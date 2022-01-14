@@ -181,6 +181,9 @@ local __addonDef = function(
         print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
         print(format('%s: Available commands: /devt to open config dialog.', prefix))
         print(format('%s: More at https://kapresoft.com/wow-addon-devtools', prefix))
+
+        --local helper = DEVT_ObjectFactory('Helper', { hello = 'there' })
+        --helper:log('Helper value: %s', helper.hello)
     end
 
     return A
@@ -192,7 +195,7 @@ DEVT = __addonDef(
         LibStub, DEVT_AceLibFactory, DEVT_Config, DEVT_PrettyPrint, DEVT_Table,
         StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown)
 
-local frame = CreateFrame("Frame", ADDON_NAME .. "Frame", UIParent)
+local frame = CreateFrame("Frame", C.AddonDetails.name .. "Frame", UIParent)
 frame:SetScript("OnEvent", DEVT.AddonLoaded)
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 

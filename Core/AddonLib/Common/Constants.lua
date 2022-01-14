@@ -1,9 +1,13 @@
+if type(DEVT_PLUS_DB) ~= "table" then DEVT_PLUS_DB = {} end
+if type(DEVT_LOG_LEVEL) ~= "number" then DEVT_LOG_LEVEL = 1 end
+if type(DEVT_DEBUG_MODE) ~= "boolean" then DEVT_DEBUG_MODE = false end
+
 local __def = function()
     local C = {}
 
     -- TODO: Deprecate these. use AddOnDetails instead
     C.ADDON_NAME = 'DevTools'
-    C.ADDON_PREFIX = '|cfdffffff{{|r|cfd91603a' .. C.ADDON_NAME .. '|r|cfdfbeb2d%s|r|cfdffffff}}|r'
+    C.ADDON_PREFIX = '|cfdffffff{{|r|cfdba8054' .. C.ADDON_NAME .. '|r|cfdfbeb2d%s|r|cfdffffff}}|r'
 
     C.AddonDetails = {
         name = C.ADDON_NAME,

@@ -4,6 +4,8 @@
 
     <Script file="Constants.lua"/>
     <Script file="AceUtil.lua"/>
+    <Script file="Logger.lua"/>
+    <Script file="ObjectFactory.lua"/>
     <Script file="AceLibFactory.lua"/>
     <Script file="AceLibAddonFactory.lua"/>
 

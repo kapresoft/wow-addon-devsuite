@@ -4,7 +4,7 @@
 ## Notes: DevTools Addon for World of Warcraft
 ## Author: antonio@kapresoft.com
 ## DefaultState: enabled
-## SavedVariables: DEVT_DB, DEVT_LOG_LEVEL
+## SavedVariables: DEVT_DB, DEVT_LOG_LEVEL, DEVT_DEBUG_MODE
 ## SavedVariablesPerCharacter: DEVT_CHARACTER_DB
 ## LoadManagers: AddonLoader
 
