@@ -39,3 +39,7 @@ luac.out
 *.x86_64
 *.hex
 
+# IDE's
+/.idea/
+/.history/
+/.vscode/

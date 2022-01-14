@@ -1,0 +1,5 @@
+<Bindings>
+    <Binding name="DEVT_OPTIONS_DLG" category="ADDONS" header="DEVT_OPTIONS">
+        DEVT.Binding_Example();
+    </Binding>
+</Bindings>
