@@ -1,4 +1,4 @@
-local __defAceLibAddonFactory = function(LibStub, VERSION_FORMAT, PrettyPrint)
+local __defAceLibAddonFactory = function(LibStub, VERSION_FORMAT, ObjectFactory, pformat)
 
     local format, tonumber, unpack = string.format, tonumber, unpack
 
@@ -11,11 +11,9 @@ local __defAceLibAddonFactory = function(LibStub, VERSION_FORMAT, PrettyPrint)
 
     function F:NewAceLib(libName)
         local version = self:GetAceLibVersion(libName)
-        --error('version:' .. PrettyPrint.pformat(version))
         local newLib = LibStub:NewLibrary(unpack(version))
         newLib.__name = libName
-        --Embed(libName, newLib, version)
-        return newLib
+        return ObjectFactory(libName, newLib)
     end
 
     return F
@@ -23,4 +21,5 @@ local __defAceLibAddonFactory = function(LibStub, VERSION_FORMAT, PrettyPrint)
 end
 
 local Constants = DEVT_Constants
-DEVT_AceLibAddonFactory = __defAceLibAddonFactory(LibStub, Constants.VERSION_FORMAT, DEVT_PrettyPrint)
+DEVT_AceLibAddonFactory = __defAceLibAddonFactory(
+        LibStub, Constants.VERSION_FORMAT, DEVT_ObjectFactory, DEVT_PrettyPrint.pformat)

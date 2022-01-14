@@ -1,3 +1,4 @@
+-- ObjectFactory
 local __def = function(Constants, Logger, pformat, table)
 
     local AddonDetails = Constants.AddonDetails
@@ -16,13 +17,19 @@ local __def = function(Constants, Logger, pformat, table)
         setmetatable(obj, obj.mt)
     end
 
-    function F:New(optionalLogName, embedObj, three)
-        --error(format('optionalLogName: %s  embedObj: %s', optionalLogName, pformat(embedObj)))
-        local obj = embedObj
+    ---@param optionalLogName string The optional logger name
+    ---@param optionalEmbedObj table Optional existing object, otherwise a new one will be returned
+    function F:New(optionalLogName, optionalEmbedObj)
+        local obj = optionalEmbedObj
         if not obj then obj = {} end
         initMetatable(optionalLogName, obj)
         Logger:Embed(obj)
         return obj
+    end
+
+    function F:NewAddon()
+        local addon = LibStub("AceAddon-3.0"):NewAddon(AddonDetails.name, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+        return self:New(nil, addon)
     end
 
     local mt = {

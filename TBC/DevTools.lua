@@ -1,27 +1,29 @@
 local __addonDef = function(
-        AddOnDetails,
+        Constants, ObjectFactory,
         LibStub, ACELIB, C, PrettyPrint, table,
         StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown)
 
-    local ADDON_NAME = AddOnDetails.name
-    local ADDON_PREFIX = AddOnDetails.prefix
-
-    local ACEDB, ACEDBO, ACECFG, ACECFGD = unpack(ACELIB:GetAddonAceLibs())
-
+    local AddonDetails = Constants.AddonDetails
+    local ADDON_NAME = AddonDetails.name
+    local ADDON_PREFIX = AddonDetails.prefix
+    local unpack = table.unpackIt
     local format, tinsert, pformat = string.format, table.insert, PrettyPrint.pformat
     local tostring, type = tostring, type
 
-    local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DebugDialog"
-    local MAJOR, MINOR = ADDON_NAME .. '-1.0', 1 -- Bump minor on changes
+    local ACEDB, ACEDBO, ACECFG, ACECFGD = unpack(ACELIB:GetAddonAceLibs())
 
-    local A = LibStub("AceAddon-3.0"):NewAddon(ADDON_NAME, "AceConsole-3.0", "AceEvent-3.0", "AceHook-3.0")
+
+    local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DebugDialog"
+    local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
+
+    local A = ObjectFactory:NewAddon()
     if not A then return end
 
     --local macroIcons = nil
     local debugDialog = nil
 
     function A:RegisterSlashCommands()
-        -- self:RegisterChatCommand("abp", "OpenConfig")
+        self:RegisterChatCommand("devt", "OpenConfig")
         -- self:RegisterChatCommand("cv", "SlashCommand_CheckVariable")
     end
 
@@ -118,7 +120,7 @@ local __addonDef = function(
     end
 
     function A:OpenConfig(_)
-        ACECFGD:Open(ADDON_NAME)
+        ACECFGD:Open(AddonDetails.name)
     end
 
     function A:OnUpdate()
@@ -127,12 +129,12 @@ local __addonDef = function(
 
     -- AceAddon Hook
     function A:OnEnable()
-        print(ADDON_NAME, 'OnEnable...')
+        self:log('OnEnable...')
     end
 
     -- AceAddon Hook
     function A:OnDisable()
-        print(ADDON_NAME, 'OnEnable...')
+        self:log('OnDisable...')
     end
 
     function A:InitDbDefaults()
@@ -178,7 +180,8 @@ local __addonDef = function(
     function A.AddonLoaded(frame, event)
         --for _, module in ipairs(libModules) do module:OnAddonLoaded() end
         local prefix = format(ADDON_PREFIX, '')
-        print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
+        A:log('%s.%s initialized', MAJOR, MINOR)
+        --print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
         print(format('%s: Available commands: /devt to open config dialog.', prefix))
         print(format('%s: More at https://kapresoft.com/wow-addon-devtools', prefix))
 
@@ -189,13 +192,13 @@ local __addonDef = function(
     return A
 end
 
-local C = DEVT_Constants
+local Constants = DEVT_Constants
 DEVT = __addonDef(
-        C.AddonDetails,
+        Constants, DEVT_ObjectFactory,
         LibStub, DEVT_AceLibFactory, DEVT_Config, DEVT_PrettyPrint, DEVT_Table,
         StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown)
 
-local frame = CreateFrame("Frame", C.AddonDetails.name .. "Frame", UIParent)
+local frame = CreateFrame("Frame", Constants.AddonDetails.name .. "Frame", UIParent)
 frame:SetScript("OnEvent", DEVT.AddonLoaded)
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 

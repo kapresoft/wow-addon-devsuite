@@ -1,6 +1,4 @@
-local __def = function(C, AceUtil, AceLibFactory, AceLibAddonFactory,
-                       table,
-                       PrettyPrint, LOG_LEVEL)
+local __def = function(C, AceUtil, table, PrettyPrint, LOG_LEVEL)
 
     local format, pack, unpack, sliceAndPack = string.format, table.pack, table.unpackIt, table.sliceAndPack
     local type, select, tostring, error = type, select, tostring, error
@@ -9,12 +7,10 @@ local __def = function(C, AceUtil, AceLibFactory, AceLibAddonFactory,
     local isNotTable = table.isNotTable
 
     local c = AceUtil:GetAceConsole()
-    --local L = AceUtil:NewPlainAceLib('Logger')
     local L = {}
 
     ---@param obj table
-    ---@param optionalLogName string The optional logger name
-    function L:Embed(obj, optionalLogName)
+    function L:Embed(obj)
         c:Embed(obj)
 
         function obj:log(...)
@@ -103,11 +99,22 @@ local __def = function(C, AceUtil, AceLibFactory, AceLibAddonFactory,
 
     end
 
+    local function initMetatable(optionalLogName, obj)
+        local prefix = ''
+        if type(optionalLogName) == 'string' then prefix = '::' .. optionalLogName end
+        if type(obj.mt) ~= 'table' then obj.mt = {} end
+
+        obj.mt.__tostring = function() return format(C.AddonDetails.prefix, prefix)  end
+
+        setmetatable(obj, obj.mt)
+    end
+
     --- Constructor
     --- Usage:  local logger = DEVT_Logger('DevTools')
     function L:NewLogger(logName)
         local _logger = {}
-        self:EmbedLogger(_logger, logName)
+        initMetatable(logName, _logger)
+        self:Embed(_logger)
         return _logger
     end
 
@@ -122,6 +129,4 @@ end
 
 ---@class Logger
 DEVT_logger = __def(
-        DEVT_Constants, DEVT_AceUtil, DEVT_AceLibFactory, DEVT_AceLibAddonFactory,
-        DEVT_Table,
-        DEVT_PrettyPrint, DEVT_LOG_LEVEL)
+        DEVT_Constants, DEVT_AceUtil, DEVT_Table, DEVT_PrettyPrint, DEVT_LOG_LEVEL)
