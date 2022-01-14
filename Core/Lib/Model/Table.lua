@@ -150,7 +150,7 @@ local __def = function(
     function T.printLoaded() T.printkvs(package.loaded) end
 
     -- ### Redirects ---
-    function T.insert(list, pos, value) table.insert(list, pos, value) end
+    function T.insert(list, value) table.insert(list, value) end
 
     return T
 end

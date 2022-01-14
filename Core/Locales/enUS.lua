@@ -8,3 +8,4 @@
 local L = LibStub("AceLocale-3.0"):NewLocale("DevTools", "enUS", true);
 
 L["BINDING_NAME_DEVT_OPTIONS_DLG"]  = 'Options Dialog'
+L["BINDING_NAME_DEVT_DEBUG_DLG"]  = 'Debug Dialog'

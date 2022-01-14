@@ -1,11 +1,15 @@
-local __def = function(ADDON_NAME, LIB)
-    local format, unpack, pack, tinsert = string.format, table.unpackIt, table.pack, table.insert
+local __def = function(ADDON_NAME, LIB, Table, pformat)
+    local format, unpack, pack, tinsert = string.format, Table.unpackIt, Table.pack, Table.insert
     local C = LIB:NewAceLib('Config')
     if not C then return end
 
     ---- ## Start Here ----
 
-    function C:OnAfterInitialize()
+    function C:OnAfterInitialize(...)
+        local args = unpack({...})
+        self.profile = args.profile
+        local profileType = type(self.profile)
+        assert(profileType == 'table', format('Invalid profile detected: %s', profileType))
     end
 
     function C:OnAfterEnable()
@@ -24,8 +28,15 @@ local __def = function(ADDON_NAME, LIB)
                     name = format("Enable %s", ADDON_NAME),
                     desc = format("Enable or Disable %s", ADDON_NAME),
                     order = 0,
-                    get = function(_) return end,
-                    set = function(_, v) return end,
+                    get = function(_)
+                        local v = self.profile.enabled
+                        if v == nil then
+                            self.profile.enabled = false
+                            v = self.profile.enabled
+                        end
+                        return v
+                    end,
+                    set = function(_, v) self.profile.enabled = v end,
                 }
             }
         }
@@ -34,4 +45,4 @@ local __def = function(ADDON_NAME, LIB)
     return C
 end
 
-DEVT_Config = __def(DEVT_Constants.ADDON_NAME, DEVT_AceLibAddonFactory)
+DEVT_Config = __def(DEVT_Constants.ADDON_NAME, DEVT_AceLibAddonFactory, DEVT_Table, DEVT_PrettyPrint.pformat)

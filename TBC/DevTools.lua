@@ -13,7 +13,7 @@ local __addonDef = function(
     local ACEDB, ACEDBO, ACECFG, ACECFGD = unpack(ACELIB:GetAddonAceLibs())
 
 
-    local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DebugDialog"
+    local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
     local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
 
     local A = ObjectFactory:NewAddon()
@@ -35,6 +35,7 @@ local __addonDef = function(
         -- The following makes the "Escape" close the window
         --_G[DEBUG_DIALOG_GLOBAL_FRAME_NAME] = frame.frame
         --tinsert(UISpecialFrames, DEBUG_DIALOG_GLOBAL_FRAME_NAME)
+        Constants:ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, frame)
 
         frame:SetTitle("Debug Frame")
         frame:SetStatusText('')
@@ -138,7 +139,13 @@ local __addonDef = function(
     end
 
     function A:InitDbDefaults()
-        -- TODO
+        local profileName = self.db:GetCurrentProfile()
+        --local defaultProfile = P:CreateDefaultProfile(profileName)
+        --local defaults = { profile =  defaultProfile }
+        --self.db:RegisterDefaults(defaults)
+        self.profile = self.db.profile
+        --if table.isEmpty(ABP_PLUS_DB.profiles[profileName]) then
+        --    ABP_PLUS_DB.profiles[profileName] = defaultProfile
     end
 
     function A:GetCurrentProfileData()
@@ -147,7 +154,7 @@ local __addonDef = function(
 
     function A:OnInitialize()
         -- Set up our database
-        self.db = ACEDB:New(ABP_PLUS_DB_NAME)
+        self.db = ACEDB:New(Constants.DB_NAME)
         self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
         self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
         self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
@@ -169,12 +176,18 @@ local __addonDef = function(
         self:RegisterKeyBindings()
 
         --macroIcons = self:FetchMacroIcons()
+        C:OnAfterInitialize{ profile = self.db.profile }
     end
 
     -- ##################################################################################
 
-    function A.Binding_Example()
-        print('Binding_Example() called...')
+    function A.BINDING_DEVT_OPTIONS_DLG()
+        A:OpenConfig()
+    end
+
+    function A.BINDING_DEVT_DEBUG_DLG()
+        local profileName = A.db:GetCurrentProfile()
+        A:ShowDebugDialog(A.db.profile, format('Current Profile: %s', profileName))
     end
 
     function A.AddonLoaded(frame, event)

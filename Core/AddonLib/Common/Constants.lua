@@ -1,13 +1,16 @@
-if type(DEVT_PLUS_DB) ~= "table" then DEVT_PLUS_DB = {} end
+if type(DEVT_DB) ~= "table" then DEVT_DB = {} end
 if type(DEVT_LOG_LEVEL) ~= "number" then DEVT_LOG_LEVEL = 1 end
 if type(DEVT_DEBUG_MODE) ~= "boolean" then DEVT_DEBUG_MODE = false end
 
-local __def = function()
+local __def = function(UISpecialFrames, Table)
     local C = {}
+
+    local setglobal = setglobal
 
     -- TODO: Deprecate these. use AddOnDetails instead
     C.ADDON_NAME = 'DevTools'
     C.ADDON_PREFIX = '|cfdffffff{{|r|cfdba8054' .. C.ADDON_NAME .. '|r|cfdfbeb2d%s|r|cfdffffff}}|r'
+    C.DB_NAME = 'DEVT_DB'
 
     C.AddonDetails = {
         name = C.ADDON_NAME,
@@ -36,8 +39,15 @@ local __def = function()
         ButtonFactory = 'ButtonFactory',
     }
 
+    function C:ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
+        local frame = frameInstance
+        if frameInstance.frame then frame = frameInstance.frame end
+        setglobal(frameName, frame)
+        Table.insert(UISpecialFrames, frameName)
+    end
+
     return C
 
 end
 
-DEVT_Constants = __def()
+DEVT_Constants = __def(UISpecialFrames, DEVT_Table)
