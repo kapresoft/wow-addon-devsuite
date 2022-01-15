@@ -49,8 +49,14 @@ local __addonDef = function(
         end)
         --frame:SetWidth(800)
 
+        local inlineGroup = AceGUI:Create("InlineGroup")
+        --inlineGroup:SetTitle("Evaluate LUA Variable")
+        inlineGroup:SetLayout("List")
+        inlineGroup:SetFullWidth(true)
+        frame:AddChild(inlineGroup)
+
         local codeEditBox = AceGUI:Create("MultiLineEditBox")
-        codeEditBox:SetLabel('Eval Variable:')
+        codeEditBox:SetLabel('')
         codeEditBox:SetFullWidth(true)
         codeEditBox:SetHeight(100)
         codeEditBox:SetText(self.profile.last_eval or '')
@@ -76,8 +82,10 @@ local __addonDef = function(
         showFnEditBox:SetCallback("OnValueChanged", function(_, _, checkedState)
             codeEditBox.button:Enable()
         end)
-        frame:AddChild(showFnEditBox)
-        frame:AddChild(codeEditBox)
+        --frame:AddChild(showFnEditBox)
+        --frame:AddChild(codeEditBox)
+        inlineGroup:AddChild(showFnEditBox)
+        inlineGroup:AddChild(codeEditBox)
 
         -- PrettyPrint.format(obj)
         local multiEditbox = AceGUI:Create("MultiLineEditBox")
