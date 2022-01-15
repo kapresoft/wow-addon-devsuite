@@ -5,9 +5,9 @@ local __def = function(tinsert, pairs, type, tostring)
 
     function S.IsEmpty(str) return (str or '') == '' end
     function S.IsNotEmpty(str) return not S.IsEmpty(str) end
-    function S.IsBlank(str) return S.len(S.TrimAll(str)) <= 0 end
+    function S.IsBlank(str) return string.len(S.TrimAll(str)) <= 0 end
     function S.IsNotBlank(str) return not S.IsEmpty(str) end
-    function S.TrimAll(str) return S.gsub(str or '', "%s", "") end
+    function S.TrimAll(str) return string.gsub(str or '', "%s", "") end
 
     function S.ToTable(args)
         -- print(string.format("args: %s, type=%s", args, type(args)))

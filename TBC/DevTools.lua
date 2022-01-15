@@ -44,24 +44,63 @@ local __addonDef = function(
             widget:SetStatusText('')
         end)
         frame:SetLayout("Flow")
+        frame:SetCallback("OnShow", function(widget, event)
+            frame:EnableAcceptButton()
+        end)
         --frame:SetWidth(800)
 
+        local codeEditBox = AceGUI:Create("MultiLineEditBox")
+        codeEditBox:SetLabel('Eval Variable:')
+        codeEditBox:SetFullWidth(true)
+        codeEditBox:SetHeight(100)
+        codeEditBox:SetText(self.profile.last_eval or '')
+        codeEditBox:SetCallback("OnEnterPressed", function(widget, event, text)
+            if DEVT_String.IsBlank(text) then return end
+            self.profile.last_eval = text
+            local includeFn = frame:IsShowFunctions()
+            local baseOptions = 'show_metatable=true, depth_limit=true'
+            local pre = format('PrettyPrint.setup({ show_function=%s, %s }); ',
+                    tostring(includeFn), baseOptions)
+            local evalCode = pre .. 'return PrettyPrint.pformat(%s)'
+            print(format('%s Code to eval: %s', Constants.AddonDetails.prefix, evalCode))
+            local cmd = format(evalCode , text)
+            local func, errorMessage = loadstring(cmd, "Eval-Variable")
+            frame:SetStatusText(errorMessage)
+            local val = func()
+            --print('val:', val)
+            frame:SetTextContent(val)
+        end)
+
+        local showFnEditBox = AceGUI:Create("CheckBox")
+        showFnEditBox:SetLabel("Show Functions")
+        showFnEditBox:SetCallback("OnValueChanged", function(_, _, checkedState)
+            codeEditBox.button:Enable()
+        end)
+        frame:AddChild(showFnEditBox)
+        frame:AddChild(codeEditBox)
+
         -- PrettyPrint.format(obj)
-        local editbox = AceGUI:Create("MultiLineEditBox")
-        editbox:SetLabel('')
-        editbox:SetText('')
-        editbox:SetFullWidth(true)
-        editbox:SetFullHeight(true)
-        editbox.button:Hide()
-        frame:AddChild(editbox)
-        frame.editBox = editbox
+        local multiEditbox = AceGUI:Create("MultiLineEditBox")
+        multiEditbox:SetLabel('Output:')
+        multiEditbox:SetText('')
+        multiEditbox:SetFullWidth(true)
+        multiEditbox:SetFullHeight(true)
+        multiEditbox.button:Hide()
+        frame:AddChild(multiEditbox)
+        frame.multiEditbox = multiEditbox
 
         function frame:SetTextContent(text)
-            self.editBox:SetText(text)
+            self.multiEditbox:SetText(text)
         end
         function frame:SetIcon(iconPathOrId)
             if not iconPathOrId then return end
             self.iconFrame:SetImage(iconPathOrId)
+        end
+        function frame:EnableAcceptButton()
+            codeEditBox.button:Enable()
+        end
+        function frame:IsShowFunctions()
+            return showFnEditBox:GetValue()
         end
 
         frame:Hide()
@@ -81,12 +120,14 @@ local __addonDef = function(
     function A:ShowDebugDialog(obj, optionalLabel)
         local text = nil
         local label = optionalLabel or ''
-        if type(obj) ~= 'string' then
-            text = PrettyPrint.pformat(obj)
-        else
-            text = tostring(nil)
+        if obj ~= nil then
+            if type(obj) == 'table' then
+                text = PrettyPrint.pformat(obj)
+            else
+                text = tostring(obj)
+            end
+            debugDialog:SetTextContent(text)
         end
-        debugDialog:SetTextContent(text)
         debugDialog:SetStatusText(label)
         debugDialog:Show()
     end
@@ -187,7 +228,8 @@ local __addonDef = function(
 
     function A.BINDING_DEVT_DEBUG_DLG()
         local profileName = A.db:GetCurrentProfile()
-        A:ShowDebugDialog(A.db.profile, format('Current Profile: %s', profileName))
+        --A:ShowDebugDialog(A.db.profile, format('Current Profile: %s', profileName))
+        A:ShowDebugDialog()
     end
 
     function A.AddonLoaded(frame, event)
