@@ -9,7 +9,7 @@ local __addonDef = function(
     local unpack = table.unpackIt
     local format, tinsert, pformat = string.format, table.insert, PrettyPrint.pformat
     local tostring, type = tostring, type
-
+    local IsNotBlank = DEVT_String.IsNotBlank
     local ACEDB, ACEDBO, ACECFG, ACECFGD = unpack(ACELIB:GetAddonAceLibs())
 
 
@@ -39,14 +39,17 @@ local __addonDef = function(
 
         frame:SetTitle("Debug Frame")
         frame:SetStatusText('')
-        frame:SetCallback("OnClose", function(widget)
-            widget:SetTextContent('')
-            widget:SetStatusText('')
+        frame:SetCallback("OnClose", function(_)
+            frame:SetCodeText('')
+            frame:SetContentText('')
+            frame:SetStatusText('')
         end)
         frame:SetLayout("Flow")
         frame:SetCallback("OnShow", function(widget, event)
             frame:EnableAcceptButton()
+            --if frame:HasCodeContent() then frame:Submit() end
         end)
+
         --frame:SetWidth(800)
 
         local inlineGroup = AceGUI:Create("InlineGroup")
@@ -56,13 +59,15 @@ local __addonDef = function(
         frame:AddChild(inlineGroup)
 
         local codeEditBox = AceGUI:Create("MultiLineEditBox")
+        frame.codeEditBox = codeEditBox
         codeEditBox:SetLabel('')
         codeEditBox:SetFullWidth(true)
         codeEditBox:SetHeight(100)
-        codeEditBox:SetText(self.profile.last_eval or '')
+        codeEditBox:SetText('')
         codeEditBox:SetCallback("OnEnterPressed", function(widget, event, text)
             if DEVT_String.IsBlank(text) then return end
             self.profile.last_eval = text
+
             local includeFn = frame:IsShowFunctions()
             local baseOptions = 'show_metatable=true, depth_limit=true'
             local pre = format('PrettyPrint.setup({ show_function=%s, %s }); ',
@@ -74,7 +79,7 @@ local __addonDef = function(
             frame:SetStatusText(errorMessage)
             local val = func()
             --print('val:', val)
-            frame:SetTextContent(val)
+            frame:SetContentText(val)
         end)
 
         local showFnEditBox = AceGUI:Create("CheckBox")
@@ -88,17 +93,20 @@ local __addonDef = function(
         inlineGroup:AddChild(codeEditBox)
 
         -- PrettyPrint.format(obj)
-        local multiEditbox = AceGUI:Create("MultiLineEditBox")
-        multiEditbox:SetLabel('Output:')
-        multiEditbox:SetText('')
-        multiEditbox:SetFullWidth(true)
-        multiEditbox:SetFullHeight(true)
-        multiEditbox.button:Hide()
-        frame:AddChild(multiEditbox)
-        frame.multiEditbox = multiEditbox
+        local contentEditBox = AceGUI:Create("MultiLineEditBox")
+        contentEditBox:SetLabel('Output:')
+        contentEditBox:SetText('')
+        contentEditBox:SetFullWidth(true)
+        contentEditBox:SetFullHeight(true)
+        contentEditBox.button:Hide()
+        frame:AddChild(contentEditBox)
+        frame.contentEditBox = contentEditBox
 
-        function frame:SetTextContent(text)
-            self.multiEditbox:SetText(text)
+        function frame:SetContentText(text)
+            frame.contentEditBox:SetText(text)
+        end
+        function frame:SetCodeText(text)
+            frame.codeEditBox:SetText(text)
         end
         function frame:SetIcon(iconPathOrId)
             if not iconPathOrId then return end
@@ -109,6 +117,13 @@ local __addonDef = function(
         end
         function frame:IsShowFunctions()
             return showFnEditBox:GetValue()
+        end
+        function frame:Submit()
+            frame.codeEditBox.button:Click()
+        end
+        function frame:HasCodeContent()
+            local codeValue = frame.codeEditBox:GetText()
+            return IsNotBlank(codeValue)
         end
 
         frame:Hide()
@@ -125,25 +140,33 @@ local __addonDef = function(
         debugDialog:Show()
     end
 
-    function A:ShowDebugDialog(obj, optionalLabel)
-        local text = nil
-        local label = optionalLabel or ''
-        if obj ~= nil then
-            if type(obj) == 'table' then
-                text = PrettyPrint.pformat(obj)
-            else
-                text = tostring(obj)
-            end
-            debugDialog:SetTextContent(text)
-        end
+    function A:ShowDebugDialog()
+        debugDialog:SetCodeText(self.profile.last_eval)
+        debugDialog:Show()
+    end
+
+    function A:EvalVar(globalVarName)
+        --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
+        debugDialog:SetCodeText(globalVarName)
+        debugDialog:SetContentText(pformat(getglobal(globalVarName)))
+        local label = format('Global variable name: %s', globalVarName)
         debugDialog:SetStatusText(label)
         debugDialog:Show()
     end
 
-    function A:DBG(obj, optionalLabel) self:ShowDebugDialog(obj, optionalLabel) end
-    function A:TI()
-        -- local macroIcons = GetMacroItemIcons()
-        -- self:ShowTextureDialog(macroIcons, 'Macro Icons')
+    function A:EvalObject(o, varName, _isGlobal)
+        local isGlobal = _isGlobal or false
+        local codeText = ''
+        local localityLabel = 'Local'
+        if isGlobal then
+            codeText = varName
+            localityLabel = 'Global'
+        end
+        debugDialog:SetCodeText(codeText)
+        debugDialog:SetContentText(pformat(o))
+        local label = format('%s variable name: %s', localityLabel, varName)
+        debugDialog:SetStatusText(label)
+        debugDialog:Show()
     end
 
     function A:RegisterKeyBindings()
