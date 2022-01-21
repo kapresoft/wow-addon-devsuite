@@ -299,10 +299,14 @@ function A.BINDING_DEVT_DEBUG_DLG() A:Handle_SlashCommand_ShowProfile() end
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 
-function A.OnAddonLoaded(frame, event)
+function A.OnAddonLoaded(frame, event, ...)
+    local isLogin, isReload = ...
+
     --for _, module in ipairs(libModules) do module:OnAddonLoaded() end
     local prefix = format(ADDON_PREFIX, '')
     A:log('%s.%s initialized', MAJOR, MINOR)
+    if not isLogin then return end
+
     --print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
     local cprefix = format('|cfffc4e03%s|r', '/devt')
     print(format('%s: Available commands: ' .. cprefix, prefix))
