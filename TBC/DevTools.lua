@@ -103,10 +103,10 @@ local __addonDef = function(
         frame.contentEditBox = contentEditBox
 
         function frame:SetContentText(text)
-            frame.contentEditBox:SetText(text)
+            frame.contentEditBox:SetText(tostring(text))
         end
         function frame:SetCodeText(text)
-            frame.codeEditBox:SetText(text)
+            frame.codeEditBox:SetText(tostring(text))
         end
         function frame:SetIcon(iconPathOrId)
             if not iconPathOrId then return end
