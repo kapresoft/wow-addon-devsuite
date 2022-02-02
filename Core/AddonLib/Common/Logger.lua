@@ -7,6 +7,7 @@ local __def = function(C, AceUtil, table, PrettyPrint, LOG_LEVEL)
     local isNotTable = table.isNotTable
 
     local c = AceUtil:GetAceConsole()
+    ---@class Logger
     local L = {}
 
     ---@param obj table
@@ -127,6 +128,6 @@ local __def = function(C, AceUtil, table, PrettyPrint, LOG_LEVEL)
     return L
 end
 
----@class Logger
+---@type Logger
 DEVT_logger = __def(
         DEVT_Constants, DEVT_AceUtil, DEVT_Table, DEVT_PrettyPrint, DEVT_LOG_LEVEL)

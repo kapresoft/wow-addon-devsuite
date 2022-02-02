@@ -27,6 +27,7 @@ if not A then return end
 local debugDialog = nil
 
 function A:CreateDebugPopupDialog()
+    local p = DEVT_logger:NewLogger('DebugDialog')
     local AceGUI = ACELIB:GetAceGUI()
     local frame = AceGUI:Create("Frame")
     -- The following makes the "Escape" close the window
@@ -61,21 +62,23 @@ function A:CreateDebugPopupDialog()
     codeEditBox:SetFullWidth(true)
     codeEditBox:SetHeight(100)
     codeEditBox:SetText('')
-    codeEditBox:SetCallback("OnEnterPressed", function(widget, event, text)
-        if DEVT_String.IsBlank(text) then return end
-        self.profile.last_eval = text
+    codeEditBox:SetCallback("OnEditFocusGained", function(widget, event)
+        frame:EnableAcceptButton()
+    end)
+    codeEditBox:SetCallback("OnEnterPressed", function(widget, event, literalVarName)
+        if DEVT_String.IsBlank(literalVarName) then return end
+        self.profile.last_eval = literalVarName
 
         local includeFn = frame:IsShowFunctions()
         local baseOptions = 'show_metatable=true, depth_limit=true'
-        local pre = format('PrettyPrint.setup({ show_function=%s, %s }); ',
-                tostring(includeFn), baseOptions)
-        local evalCode = pre .. 'return PrettyPrint.pformat(%s)'
-        print(format('%s Code to eval: %s', Constants.AddonDetails.prefix, evalCode))
-        local cmd = format(evalCode , text)
-        local func, errorMessage = loadstring(cmd, "Eval-Variable")
+        local scriptToEval = format([[ DEVT_PrettyPrint.setup({ show_function=%s, %s })
+        return %s]], tostring(includeFn), baseOptions, literalVarName)
+        p:log(30, 'Eval Code: %s', scriptToEval)
+        --local cmd = format(evalCode , literalVarName)
+        local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
         frame:SetStatusText(errorMessage)
         local val = func()
-        --print('val:', val)
+        if type(val) == 'function' then val = val() end
         frame:SetContent(val)
     end)
 
@@ -98,6 +101,7 @@ function A:CreateDebugPopupDialog()
     contentEditBox.button:Hide()
     frame:AddChild(contentEditBox)
     frame.contentEditBox = contentEditBox
+
 
     function frame:SetCodeText(text)
         frame.codeEditBox:SetText(text or '')
@@ -218,14 +222,9 @@ function A:OnUpdate()
 end
 
 -- AceAddon Hook
-function A:OnEnable()
-    self:log('OnEnable...')
-end
-
+--function A:OnEnable() self:log('OnEnable...') end
 -- AceAddon Hook
-function A:OnDisable()
-    self:log('OnDisable...')
-end
+--function A:OnDisable() self:log('OnDisable...') end
 
 function A:InitDbDefaults()
     local profileName = self.db:GetCurrentProfile()
@@ -293,7 +292,7 @@ function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() e
 
 function A.BINDING_DEVT_OPTIONS_DLG() A:OpenConfig() end
 
-function A.BINDING_DEVT_DEBUG_DLG() A:Handle_SlashCommand_ShowProfile() end
+function A.BINDING_DEVT_DEBUG_DLG() A:ShowDebugDialog() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -304,8 +303,9 @@ function A.OnAddonLoaded(frame, event, ...)
 
     --for _, module in ipairs(libModules) do module:OnAddonLoaded() end
     local prefix = format(ADDON_PREFIX, '')
-    A:log('%s.%s initialized', MAJOR, MINOR)
+    --A:log('isLogin: %s, isReload: %s', tostring(isLogin), tostring(isReload))
     if not isLogin then return end
+    A:log('%s.%s initialized', MAJOR, MINOR)
 
     --print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
     local cprefix = format('|cfffc4e03%s|r', '/devt')
