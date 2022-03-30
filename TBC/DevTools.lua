@@ -47,7 +47,7 @@ function A:CreateDebugPopupDialog()
         frame:EnableAcceptButton()
         --if frame:HasCodeContent() then frame:Submit() end
     end)
-
+    frame:SetHeight(800)
     --frame:SetWidth(800)
 
     local inlineGroup = AceGUI:Create("InlineGroup")
@@ -60,7 +60,7 @@ function A:CreateDebugPopupDialog()
     frame.codeEditBox = codeEditBox
     codeEditBox:SetLabel('')
     codeEditBox:SetFullWidth(true)
-    codeEditBox:SetHeight(100)
+    codeEditBox:SetHeight(200)
     codeEditBox:SetText('')
     codeEditBox:SetCallback("OnEditFocusGained", function(widget, event)
         frame:EnableAcceptButton()
