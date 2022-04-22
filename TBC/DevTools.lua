@@ -1,10 +1,22 @@
+--[[-----------------------------------------------------------------------------
+Lua Vars
+-------------------------------------------------------------------------------]]
+local setglobal = setglobal
+
+--[[-----------------------------------------------------------------------------
+Blizzard Vars
+-------------------------------------------------------------------------------]]
+local UISpecialFrames = UISpecialFrames
+
+--[[-----------------------------------------------------------------------------
+Local Vars
+-------------------------------------------------------------------------------]]
 local Constants, ObjectFactory,
     LibStub, ACELIB, C, PrettyPrint, table, String,
     StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown =
             DEVT_Constants, DEVT_ObjectFactory,
             LibStub, DEVT_AceLibFactory, DEVT_Config, DEVT_PrettyPrint, DEVT_Table, DEVT_String,
             StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown
-
 
 local AddonDetails = Constants.AddonDetails
 local ADDON_NAME = AddonDetails.name
@@ -26,6 +38,21 @@ if not A then return end
 ---@class DebugDialog
 local debugDialog = nil
 
+--[[-----------------------------------------------------------------------------
+Support Functions
+-------------------------------------------------------------------------------]]
+--_G[TEXTURE_DIALOG_GLOBAL_FRAME_NAME] = frame.frame
+--table.insert(UISpecialFrames, TEXTURE_DIALOG_GLOBAL_FRAME_NAME)
+local function ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
+    local frame = frameInstance
+    if frameInstance.frame then frame = frameInstance.frame end
+    setglobal(frameName, frame)
+    table.insert(UISpecialFrames, frameName)
+end
+
+--[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
 function A:CreateDebugPopupDialog()
     local p = DEVT_logger:NewLogger('DebugDialog')
     local AceGUI = ACELIB:GetAceGUI()
