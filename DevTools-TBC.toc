@@ -1,0 +1,22 @@
+## Interface: 90207
+## Version: 1.0
+## Title: Dev|cff1784d1Tools|r Retail
+## Notes: DevTools Addon for World of Warcraft
+## Author: antonio@kapresoft.com
+## DefaultState: enabled
+## SavedVariables: DEVT_DB, DEVT_LOG_LEVEL, DEVT_DEBUG_MODE
+## SavedVariablesPerCharacter: DEVT_CHARACTER_DB
+## LoadManagers: AddonLoader
+
+## X-Min-Interface: 90207
+## X-LoadOn-Always: delayed
+## X-Credits: antonio@kapresoft.com
+## X-Category: Development Tools
+## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+## X-Github-Repo: https://github.com/kapresoft/wowaddon-devtools
+
+# To get the Interface/Build Info
+# /run print(select(4, GetBuildInfo()))
+
+Core\_Core.xml
+TBC\_DevTools.xml
