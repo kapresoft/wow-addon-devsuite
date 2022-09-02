@@ -1,6 +1,6 @@
-## Interface: 20504
+## Interface: 90207
 ## Version: 1.0
-## Title: Dev|cff1784d1Tools|r TBC
+## Title: Dev|cff1784d1Tools|r Retail
 ## Notes: DevTools Addon for World of Warcraft
 ## Author: antonio@kapresoft.com
 ## DefaultState: enabled
