@@ -12,6 +12,7 @@ local __def = function(LibStub, ADDON_NAME, Table)
 
     function C:OnAfterInitialize(...)
         local args = unpack({...})
+        ---@class ProfileDb
         self.profile = args.profile
         local profileType = type(self.profile)
         assert(profileType == 'table', format('Invalid profile detected: %s', profileType))

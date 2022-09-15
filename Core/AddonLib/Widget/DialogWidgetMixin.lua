@@ -13,7 +13,7 @@ local tinsert = Table.insert
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
----@class DialogWidgetMixins : BaseMixin
+---@class DialogWidgetMixin : BaseMixin
 local L = LibStub:NewMixin(M.DialogWidgetMixin)
 local p = LogFactory(M.DialogWidgetMixin)
 

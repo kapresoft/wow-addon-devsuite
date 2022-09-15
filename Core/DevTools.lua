@@ -14,7 +14,8 @@ Local Vars
 -------------------------------------------------------------------------------]]
 local LibStub, M, G = DEVT_LibGlobals:LibPack()
 local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
-
+---@type DebugDialog
+local DebugDialog = LibStub(M.DebugDialog)
 local Constants, ObjectFactory = DEVT_Constants, DEVT_ObjectFactory
 
 
@@ -41,7 +42,7 @@ if not A then return end
 --local p = DEVT_logger:NewLogger('DebugDialog')
 local LogFactory = G:Lib_LogFactory()
 local p = LogFactory()
----@class DebugDialogx
+---@type DebugDialogWidget
 local debugDialog = nil
 
 
@@ -60,123 +61,6 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function A:CreateDebugPopupDialog()
-    local AceGUI = ACELIB:GetAceGUI()
-    local frame = AceGUI:Create("Frame")
-    -- The following makes the "Escape" close the window
-    --_G[DEBUG_DIALOG_GLOBAL_FRAME_NAME] = frame.frame
-    --tinsert(UISpecialFrames, DEBUG_DIALOG_GLOBAL_FRAME_NAME)
-    Constants:ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, frame)
-
-    frame:SetTitle("Debug Frame")
-    frame:SetStatusText('')
-    frame:SetCallback("OnClose", function(_)
-        frame:SetCodeText('')
-        frame:SetContent('')
-        frame:SetStatusText('')
-    end)
-    frame:SetLayout("Flow")
-    frame:SetCallback("OnShow", function(widget, event)
-        frame:EnableAcceptButton()
-        --if frame:HasCodeContent() then frame:Submit() end
-    end)
-    frame:SetHeight(800)
-    --frame:SetWidth(800)
-
-    local inlineGroup = AceGUI:Create("InlineGroup")
-    --inlineGroup:SetTitle("Evaluate LUA Variable")
-    inlineGroup:SetLayout("List")
-    inlineGroup:SetFullWidth(true)
-    frame:AddChild(inlineGroup)
-
-    local codeEditBox = AceGUI:Create("MultiLineEditBox")
-    frame.codeEditBox = codeEditBox
-    codeEditBox:SetLabel('')
-    codeEditBox:SetFullWidth(true)
-    codeEditBox:SetHeight(200)
-    codeEditBox:SetText('')
-    codeEditBox:SetCallback("OnEditFocusGained", function(widget, event)
-        frame:EnableAcceptButton()
-    end)
-    codeEditBox:SetCallback("OnEnterPressed", function(widget, event, literalVarName)
-        if String.IsBlank(literalVarName) then return end
-        self.profile.last_eval = literalVarName
-
-        local includeFn = frame:IsShowFunctions()
-        --local baseOptions = 'show_metatable=true, depth_limit=true'
-        --local scriptToEval = format([[ DEVT_PrettyPrint.setup({ show_function=%s, %s })
-        --return %s]], tostring(includeFn), baseOptions, literalVarName)
-
-        local scriptToEval = format([[ return %s]], literalVarName)
-        --p:log(30, 'Eval Code: %s', scriptToEval)
-        --local cmd = format(evalCode , literalVarName)
-        local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
-        frame:SetStatusText(errorMessage)
-        local val = func()
-        if type(val) == 'function' then val = val() end
-        frame:SetContent(val, includeFn)
-    end)
-
-    local showFnEditBox = AceGUI:Create("CheckBox")
-    showFnEditBox:SetLabel("Show Functions")
-    showFnEditBox:SetCallback("OnValueChanged", function(_, _, checkedState)
-        codeEditBox.button:Enable()
-    end)
-    -- checked by default
-    showFnEditBox:SetValue(true)
-    --frame:AddChild(showFnEditBox)
-    --frame:AddChild(codeEditBox)
-    inlineGroup:AddChild(showFnEditBox)
-    inlineGroup:AddChild(codeEditBox)
-
-    -- PrettyPrint.format(obj)
-    local contentEditBox = AceGUI:Create("MultiLineEditBox")
-    contentEditBox:SetLabel('Output:')
-    contentEditBox:SetText('')
-    contentEditBox:SetFullWidth(true)
-    contentEditBox:SetFullHeight(true)
-    contentEditBox.button:Hide()
-    frame:AddChild(contentEditBox)
-    frame.contentEditBox = contentEditBox
-
-
-    function frame:SetCodeText(text)
-        frame.codeEditBox:SetText(text or '')
-    end
-    ---@param showFunctions boolean
-    function frame:SetContent(o, showFunctions)
-        local text = nil
-        if type(o) == 'text' then text = '' end
-        if showFunctions then text = pformat:A():pformat(o) else text = pformat(o) end
-        frame.contentEditBox:SetText(text)
-    end
-    function frame:SetIcon(iconPathOrId)
-        if not iconPathOrId then return end
-        self.iconFrame:SetImage(iconPathOrId)
-    end
-    function frame:EnableAcceptButton()
-        codeEditBox.button:Enable()
-    end
-    function frame:IsShowFunctions()
-        return showFnEditBox:GetValue()
-    end
-    function frame:Submit()
-        frame.codeEditBox.button:Click()
-    end
-    function frame:HasCodeContent()
-        local codeValue = frame.codeEditBox:GetText()
-        return IsNotBlank(codeValue)
-    end
-
-    frame:Hide()
-    return frame
-end
-
-function A:ShowDebugDialog()
-    debugDialog:SetCodeText(self.profile.last_eval)
-    debugDialog:Show()
-end
-
 function A:GetMouseOver()
     p:log('GetMouseOver: entering...')
 end
@@ -288,8 +172,8 @@ function A:OnInitialize()
     self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
     self:InitDbDefaults()
 
-    debugDialog = self:CreateDebugPopupDialog()
-    ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, debugDialog.frame)
+    --debugDialog = self:CreateDebugPopupDialog()
+    --ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, debugDialog.frame)
 
     local options = C:GetOptions()
     -- Register options table and slash command
@@ -305,6 +189,7 @@ function A:OnInitialize()
 
     --macroIcons = self:FetchMacroIcons()
     C:OnAfterInitialize{ profile = self.db.profile }
+    debugDialog = DebugDialog(self.profile)
 end
 
 -- ## -------------------------------------------------------------------------
@@ -334,7 +219,7 @@ function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() e
 
 function A.BINDING_DEVT_OPTIONS_DLG() A:OpenConfig() end
 
-function A.BINDING_DEVT_DEBUG_DLG() A:ShowDebugDialog() end
+function A.BINDING_DEVT_DEBUG_DLG() debugDialog:Show() end
 function A.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
 
 -- ## -------------------------------------------------------------------------

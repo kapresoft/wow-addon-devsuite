@@ -152,7 +152,12 @@ end
 
 ---@param object any The target object
 ---@return any The mixed-in object
-function L:Mixin(object, ...) return self:LibPack_Mixin():Mixin(object, ...) end
+function L:MixinAll(object, ...) return self:LibPack_Mixin():Mixin(object, ...) end
+
+---The standard mixin that skips "GetName", "mt (metatables)", etc.. [Preferred]
+---@param object any The target object
+---@return any The mixed-in object
+function L:Mixin(object, ...) return self:LibPack_Mixin():MixinStandard(object, ...) end
 
 ---@return Mixin
 function L:LibPack_Mixin() return self:Get(M.Mixin) end
@@ -173,7 +178,7 @@ function L:Lib_LogFactory() return self:Get(M.LogFactory) end
 ---@return Table
 function L:Lib_Table() return LibStub(M.Table) end
 
----@return DialogWidgetMixins
+---@return DialogWidgetMixin
 function L:LibMixin_DialogWidgetMixins() return LibStub:GetMixin(M.DialogWidgetMixin) end
 
 ---@return UnitIDAttributes

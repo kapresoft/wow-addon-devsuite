@@ -34,11 +34,10 @@ function _L:Mixin(object, ...)
 end
 
 function _L:MixinStandard(object, ...)
-    self:MixinExcept(object, { 'GetName', 'mt', 'log' }, Table.pack(...))
+    self:MixinExcept(object, { 'GetName', 'mt', 'log' }, ...)
 end
 
 function _L:MixinExcept(object, skipList, ...)
-    print('skipList:', pformat(type(skipList)))
     for i = 1, select("#", ...) do
         local mixin = select(i, ...)
         for k, v in pairs(mixin) do
