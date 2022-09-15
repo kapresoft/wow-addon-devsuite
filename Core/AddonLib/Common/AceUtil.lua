@@ -7,8 +7,6 @@ local __def = function(LIB, versionFormat, AceModule, unpack)
 
     local libAceConsole = nil
 
-    C.hello = 'there'
-
     function C:GetAceLibVersion(libName)
         local major, minor = format(versionFormat, libName), tonumber(("$Revision: 1 $"):match("%d+"))
         return { major, minor }

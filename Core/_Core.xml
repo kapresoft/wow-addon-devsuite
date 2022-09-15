@@ -2,8 +2,9 @@
 ..\FrameXML\UI.xsd">
 
     <Include file='ExtLib\_ExtLib.xml'/>
+
+    <Script file="_Core.lua"/>
     <Include file='Lib\_Lib.xml'/>
     <Include file='AddonLib\_AddonLib.xml'/>
-    <Include file='Locales\_Locales.xml'/>
 
 </Ui>

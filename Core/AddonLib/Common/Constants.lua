@@ -2,6 +2,7 @@ if type(DEVT_DB) ~= "table" then DEVT_DB = {} end
 if type(DEVT_LOG_LEVEL) ~= "number" then DEVT_LOG_LEVEL = 1 end
 if type(DEVT_DEBUG_MODE) ~= "boolean" then DEVT_DEBUG_MODE = false end
 
+---@type Table
 local __def = function(UISpecialFrames, Table)
     local C = {}
 
@@ -31,6 +32,7 @@ local __def = function(UISpecialFrames, Table)
         AceLibSharedMedia = 'LibSharedMedia-3.0'
     }
 
+    -- TODO: Deprecate these
     C.Module = {
         Logger = 'Logger',
         Config = 'Config',
@@ -49,5 +51,6 @@ local __def = function(UISpecialFrames, Table)
     return C
 
 end
-
-DEVT_Constants = __def(UISpecialFrames, DEVT_Table)
+---@type Table
+local LibStub = __K_Core_DevTools:LibStub()
+DEVT_Constants = __def(UISpecialFrames, LibStub('Table'))

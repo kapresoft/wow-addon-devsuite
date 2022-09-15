@@ -7,36 +7,43 @@ local setglobal = setglobal
 Blizzard Vars
 -------------------------------------------------------------------------------]]
 local UISpecialFrames = UISpecialFrames
+local ReloadUI, IsShiftKeyDown = ReloadUI, IsShiftKeyDown
 
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local Constants, ObjectFactory,
-    LibStub, ACELIB, C, PrettyPrint, table, String,
-    StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown =
-            DEVT_Constants, DEVT_ObjectFactory,
-            LibStub, DEVT_AceLibFactory, DEVT_Config, DEVT_PrettyPrint, DEVT_Table, DEVT_String,
-            StaticPopupDialogs, StaticPopup_Show, ReloadUI, IsShiftKeyDown
+local LibStub, M, G = DEVT_LibGlobals:LibPack()
+local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
 
+local Constants, ObjectFactory = DEVT_Constants, DEVT_ObjectFactory
+
+
+local C = G:Lib_Config()
 local AddonDetails = Constants.AddonDetails
 local ADDON_NAME = AddonDetails.name
 local ADDON_PREFIX = AddonDetails.prefix
-local unpack = table.unpackIt
-local print, format, tinsert, pformat = print, string.format, table.insert, PrettyPrint.pformat
+
+local ACELIB = G:LibPack_AceLibFactory()
+local ACEDB, ACEDBO, ACECFG, ACECFGD = G:LibPack_AceAddonLibs()
+
+local unpack = Table.unpackIt
+local print, format = print, string.format
 local tostring, type = tostring, type
 local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
-local ACEDB, ACEDBO, ACECFG, ACECFGD = unpack(ACELIB:GetAddonAceLibs())
-
 
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
 local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
 
 ---@class DevTools
-local A = ObjectFactory:NewAddon()
+local A = LibStub:NewAddon(G.addonName)
 if not A then return end
 
----@class DebugDialog
+--local p = DEVT_logger:NewLogger('DebugDialog')
+local LogFactory = G:Lib_LogFactory()
+local p = LogFactory()
+---@class DebugDialogx
 local debugDialog = nil
+
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -47,14 +54,13 @@ local function ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
     local frame = frameInstance
     if frameInstance.frame then frame = frameInstance.frame end
     setglobal(frameName, frame)
-    table.insert(UISpecialFrames, frameName)
+    Table.insert(UISpecialFrames, frameName)
 end
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
 function A:CreateDebugPopupDialog()
-    local p = DEVT_logger:NewLogger('DebugDialog')
     local AceGUI = ACELIB:GetAceGUI()
     local frame = AceGUI:Create("Frame")
     -- The following makes the "Escape" close the window
@@ -93,20 +99,22 @@ function A:CreateDebugPopupDialog()
         frame:EnableAcceptButton()
     end)
     codeEditBox:SetCallback("OnEnterPressed", function(widget, event, literalVarName)
-        if DEVT_String.IsBlank(literalVarName) then return end
+        if String.IsBlank(literalVarName) then return end
         self.profile.last_eval = literalVarName
 
         local includeFn = frame:IsShowFunctions()
-        local baseOptions = 'show_metatable=true, depth_limit=true'
-        local scriptToEval = format([[ DEVT_PrettyPrint.setup({ show_function=%s, %s })
-        return %s]], tostring(includeFn), baseOptions, literalVarName)
-        p:log(30, 'Eval Code: %s', scriptToEval)
+        --local baseOptions = 'show_metatable=true, depth_limit=true'
+        --local scriptToEval = format([[ DEVT_PrettyPrint.setup({ show_function=%s, %s })
+        --return %s]], tostring(includeFn), baseOptions, literalVarName)
+
+        local scriptToEval = format([[ return %s]], literalVarName)
+        --p:log(30, 'Eval Code: %s', scriptToEval)
         --local cmd = format(evalCode , literalVarName)
         local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
         frame:SetStatusText(errorMessage)
         local val = func()
         if type(val) == 'function' then val = val() end
-        frame:SetContent(val)
+        frame:SetContent(val, includeFn)
     end)
 
     local showFnEditBox = AceGUI:Create("CheckBox")
@@ -114,6 +122,8 @@ function A:CreateDebugPopupDialog()
     showFnEditBox:SetCallback("OnValueChanged", function(_, _, checkedState)
         codeEditBox.button:Enable()
     end)
+    -- checked by default
+    showFnEditBox:SetValue(true)
     --frame:AddChild(showFnEditBox)
     --frame:AddChild(codeEditBox)
     inlineGroup:AddChild(showFnEditBox)
@@ -133,10 +143,11 @@ function A:CreateDebugPopupDialog()
     function frame:SetCodeText(text)
         frame.codeEditBox:SetText(text or '')
     end
-    function frame:SetContent(o)
+    ---@param showFunctions boolean
+    function frame:SetContent(o, showFunctions)
         local text = nil
         if type(o) == 'text' then text = '' end
-        text = pformat(o)
+        if showFunctions then text = pformat:A():pformat(o) else text = pformat(o) end
         frame.contentEditBox:SetText(text)
     end
     function frame:SetIcon(iconPathOrId)
@@ -165,8 +176,12 @@ function A:ShowDebugDialog()
     debugDialog:SetCodeText(self.profile.last_eval)
     debugDialog:Show()
 end
+
+function A:GetMouseOver()
+    p:log('GetMouseOver: entering...')
+end
+
 function A:ShowDebugDialogCurrentProfile()
-    PrettyPrint.setup({ show_all = false, show_function = true } )
     local profileData = self:GetCurrentProfileData()
     local profileName = self.db:GetCurrentProfile()
     debugDialog:SetCodeText('')
@@ -278,7 +293,7 @@ function A:OnInitialize()
 
     local options = C:GetOptions()
     -- Register options table and slash command
-    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "abp_options" })
+    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devt_options" })
     --cfgDialog:SetDefaultSize(ADDON_NAME, 800, 500)
     ACECFGD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
 
@@ -320,6 +335,7 @@ function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() e
 function A.BINDING_DEVT_OPTIONS_DLG() A:OpenConfig() end
 
 function A.BINDING_DEVT_DEBUG_DLG() A:ShowDebugDialog() end
+function A.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -327,20 +343,14 @@ function A.BINDING_DEVT_DEBUG_DLG() A:ShowDebugDialog() end
 
 function A.OnAddonLoaded(frame, event, ...)
     local isLogin, isReload = ...
-
     --for _, module in ipairs(libModules) do module:OnAddonLoaded() end
     local prefix = format(ADDON_PREFIX, '')
-    --A:log('isLogin: %s, isReload: %s', tostring(isLogin), tostring(isReload))
     if not isLogin then return end
-    A:log('%s.%s initialized', MAJOR, MINOR)
+    p:log('%s.%s initialized', MAJOR, MINOR)
 
-    --print(format("%s: %s.%s initialized", prefix, MAJOR, MINOR))
     local cprefix = format('|cfffc4e03%s|r', '/devt')
     print(format('%s: Available commands: ' .. cprefix, prefix))
     print(format('%s: More at https://kapresoft.com/wow-addon-devtools', prefix))
-
-    --local helper = DEVT_ObjectFactory('Helper', { hello = 'there' })
-    --helper:log('Helper value: %s', helper.hello)
 end
 
 ---@type DevTools

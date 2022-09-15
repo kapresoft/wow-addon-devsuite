@@ -5,4 +5,7 @@
     <Binding name="DEVT_DEBUG_DLG" category="DEVT_CATEGORY">
         DEVT.BINDING_DEVT_DEBUG_DLG();
     </Binding>
+    <Binding name="DEVT_GET_DETAILS_ON_MOUSEOVER" category="DEVT_CATEGORY">
+        DEVT.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER();
+    </Binding>
 </Bindings>

@@ -1,6 +1,6 @@
-## Interface: 20504
+## Interface: 11403
 ## Version: 1.0
-## Title: Dev|cff1784d1Tools|r TBC
+## Title: Dev|cff1784d1Tools|r Classic
 ## Notes: DevTools Addon for World of Warcraft
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
@@ -19,4 +19,4 @@
 # /run print(select(4, GetBuildInfo()))
 
 Core\_Core.xml
-TBC\_DevTools.xml
+Vanilla\_DevTools.xml

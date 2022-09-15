@@ -40,10 +40,16 @@
 ---     wrap_array = true,
 ---     wrap_string = true
 --- }
-local pprint = { VERSION = '0.1' }
--- for WOW
--- local io = { write = print }
-if type(io) ~= 'table' then io = { write = print } end
+
+---@type LibStub
+local LibStub = LibStub
+
+---@class PrettyPrint
+local pprint = LibStub:NewLibrary('DevTools-PrettyPrint-1.0', 1)
+
+if not pprint then return end
+
+--local pprint = { VERSION = '0.1' }
 
 local depth = 1
 
@@ -516,8 +522,11 @@ setmetatable(pprint, {
     end
 })
 
--- Defaults
-pprint.setup({ wrap_string = false, indent_size=4, sort_keys=true, level_width=100 })
+--------------------------------------------------
+------------- ## My Modifications ## -------------
+--------------------------------------------------
 
-DEVT_PrettyPrint = pprint
+-- for World of Warcraft
+if type(io) ~= 'table' then io = { write = print } end
+
 

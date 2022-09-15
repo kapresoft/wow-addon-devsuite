@@ -3,5 +3,6 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
 
     <Include file='Common\_Common.xml'/>
+    <Include file='Widget\_Widget.xml'/>
 
 </Ui>
