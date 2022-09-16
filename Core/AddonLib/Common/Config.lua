@@ -12,10 +12,24 @@ local __def = function(LibStub, ADDON_NAME, Table)
 
     function C:OnAfterInitialize(...)
         local args = unpack({...})
-        ---@class ProfileDb
+        ---@type ProfileDb
         self.profile = args.profile
         local profileType = type(self.profile)
         assert(profileType == 'table', format('Invalid profile detected: %s', profileType))
+
+        local maxHistory = self.profile.debugDialog.maxHistory or 9
+        if self.profile.debugDialog.items == nil then self.profile.debugDialog.items = {} end
+        if Table.size(self.profile.debugDialog.items) <= 0 then
+            self:log('DebugDialog profile initialized')
+            self.profile.debugDialog.items = {
+                ['Save #1'] = "function() return 'hello' end",
+                ['Save #2'] = "function() return { 'hello', 'world' } end",
+            }
+            for i=3,maxHistory do
+                local key = string.format('Save #%s', tostring(i))
+                self.profile.debugDialog.items[key] = ''
+            end
+        end
     end
 
     function C:OnAfterEnable()

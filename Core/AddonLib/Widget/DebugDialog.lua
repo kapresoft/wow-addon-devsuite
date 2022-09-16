@@ -3,18 +3,13 @@ local Table, String = G:LibPack_Utils()
 local AceEvent, AceGUI, AceHook = G:LibPack_AceLibrary()
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
 local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
-local IsBlank = String.IsBlank
+local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
 ---@class DebugDialog : DialogWidgetMixin
 local D = LibStub:NewLibrary(M.DebugDialog)
 p = LogFactory(M.DebugDialog)
---_L.mt.__index = {
---    ['hi'] = function() p:log('hi') end
---}
---setmetatable(L, L.mt)
-
 ---@type DialogWidgetMixin
 G:Mixin(D, LibStub:GetMixin(M.DialogWidgetMixin))
 D.mt.__call = function (_, ...) return D:Constructor(...) end
@@ -25,69 +20,116 @@ Support Functions
 -------------------------------------------------------------------------------]]
 ---@param w DebugDialogWidget
 local function OnClose(w)
-    local fw = w.frameWidget
-    fw:SetCodeText('')
-    fw:SetContent('')
-    fw:SetStatusText('')
+    w:SetCodeText('')
+    w:SetContent('')
+    w:SetStatusText('')
 end
 
 ---@param w DebugDialogWidget
 local function OnShow(w)
-    local fw = w.frameWidget
-    C_Timer.After(0.1, function() w:EnableAcceptButton()  end)
-    fw:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
-end
-
----@param w DebugDialogWidget
-local function widgetMethods(w)
-    function w:Show() self.f:Show() end
-    function w:GetTitle() return self.f.titletext:GetText() end
-    function w:EnableAcceptButton() self.f.codeEditBox.button:Enable() end
-    function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
-
-    function w:Submit() self.codeEditBox.button:Click() end
-    function w:SetIcon(iconPathOrId)
-        if not iconPathOrId then return end
-        self.iconFrame:SetImage(iconPathOrId)
+    w:EnableAcceptButtonDelayed()
+    --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
+    local text
+    if w.profile.last_eval then
+        text = w.profile.debugDialog.items[w.profile.last_eval]
+        w.histDropdown:SetValue(w.profile.last_eval)
     end
-    function w:HasCodeContent()
-        local codeValue = self.codeEditBox:GetText()
-        return IsNotBlank(codeValue)
+    if not text then
+        text = w.profile.debugDialog.items[w.histDropdown:GetValue()]
     end
+    w:SetCodeText(text)
 end
 
 ---@type DebugDialogWidget
 local function CodeEditBox_OnEditFocusGained(w) w:EnableAcceptButton() end
 
----@param widget DebugDialogWidget
-local function CodeEditBox_OnEnterPressed(widget, literalVarName)
+---@param w DebugDialogWidget
+local function CodeEditBox_OnEnterPressed(w, literalVarName)
     if IsBlank(literalVarName) then return end
-    widget.profile.last_eval = literalVarName
-    local includeFn = widget:IsShowFunctions()
     local scriptToEval = format([[ return %s]], literalVarName)
     local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
-    widget.f:SetStatusText(errorMessage)
+    w.f:SetStatusText(errorMessage)
     local val = func()
     if type(val) == 'function' then
         local status, error = pcall(function() val = val() end)
         if not status then
             val = nil
-            frame:SetStatusText(string.format("ERROR: %s", tostring(error)))
+            w:SetStatusText(string.format("ERROR: %s", tostring(error)))
         end
     end
-    widget.f:SetContent(val, includeFn)
+    w:SetContent(val)
 end
 
----@param widget DebugDialogWidget
-local function RegisterCallbacks(widget)
-    widget.f:SetCallback("OnClose", function() OnClose(widget)  end)
-    widget.f:SetCallback("OnShow", function() OnShow(widget)  end)
-    widget.codeEditBox:SetCallback("OnEditFocusGained", function() CodeEditBox_OnEditFocusGained(widget) end)
-    widget.codeEditBox:SetCallback("OnEnterPressed", function(_, _, literalVarName) CodeEditBox_OnEnterPressed(widget, literalVarName) end)
+---@param w DebugDialogWidget
+local function HistDropDown_OnValueChanged(w, selectedIndex)
+    w.profile.last_eval = w.histDropdown:GetValue()
+    local val = w.profile.debugDialog.items[selectedIndex]
+    w:SetCodeText(val)
+    w:EnableAcceptButtonDelayed()
+end
+
+---@param w DebugDialogWidget
+local function ShowFnEditBox_OnValueChanged(w, checkedState) w.codeEditBox.button:Enable() end
+
+
+---@param w DebugDialogWidget
+local function RegisterCallbacks(w)
+    w.f:SetCallback("OnClose", function() OnClose(w)  end)
+    w.f:SetCallback("OnShow", function() OnShow(w)  end)
+    w.codeEditBox:SetCallback("OnEditFocusGained", function()
+        CodeEditBox_OnEditFocusGained(w)
+    end)
+    w.codeEditBox:SetCallback("OnEnterPressed", function(fw, event, literalVarName)
+        CodeEditBox_OnEnterPressed(w, literalVarName)
+    end)
+    w.histDropdown:SetCallback("OnValueChanged", function(fw, event, selectedIndex)
+        HistDropDown_OnValueChanged(w, selectedIndex)
+    end)
+    w.showFnEditBox:SetCallback("OnValueChanged", function(fw, event, checkedState)
+        ShowFnEditBox_OnValueChanged(w, checkedState)
+    end)
 end
 
 --[[-----------------------------------------------------------------------------
 Methods
+-------------------------------------------------------------------------------]]
+---@param w DebugDialogWidget
+local function widgetMethods(w)
+    function w:Show() self.f:Show() end
+    function w:GetTitle() return self.f.titletext:GetText() end
+    function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton()  end) end
+    function w:EnableAcceptButton() self.f.codeEditBox.button:Enable() end
+    function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
+
+    function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
+    function w:SetStatusText(text) self.f:SetStatusText(text) end
+    function w:SetContent(o)
+        local text
+        if type(o) == 'text' then text = '' end
+        if self:IsShowFunctions() then text = pformat:A():pformat(o) else text = pformat(o) end
+        self.contentEditBox:SetText(text)
+        w:SaveHistory()
+    end
+
+    function w:Submit() self.codeEditBox.button:Click() end
+    function w:HasCodeContent()
+        local codeValue = self.codeEditBox:GetText()
+        return IsNotBlank(codeValue)
+    end
+
+    -- /run DEVT.profile.debugDialog.items = nil
+    -- /dump DEVT.profile.debugDialog.items
+    function w:SaveHistory()
+        local codeText = w.codeEditBox:GetText()
+        if IsNotBlank(codeText) then
+            local selectedKey = w.histDropdown:GetValue()
+            w.profile.debugDialog.items[selectedKey] = codeText
+        end
+    end
+end
+
+--[[-----------------------------------------------------------------------------
+Constructor
 -------------------------------------------------------------------------------]]
 ---@return DebugDialogWidget
 ---@param profile ProfileDb
@@ -107,12 +149,11 @@ function D:Constructor(profile)
     --frame:SetWidth(800)
 
     local inlineGroup = AceGUI:Create("InlineGroup")
-    --inlineGroup:SetTitle("Evaluate LUA Variable")
     inlineGroup:SetLayout("List")
     inlineGroup:SetFullWidth(true)
     frame:AddChild(inlineGroup)
 
-    ---@class DebugDialogMultiLineEditBox
+    ---@class DebugDialog_Code_MultiLineEditBox
     local codeEditBox = AceGUI:Create("MultiLineEditBox")
     frame.codeEditBox = codeEditBox
     codeEditBox:SetLabel('')
@@ -120,20 +161,32 @@ function D:Constructor(profile)
     codeEditBox:SetHeight(200)
     codeEditBox:SetText('')
 
-
+    ---@class DebugDialog_ShowFunction_CheckBox
     local showFnEditBox = AceGUI:Create("CheckBox")
     showFnEditBox:SetLabel("Show Functions")
-    showFnEditBox:SetCallback("OnValueChanged", function(_, _, checkedState)
-        codeEditBox.button:Enable()
-    end)
     -- checked by default
     showFnEditBox:SetValue(true)
-    --frame:AddChild(showFnEditBox)
-    --frame:AddChild(codeEditBox)
+
+    ---@class DebugDialog_History_Dropdown
+    local histDropdown = AceGUI:Create("Dropdown")
+    histDropdown:SetLabel("History:")
+    local orderKeys = {}
+    local list = {}
+    for k,_ in pairs(profile.debugDialog.items) do
+        Table.insert(orderKeys, k)
+        list[k] = k
+    end
+    table.sort(orderKeys)
+    histDropdown:SetList(list, orderKeys)
+    if #orderKeys > 1 then
+        histDropdown:SetValue(orderKeys[1])
+    end
+
     inlineGroup:AddChild(showFnEditBox)
+    inlineGroup:AddChild(histDropdown)
     inlineGroup:AddChild(codeEditBox)
 
-    -- PrettyPrint.format(obj)
+    ---@class DebugDialog_Content_MultiLineEditBox
     local contentEditBox = AceGUI:Create("MultiLineEditBox")
     contentEditBox:SetLabel('Output:')
     contentEditBox:SetText('')
@@ -142,19 +195,6 @@ function D:Constructor(profile)
     contentEditBox.button:Hide()
     frame:AddChild(contentEditBox)
     frame.contentEditBox = contentEditBox
-
-
-    function frame:SetCodeText(text)
-        frame.codeEditBox:SetText(text or '')
-    end
-    ---@param showFunctions boolean
-    function frame:SetContent(o, showFunctions)
-        local text = nil
-        if type(o) == 'text' then text = '' end
-        if showFunctions then text = pformat:A():pformat(o) else text = pformat(o) end
-        frame.contentEditBox:SetText(text)
-    end
-
 
     frame:Hide()
 
@@ -165,18 +205,15 @@ function D:Constructor(profile)
         ---@deprecated
         frameWidget = frame,
         codeEditBox = codeEditBox,
+        contentEditBox = contentEditBox,
         showFnEditBox = showFnEditBox,
+        histDropdown = histDropdown,
     }
     frame.widget = widget
     widgetMethods(widget)
-    D.frame = frame
 
     RegisterCallbacks(widget)
 
     return widget;
 end
 
-
-
-
-DD = D

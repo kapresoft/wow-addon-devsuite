@@ -153,10 +153,17 @@ end
 --function A:OnDisable() self:log('OnDisable...') end
 
 function A:InitDbDefaults()
-    local profileName = self.db:GetCurrentProfile()
-    --local defaultProfile = P:CreateDefaultProfile(profileName)
-    --local defaults = { profile =  defaultProfile }
-    --self.db:RegisterDefaults(defaults)
+
+    ---@class ProfileDb
+    local defaultProfile = {
+        ['enabled'] = true,
+        ['debugDialog'] = {
+            maxHistory = 9,
+            items = { }
+        },
+    }
+    local defaults = { profile =  defaultProfile }
+    self.db:RegisterDefaults(defaults)
     self.profile = self.db.profile
     --if table.isEmpty(ABP_PLUS_DB.profiles[profileName]) then
     --    ABP_PLUS_DB.profiles[profileName] = defaultProfile

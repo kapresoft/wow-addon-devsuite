@@ -82,6 +82,11 @@ function _L.replace(str, match, replacement)
     return str:gsub(match, replacement)
 end
 
+function _L.replaceNonSpaceChars(str, replacement)
+    if type(str) ~= 'string' then return nil end
+    return str:gsub('(%s+)', replacement)
+end
+
 ---Example: local charCount = Count('hello world', 'l') ; returns 3
 ---@param str string The string to search
 ---@param pattern string The pattern to count
