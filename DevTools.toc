@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100002
 ## Version: 1.0
 ## Title: Dev|cff1784d1Tools|r Retail
 ## Notes: DevTools Addon for World of Warcraft
