@@ -13,9 +13,9 @@
     <Include file="Ace3\AceConsole-3.0\AceConsole-3.0.xml"/>
     <Include file="Ace3\AceConfig-3.0\AceConfig-3.0.xml"/>
     <Include file="Ace3\AceHook-3.0\AceHook-3.0.xml"/>
-    <Include file="LibSharedMedia-3.0\LibSharedMedia-3.0\lib.xml"/>
-    <Include file="LibCompress\lib.xml"/>
-    <Include file='LibBase64-1.0\lib.xml'/>
+    <Include file="LibSharedMedia\LibSharedMedia-3.0\lib.xml"/>
+    <Include file="LibCompress\LibCompress\lib.xml"/>
+    <Include file='LibBase64-1.0\LibBase64-1.0.lua'/>
     <!--@end no-lib-strip@-->
 
     <Script file="pprint/pprint.lua"/>

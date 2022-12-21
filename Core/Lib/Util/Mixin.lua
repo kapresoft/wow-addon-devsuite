@@ -34,7 +34,7 @@ function _L:Mixin(object, ...)
 end
 
 function _L:MixinStandard(object, ...)
-    self:MixinExcept(object, { 'GetName', 'mt', 'log' }, ...)
+    return self:MixinExcept(object, { 'GetName', 'mt', 'log' }, ...)
 end
 
 function _L:MixinExcept(object, skipList, ...)
