@@ -10,7 +10,6 @@
     <Include file="Ace3\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
     <Include file="Ace3\AceLocale-3.0\AceLocale-3.0.xml"/>
     <Include file="Ace3\AceGUI-3.0\AceGUI-3.0.xml"/>
-    <Include file="Ace3\AceConsole-3.0\AceConsole-3.0.xml"/>
     <Include file="Ace3\AceConfig-3.0\AceConfig-3.0.xml"/>
     <Include file="Ace3\AceHook-3.0\AceHook-3.0.xml"/>
     <Include file="LibSharedMedia\LibSharedMedia-3.0\lib.xml"/>

@@ -42,6 +42,7 @@ local M = {
     -- ## Widgets ## --
     DialogWidgetMixin = 'DialogWidgetMixin',
     DebugDialog = 'DebugDialog',
+    Developer = 'Developer',
 
 }
 -- TODO: Remove 'Module'

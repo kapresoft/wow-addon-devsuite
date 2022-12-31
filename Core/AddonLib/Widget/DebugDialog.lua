@@ -9,7 +9,7 @@ New Library
 -------------------------------------------------------------------------------]]
 ---@class DebugDialog : DialogWidgetMixin
 local D = LibStub:NewLibrary(M.DebugDialog)
-p = LogFactory(M.DebugDialog)
+local p = LogFactory(M.DebugDialog)
 ---@type DialogWidgetMixin
 G:Mixin(D, LibStub:GetMixin(M.DialogWidgetMixin))
 D.mt.__call = function (_, ...) return D:Constructor(...) end
