@@ -2,6 +2,7 @@
 Lua Vars
 -------------------------------------------------------------------------------]]
 local geterrorhandler = geterrorhandler
+local str_lower = string.lower
 
 --[[-----------------------------------------------------------------------------
 Blizzard Vars
@@ -9,8 +10,7 @@ Blizzard Vars
 local EnableAddOn, DisableAddOn = EnableAddOn, DisableAddOn
 local StaticPopupDialogs, ReloadUI = StaticPopupDialogs, ReloadUI
 local StaticPopup_Visible, StaticPopup_Show = StaticPopup_Visible, StaticPopup_Show
-local str_lower = string.lower
-
+local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSavedInstanceInfo
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -124,6 +124,28 @@ local function Methods(o)
             end
         end
         if overallStatus then ConfirmAndReload() return end
+    end
+
+    function o:GetSavedInstances()
+
+        local t = {}
+        local c = GetNumSavedInstances()
+        for i=1, c do
+            local name, id, reset, difficulty, locked, extended, instanceIDMostSig,
+                    isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress,
+                    extendDisabled = GetSavedInstanceInfo(i)
+            if true then
+                local instance = {
+                    name=name, id=id, reset=reset, difficulty=difficulty, locked=locked,
+                    extended=extended, instanceIDMostSig=instanceIDMostSig, isRaid=isRaid,
+                    maxPlayers=maxPlayers, difficultyName=difficultyName, numEncounters=numEncounters,
+                    encounterProgress=encounterProgress, extendDisabled=extendDisabled
+                }
+                table.insert(t, instance)
+            end
+        end
+        return t
+
     end
 
 end

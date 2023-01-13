@@ -6,5 +6,5 @@
 <!--    <Script file="AceUtil.lua"/>-->
 <!--    <Script file="ObjectFactory.lua"/>-->
     <Script file="Config.lua"/>
-    <Script file="Developer.lua"/>
+    <Include file='Developer\_Developer.xml'/>
 </Ui>
