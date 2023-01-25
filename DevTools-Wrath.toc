@@ -1,4 +1,4 @@
-## Interface: 30400
+## Interface: 30401
 ## Version: 1.0
 ## Title: Dev|cff1784d1Tools|r Wrath
 ## Notes: DevTools Addon for World of Warcraft
