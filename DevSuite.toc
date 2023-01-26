@@ -1,11 +1,11 @@
 ## Interface: 100005
 ## Version: 1.0
-## Title: Dev|cff1784d1Tools|r Retail
+## Title: Dev|cff1784d1Suite|r Retail
 ## Notes: DevSuite Addon for World of Warcraft
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
-## SavedVariables: DEVT_DB, DEVT_LOG_LEVEL, DEVT_DEBUG_MODE
-## SavedVariablesPerCharacter: DEVT_CHARACTER_DB
+## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE
+## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
 ## LoadManagers: AddonLoader
 
 ## X-Min-Interface: 20501
@@ -13,7 +13,16 @@
 ## X-Credits: kapresoft@gmail.com
 ## X-Category: Development Tools
 ## X-License: All Rights Reserved: You are free to fork and modify on GitHub, please ask us about anything else.
+
 ## X-Github-Repo: https://github.com/kapresoft/wowaddon-devsuite
+## X-Github-Issues: https://github.com/kapresoft/wowaddon-devsuite/issues
+## X-CurseForge: https://www.curseforge.com/wow/addons/devsuite
+## X-Curse-Project-ID: 566626
+## X-Github-Project-Author: @project-author@
+## X-Github-Project-Hash: @project-hash@
+## X-Github-Project-Last-Changed-Date: @project-date-iso@
+## X-Github-Project-Version: @project-version@
+
 
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))

@@ -19,7 +19,7 @@ local Core = __K_Core_DevSuite
 local LibStub = Core:LibPack()
 
 -- ABP_LOG_LEVEL is also in use here
-local DB_NAME = 'DEVT_DB'
+local DB_NAME = 'DEVS_DB'
 
 local addonName, versionFormat, logPrefix = Core:GetAddonInfo()
 
@@ -75,7 +75,7 @@ function L:Core() return Core end
 
 ---```
 ---Example:
----local LibStub, M, G = DEVT_LibGlobals:LibPack()
+---local LibStub, M, G = DEVS_LibGlobals:LibPack()
 ---```
 ---@return LocalLibStub, Module, LibGlobals
 function L:LibPack() return LibStub, M, L end
@@ -133,7 +133,7 @@ function L:LibPack_NewAddon()
 end
 ---### Usage
 ---```
----local LibStub, M, LogFactory, G = DEVT_LibGlobals:LibPack_NewLibrary()
+---local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
 ---```
 ---@return LocalLibStub, Module, LoggerTemplate, LibGlobals
 function L:LibPack_NewLibrary()
@@ -165,7 +165,7 @@ function L:LibPack_Mixin() return self:Get(M.Mixin) end
 
 --- ### Usage
 ---```
----local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
+---local Table, String, Assert, Mixin = DEVS_LibGlobals:LibPack_Utils()
 ---```
 ---@return Table, String, Assert, Mixin
 function L:LibPack_Utils()
@@ -232,4 +232,4 @@ function L:GetAddonInfo()
 end
 
 ---@type LibGlobals
-DEVT_LibGlobals = L
+DEVS_LibGlobals = L

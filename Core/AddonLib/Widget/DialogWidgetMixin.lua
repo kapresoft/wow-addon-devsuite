@@ -6,7 +6,7 @@ local setglobal = setglobal
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub, M, LogFactory, G = DEVT_LibGlobals:LibPack_NewLibrary()
+local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
 local Table = G:LibPack_Utils()
 local tinsert = Table.insert
 

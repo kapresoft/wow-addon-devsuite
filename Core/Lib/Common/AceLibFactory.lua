@@ -1,4 +1,4 @@
-local LibStub, NewLibrary, G = DEVT_LibGlobals:LibPack_Ace()
+local LibStub, NewLibrary, G = DEVS_LibGlobals:LibPack_Ace()
 
 local AceModule = {
     AceAddon = "AceAddon-3.0",

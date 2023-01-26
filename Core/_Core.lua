@@ -179,7 +179,7 @@ function _L:LibPack_Ace() return LibStub end
 function _L:LibPack_Mixin() return _S:GetLibrary('Mixin') end
 
 ---@return LibGlobals
-function _L:LibPack_Globals() return _G['DEVT_LibGlobals'] end
+function _L:LibPack_Globals() return _G['DEVS_LibGlobals'] end
 
 ---@return LocalLibStub
 function _L:LibStub() return _S end

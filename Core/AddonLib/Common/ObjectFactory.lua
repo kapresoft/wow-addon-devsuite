@@ -41,5 +41,5 @@ local __def = function(Constants, Logger, pformat, table)
     return F
 end
 
-DEVT_PrettyPrint.setup({ show_all = true })
-DEVT_ObjectFactory = __def(DEVT_Constants, DEVT_logger, DEVT_PrettyPrint.pformat, DEVT_Table)
+DEVS_PrettyPrint.setup({ show_all = true })
+DEVS_ObjectFactory = __def(DEVS_Constants, DEVS_logger, DEVS_PrettyPrint.pformat, DEVS_Table)

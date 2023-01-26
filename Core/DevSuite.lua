@@ -12,11 +12,11 @@ local ReloadUI, IsShiftKeyDown = ReloadUI, IsShiftKeyDown
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub, M, G = DEVT_LibGlobals:LibPack()
-local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
+local LibStub, M, G = DEVS_LibGlobals:LibPack()
+local Table, String, Assert, Mixin = DEVS_LibGlobals:LibPack_Utils()
 ---@type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
-local Constants, ObjectFactory = DEVT_Constants, DEVT_ObjectFactory
+local Constants, ObjectFactory = DEVS_Constants, DEVS_ObjectFactory
 
 
 local C = G:Lib_Config()
@@ -32,14 +32,14 @@ local print, format = print, string.format
 local tostring, type = tostring, type
 local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
 
-local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
+local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
 
 ---@class DevSuite
 local A = LibStub:NewAddon(G.addonName)
 if not A then return end
 
---local p = DEVT_logger:NewLogger('DebugDialog')
+--local p = DEVS_logger:NewLogger('DebugDialog')
 local LogFactory = G:Lib_LogFactory()
 local p = LogFactory()
 ---@type DebugDialogWidget
@@ -224,10 +224,10 @@ function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() e
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 
-function A.BINDING_DEVT_OPTIONS_DLG() A:OpenConfig() end
+function A.BINDING_DEVS_OPTIONS_DLG() A:OpenConfig() end
 
-function A.BINDING_DEVT_DEBUG_DLG() debugDialog:Show() end
-function A.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
+function A.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
+function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -246,11 +246,11 @@ function A.OnAddonLoaded(frame, event, ...)
 end
 
 ---@type DevSuite
-DEVT = A
+DEVS = A
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 local frame = CreateFrame("Frame", Constants.AddonDetails.name .. "Frame", UIParent)
-frame:SetScript("OnEvent", DEVT.OnAddonLoaded)
+frame:SetScript("OnEvent", DEVS.OnAddonLoaded)
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")
