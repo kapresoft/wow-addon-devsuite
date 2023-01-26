@@ -112,8 +112,8 @@ function A:Help()
     print(format(ftext, "profile", "show current profile data"))
     print(' ')
     print("Other commands:")
-    print(format("/devtc    - %s", "open config UI"))
-    print(format("/devtp   - %s", "show current profile"))
+    print(format("/devsuite_c    - %s", "open config UI"))
+    print(format("/devsuite_p   - %s", "show current profile"))
 end
 
 function A:RegisterKeyBindings()
@@ -184,7 +184,7 @@ function A:OnInitialize()
 
     local options = C:GetOptions()
     -- Register options table and slash command
-    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devt_options" })
+    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devsuite_options" })
     --cfgDialog:SetDefaultSize(ADDON_NAME, 800, 500)
     ACECFGD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
 
@@ -204,9 +204,9 @@ end
 -- ## -------------------------------------------------------------------------
 
 function A:RegisterSlashCommands()
-    self:RegisterChatCommand("devtc", "OpenConfig")
-    self:RegisterChatCommand("devtp", "Handle_SlashCommand_ShowProfile")
-    self:RegisterChatCommand("devt", "Handle_SlashCommands")
+    self:RegisterChatCommand("devsuite_c", "OpenConfig")
+    self:RegisterChatCommand("devsuite_p", "Handle_SlashCommand_ShowProfile")
+    self:RegisterChatCommand("devsuite", "Handle_SlashCommands")
 end
 
 function A:Handle_SlashCommands(input)
@@ -240,7 +240,7 @@ function A.OnAddonLoaded(frame, event, ...)
     if not isLogin then return end
     p:log('%s.%s initialized', MAJOR, MINOR)
 
-    local cprefix = format('|cfffc4e03%s|r', '/devt')
+    local cprefix = format('|cfffc4e03%s|r', '/devsuite')
     print(format('%s: Available commands: ' .. cprefix, prefix))
     print(format('%s: More at https://kapresoft.com/wow-addon-devsuite', prefix))
 end
