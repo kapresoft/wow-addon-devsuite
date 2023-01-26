@@ -1,6 +1,6 @@
 -- ## External -------------------------------------------------
 local LibStub = LibStub
-local Core = __K_Core_DevTools
+local Core = __K_Core_DevSuite
 local logger = Core:GetLogger()
 
 -- ## Local ----------------------------------------------------

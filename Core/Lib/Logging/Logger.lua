@@ -1,6 +1,6 @@
 -- ## External -------------------------------------------------
 local LibStub = LibStub
-local Core = __K_Core_DevTools
+local Core = __K_Core_DevSuite
 
 ---@type pformat
 local pformat = pformat
@@ -103,7 +103,7 @@ local function _EmbedLogger(obj, optionalLogName)
 
     local formatter = DEFAULT_FORMATTER
 
-    function obj:format(obj) return formatter.format(obj) end
+    function obj:format(o) return formatter.format(o) end
     ---### Usage
     ---Log with table key-value output.
     ---```
@@ -212,8 +212,8 @@ local function _EmbedLogger(obj, optionalLogName)
             self:log(pformat(select(1, ...)))
             return
         end
-        local label, obj = select(1, ...)
-        self:log(label .. ': %s', pformat(obj))
+        local label, o = select(1, ...)
+        self:log(label .. ': %s', pformat(o))
     end
 
     -- Backwards compat

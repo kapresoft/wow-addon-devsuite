@@ -9,7 +9,7 @@ local __def = function(UISpecialFrames, Table)
     local setglobal = setglobal
 
     -- TODO: Deprecate these. use AddOnDetails instead
-    C.ADDON_NAME = 'DevTools'
+    C.ADDON_NAME = 'DevSuite'
     C.ADDON_PREFIX = '|cfdffffff{{|r|cfdba8054' .. C.ADDON_NAME .. '|r|cfdfbeb2d%s|r|cfdffffff}}|r'
     C.DB_NAME = 'DEVT_DB'
 
@@ -18,7 +18,7 @@ local __def = function(UISpecialFrames, Table)
         prefix = C.ADDON_PREFIX
     }
 
-    -- Library Format: DevTools-{LibraryName}-1.0
+    -- Library Format: DevSuite-{LibraryName}-1.0
     C.VERSION_FORMAT = C.ADDON_NAME .. '-%s-1.0'
 
     C.AceModule = {
@@ -52,5 +52,5 @@ local __def = function(UISpecialFrames, Table)
 
 end
 ---@type Table
-local LibStub = __K_Core_DevTools:LibStub()
+local LibStub = __K_Core_DevSuite:LibStub()
 DEVT_Constants = __def(UISpecialFrames, LibStub('Table'))

@@ -1,11 +1,11 @@
 DevSuite
 ==================
 
-[Releases](https://github.com/kapresoft/wow-addon-devtools/releases) | [Milestones](https://github.com/kapresoft/wow-addon-devtools/milestones) | [Known Issues](https://github.com/kapresoft/wow-addon-devtools/issues)
+[Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues)
 
 ### Description
 
-DevSuite is a comprehensive set of tools specifically designed for World of Warcraft developers. It provides a wide range of functionalities that allows them to inspect, analyze and debug their add-ons, UI and game mechanics. It includes features such as a code inspector, a console, a data visualizer, performance analysis tools and an API reference, among many others. This makes DevTools an essential tool for any World of Warcraft developer, allowing them to optimize their add-ons and enhance the player's experience.
+DevSuite is a comprehensive set of tools specifically designed for World of Warcraft developers. It provides a wide range of functionalities that allows them to inspect, analyze and debug their add-ons, UI and game mechanics. It includes features such as a code inspector, a console, a data visualizer, performance analysis tools and an API reference, among many others. This makes DevSuite an essential tool for any World of Warcraft developer, allowing them to optimize their add-ons and enhance the player's experience.
 
 ### Features
 
@@ -15,7 +15,7 @@ DevSuite is a comprehensive set of tools specifically designed for World of Warc
 - a UI Tool for displaying current Ace3 AceConfig data
 
 ### Docs
-- [Getting Started](https://github.com/kapresoft/wow-addon-devtools/wiki/Getting-Started)
+- [Getting Started](https://github.com/kapresoft/wow-addon-devsuite/wiki/Getting-Started)
 
 &nbsp;
 

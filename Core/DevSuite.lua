@@ -35,7 +35,7 @@ local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
 local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
 
----@class DevTools
+---@class DevSuite
 local A = LibStub:NewAddon(G.addonName)
 if not A then return end
 
@@ -43,7 +43,7 @@ if not A then return end
 local LogFactory = G:Lib_LogFactory()
 local p = LogFactory()
 ---@type DebugDialogWidget
-local debugDialog = nil
+local debugDialog
 
 
 --[[-----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ function A:EvalObject(o, varName, _isGlobal)
 end
 
 function A:Version()
-    self:Printf("DevTools Version: %s", "1.0")
+    self:Printf("DevSuite Version: %s", "1.0")
     self:Print("")
 end
 
@@ -242,10 +242,10 @@ function A.OnAddonLoaded(frame, event, ...)
 
     local cprefix = format('|cfffc4e03%s|r', '/devt')
     print(format('%s: Available commands: ' .. cprefix, prefix))
-    print(format('%s: More at https://kapresoft.com/wow-addon-devtools', prefix))
+    print(format('%s: More at https://kapresoft.com/wow-addon-devsuite', prefix))
 end
 
----@type DevTools
+---@type DevSuite
 DEVT = A
 
 -- ## -------------------------------------------------------------------------

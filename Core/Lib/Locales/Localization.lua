@@ -1,11 +1,11 @@
 --[[
-    DevTools Addon
+    DevSuite Addon
 --]]
 
-local L = LibStub("AceLocale-3.0"):GetLocale("DevTools")
+local L = LibStub("AceLocale-3.0"):GetLocale("DevSuite")
 
 -- General
-DEVT_TITLE                                = "DevTools"
+DEVT_TITLE                                = "DevSuite"
 DEVT_CATEGORY                             = "AddOns/" .. DEVT_TITLE
 
 -- Key binding localization text

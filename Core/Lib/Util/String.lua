@@ -3,7 +3,7 @@ local gsub, len, tinsert, pairs, type, tostring = string.gsub, string.len, table
 
 -- ## Local ----------------------------------------------------
 
-local LibStub = __K_Core_DevTools:LibPack()
+local LibStub = __K_Core_DevSuite:LibPack()
 ---@class String
 local _L = LibStub:NewLibrary('String')
 

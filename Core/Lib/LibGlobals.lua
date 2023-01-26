@@ -15,7 +15,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 
 -- ## Start Here ---
-local Core = __K_Core_DevTools
+local Core = __K_Core_DevSuite
 local LibStub = Core:LibPack()
 
 -- ABP_LOG_LEVEL is also in use here
