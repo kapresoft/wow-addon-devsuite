@@ -40,7 +40,25 @@ luac.out
 *.hex
 
 # IDE's
+*.iml
 /.idea/
 /.history/
 /.vscode/
 /Core/ExtLib/.Ace3.*
+
+# Visual Source Code Test Deployment
+/.deploy
+
+# BigWigMods/packager
+/build
+/.release/
+/Core/ExtLib/*
+/Core/ExtLib/WoWAce/*
+
+!/Core/ExtLib/pprint/
+!/Core/ExtLib/_ExtLib.xml
+!/Core/ExtLib/_WowAce.xml
+!/Core/ExtLib/_ExtLib.lua
+!/Core/ExtLib/ExtLib.lua
+
+
