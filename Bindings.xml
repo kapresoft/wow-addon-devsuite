@@ -1,11 +1,11 @@
 <Bindings>
-    <Binding name="DEVT_OPTIONS_DLG" category="AddOns/DevTools" header="DEVT_OPTIONS">
-        DEVT.BINDING_DEVT_OPTIONS_DLG();
+    <Binding name="DEVS_OPTIONS_DLG" category="AddOns/DevSuite" header="DEVS_OPTIONS">
+        DEVS.BINDING_DEVS_OPTIONS_DLG();
     </Binding>
-    <Binding name="DEVT_DEBUG_DLG" category="AddOns/DevTools">
-        DEVT.BINDING_DEVT_DEBUG_DLG();
+    <Binding name="DEVS_DEBUG_DLG" category="AddOns/DevSuite">
+        DEVS.BINDING_DEVS_DEBUG_DLG();
     </Binding>
-    <Binding name="DEVT_GET_DETAILS_ON_MOUSEOVER" category="AddOns/DevTools">
-        DEVT.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER();
+    <Binding name="DEVS_GET_DETAILS_ON_MOUSEOVER" category="AddOns/DevSuite">
+        DEVS.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER();
     </Binding>
 </Bindings>

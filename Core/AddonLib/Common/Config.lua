@@ -65,8 +65,8 @@ local __def = function(LibStub, ADDON_NAME, Table)
     return C
 end
 
-local LibStub, M, G = DEVT_LibGlobals:LibPack()
+local LibStub, M, G = DEVS_LibGlobals:LibPack()
 local Table = G:LibPack_Utils()
 
 ---@type Config
-DEVT_Config = __def(LibStub, DEVT_Constants.ADDON_NAME, Table)
+DEVS_Config = __def(LibStub, DEVS_Constants.ADDON_NAME, Table)

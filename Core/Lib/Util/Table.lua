@@ -2,7 +2,7 @@
 local table, unpack = table, unpack
 
 -- ## Local ----------------------------------------------------
-local LibStub, M, G, LogFactory = DEVT_LibGlobals:LibPack()
+local LibStub, M, G, LogFactory = DEVS_LibGlobals:LibPack()
 
 ---@class Table
 local _L = LibStub:NewLibrary(M.Table)

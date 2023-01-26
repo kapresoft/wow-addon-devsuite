@@ -45,7 +45,7 @@
 local LibStub = LibStub
 
 ---@class PrettyPrint
-local pprint = LibStub:NewLibrary('DevTools-PrettyPrint-1.0', 1)
+local pprint = LibStub:NewLibrary('DevSuite-PrettyPrint-1.0', 1)
 
 if not pprint then return end
 
@@ -319,8 +319,8 @@ function pprint.pformat(obj, option, printer)
         end
     end
 
-    local function string_formatter(s, force_long_quote)
-        local s, quote = escape(s)
+    local function string_formatter(txt, force_long_quote)
+        local s, quote = escape(txt)
         local quote_len = force_long_quote and 4 or 2
         if quote_len + #s + status.len > option.level_width then
             _n()
@@ -350,7 +350,7 @@ function pprint.pformat(obj, option, printer)
             end
         end
 
-        local print_header_ix = nil
+        local print_header_ix
         local ttype = type(t)
         if option.object_cache then
             local cache_state = cache.visited_tables[t]

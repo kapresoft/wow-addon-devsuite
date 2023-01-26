@@ -1,5 +1,5 @@
 local select, error, type, format = select, error, type, string.format
-local LibStub = __K_Core_DevTools:LibPack()
+local LibStub = __K_Core_DevSuite:LibPack()
 
 ---@class Assert
 local _L = LibStub:NewLibrary('Assert')
@@ -47,7 +47,7 @@ function _L.Throw(...)
     end
 
     local level = 2
-    local formatText = nil
+    local formatText
     local message = ''
 
      --Throw(1, 'An error occurred.')

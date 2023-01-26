@@ -1,7 +1,7 @@
-local LibStub, M, LogFactory, G = DEVT_LibGlobals:LibPack_NewLibrary()
+local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
 local Table, String = G:LibPack_Utils()
 local AceEvent, AceGUI, AceHook = G:LibPack_AceLibrary()
-local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
+local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 --[[-----------------------------------------------------------------------------
@@ -117,8 +117,8 @@ local function widgetMethods(w)
         return IsNotBlank(codeValue)
     end
 
-    -- /run DEVT.profile.debugDialog.items = nil
-    -- /dump DEVT.profile.debugDialog.items
+    -- /run DEVS.profile.debugDialog.items = nil
+    -- /dump DEVS.profile.debugDialog.items
     function w:SaveHistory()
         local codeText = w.codeEditBox:GetText()
         if IsNotBlank(codeText) then

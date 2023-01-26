@@ -5,7 +5,7 @@ local __def = function(LIB, versionFormat, AceModule, unpack)
     local format, tonumber = string.format, tonumber
     local C = {}
 
-    local libAceConsole = nil
+    local libAceConsole
 
     function C:GetAceLibVersion(libName)
         local major, minor = format(versionFormat, libName), tonumber(("$Revision: 1 $"):match("%d+"))
@@ -32,6 +32,6 @@ local __def = function(LIB, versionFormat, AceModule, unpack)
     return C
 end
 
-local Constants = DEVT_Constants
+local Constants = DEVS_Constants
 
-DEVT_AceUtil = __def(LibStub, Constants.VERSION_FORMAT, Constants.AceModule, DEVT_Table.unpackIt)
+DEVS_AceUtil = __def(LibStub, Constants.VERSION_FORMAT, Constants.AceModule, DEVS_Table.unpackIt)

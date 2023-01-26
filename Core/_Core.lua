@@ -6,7 +6,7 @@ local LibStub = LibStub
 -- ## Local ----------------------------------------------------
 
 local _G = _G
-local pkg = 'DevTools'
+local pkg = 'DevSuite'
 local shortName = 'DBG'
 local globalVarPrefix = shortName .. '_'
 local versionFormat = pkg .. '-%s-1.0'
@@ -44,7 +44,7 @@ end
 function _S:GetMixin(mixinName) return self.mixins[mixinName] end
 
 function _S:NewLibrary(libName, global)
-    local Core = __K_Core_DevTools
+    local Core = __K_Core_DevSuite
     local major, minor = _S:GetLibVersionUnpacked(libName)
     local obj = LibStub:NewLibrary(major, minor)
     if type(obj.mt) ~= 'table' then obj.mt = {} end
@@ -160,8 +160,8 @@ local _L = {}
 ---```
 ---local MyAddon = LibPack:NewAddon('Assert')
 ---### Others
----local LibStub, NewLibrary = __K_Core_DevTools:LibPack()
----local LibStub, NewLibrary, NewAddon = __K_Core_DevTools:LibPack()
+---local LibStub, NewLibrary = __K_Core_DevSuite:LibPack()
+---local LibStub, NewLibrary, NewAddon = __K_Core_DevSuite:LibPack()
 ---```
 ---@return LocalLibStub, NewLibrary, NewAddon
 function _L:LibPack()
@@ -179,7 +179,7 @@ function _L:LibPack_Ace() return LibStub end
 function _L:LibPack_Mixin() return _S:GetLibrary('Mixin') end
 
 ---@return LibGlobals
-function _L:LibPack_Globals() return _G['DEVT_LibGlobals'] end
+function _L:LibPack_Globals() return _G['DEVS_LibGlobals'] end
 
 ---@return LocalLibStub
 function _L:LibStub() return _S end
@@ -296,4 +296,4 @@ setmetatable(_LIB, _LIB.mt)
 _L.Lib = _LIB
 
 ---@type Core
-__K_Core_DevTools = _L
+__K_Core_DevSuite = _L

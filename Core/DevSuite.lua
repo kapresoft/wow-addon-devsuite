@@ -12,11 +12,11 @@ local ReloadUI, IsShiftKeyDown = ReloadUI, IsShiftKeyDown
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub, M, G = DEVT_LibGlobals:LibPack()
-local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
+local LibStub, M, G = DEVS_LibGlobals:LibPack()
+local Table, String, Assert, Mixin = DEVS_LibGlobals:LibPack_Utils()
 ---@type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
-local Constants, ObjectFactory = DEVT_Constants, DEVT_ObjectFactory
+local Constants, ObjectFactory = DEVS_Constants, DEVS_ObjectFactory
 
 
 local C = G:Lib_Config()
@@ -32,18 +32,18 @@ local print, format = print, string.format
 local tostring, type = tostring, type
 local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
 
-local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVT_DebugDialog"
+local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
 
----@class DevTools
+---@class DevSuite
 local A = LibStub:NewAddon(G.addonName)
 if not A then return end
 
---local p = DEVT_logger:NewLogger('DebugDialog')
+--local p = DEVS_logger:NewLogger('DebugDialog')
 local LogFactory = G:Lib_LogFactory()
 local p = LogFactory()
 ---@type DebugDialogWidget
-local debugDialog = nil
+local debugDialog
 
 
 --[[-----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ function A:EvalObject(o, varName, _isGlobal)
 end
 
 function A:Version()
-    self:Printf("DevTools Version: %s", "1.0")
+    self:Printf("DevSuite Version: %s", "1.0")
     self:Print("")
 end
 
@@ -112,8 +112,8 @@ function A:Help()
     print(format(ftext, "profile", "show current profile data"))
     print(' ')
     print("Other commands:")
-    print(format("/devtc    - %s", "open config UI"))
-    print(format("/devtp   - %s", "show current profile"))
+    print(format("/devsuite_c    - %s", "open config UI"))
+    print(format("/devsuite_p   - %s", "show current profile"))
 end
 
 function A:RegisterKeyBindings()
@@ -184,7 +184,7 @@ function A:OnInitialize()
 
     local options = C:GetOptions()
     -- Register options table and slash command
-    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devt_options" })
+    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devsuite_options" })
     --cfgDialog:SetDefaultSize(ADDON_NAME, 800, 500)
     ACECFGD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
 
@@ -204,9 +204,9 @@ end
 -- ## -------------------------------------------------------------------------
 
 function A:RegisterSlashCommands()
-    self:RegisterChatCommand("devtc", "OpenConfig")
-    self:RegisterChatCommand("devtp", "Handle_SlashCommand_ShowProfile")
-    self:RegisterChatCommand("devt", "Handle_SlashCommands")
+    self:RegisterChatCommand("devsuite_c", "OpenConfig")
+    self:RegisterChatCommand("devsuite_p", "Handle_SlashCommand_ShowProfile")
+    self:RegisterChatCommand("devsuite", "Handle_SlashCommands")
 end
 
 function A:Handle_SlashCommands(input)
@@ -224,10 +224,10 @@ function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() e
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 
-function A.BINDING_DEVT_OPTIONS_DLG() A:OpenConfig() end
+function A.BINDING_DEVS_OPTIONS_DLG() A:OpenConfig() end
 
-function A.BINDING_DEVT_DEBUG_DLG() debugDialog:Show() end
-function A.BINDING_DEVT_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
+function A.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
+function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -240,17 +240,17 @@ function A.OnAddonLoaded(frame, event, ...)
     if not isLogin then return end
     p:log('%s.%s initialized', MAJOR, MINOR)
 
-    local cprefix = format('|cfffc4e03%s|r', '/devt')
+    local cprefix = format('|cfffc4e03%s|r', '/devsuite')
     print(format('%s: Available commands: ' .. cprefix, prefix))
-    print(format('%s: More at https://kapresoft.com/wow-addon-devtools', prefix))
+    print(format('%s: More at https://kapresoft.com/wow-addon-devsuite', prefix))
 end
 
----@type DevTools
-DEVT = A
+---@type DevSuite
+DEVS = A
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 local frame = CreateFrame("Frame", Constants.AddonDetails.name .. "Frame", UIParent)
-frame:SetScript("OnEvent", DEVT.OnAddonLoaded)
+frame:SetScript("OnEvent", DEVS.OnAddonLoaded)
 frame:RegisterEvent("PLAYER_ENTERING_WORLD")

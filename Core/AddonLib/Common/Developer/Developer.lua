@@ -16,7 +16,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 local addon, ns = ...
 
-local LibStub, M, LogFactory, G = DEVT_LibGlobals:LibPack_NewLibrary()
+local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
 local reloadUI = addon .. '_CONFIRM_RELOAD_UI'
 
 

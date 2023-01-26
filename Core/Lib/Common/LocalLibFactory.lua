@@ -1,4 +1,4 @@
-local Table, String, Assert, Mixin = DEVT_LibGlobals:LibPack_Utils()
+local Table, String, Assert, Mixin = DEVS_LibGlobals:LibPack_Utils()
 
 local LibStub, format, unpack = LibStub, string.format, Table.unpackIt
 local assert, type, tonumber, isTable = assert, type, tonumber, Table.isTable
