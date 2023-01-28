@@ -11,7 +11,7 @@ on:
 
 env:
   addonName: AddonTemplate
-  curseForgeProjectId:
+  curseForgeProjectId: 782096
   releaseDir: ./.release
 
 jobs:
@@ -61,8 +61,7 @@ jobs:
       ## see: https://github.com/marketplace/actions/wow-packager
       - uses: BigWigsMods/packager@v2
         with:
-          #args: -du -r ${releaseDir} -p ${curseForgeProjectId}
-          args: -du -r ${releaseDir}
+          args: -du -r ${releaseDir} -p ${curseForgeProjectId}
       ## ------------------------------------------------ ##
       - name: "Verify Build Artifact Exists: ${{ env.buildArtifact }}"
         uses: andstor/file-existence-action@v2
