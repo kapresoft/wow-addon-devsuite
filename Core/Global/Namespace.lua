@@ -62,8 +62,6 @@ local GlobalObjects = {
     --- @type OptionsMixin
     OptionsMixin = {},
 
-    --- @type Core
-    Core = {},
     --- @type DialogWidgetMixin
     DialogWidgetMixin = {},
     --- @type GlobalConstants
@@ -85,13 +83,8 @@ local M = {
 
     AceDbInitializerMixin = 'AceDbInitializerMixin',
     OptionsMixin = 'OptionsMixin',
-    Core = 'Core',
     GlobalConstants = 'GlobalConstants',
     Logger = 'Logger',
-
-    --Logger = 'Logger',
-    LogFactory = 'LogFactory',
-    --PrettyPrint = 'PrettyPrint',
     AceLibFactory = 'AceLibFactory',
 
     Table = 'Table',
