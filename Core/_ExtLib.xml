@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <!-- LibStub needs to be at the top -->
+    <Script file="ExtLib\WowAce\Ace3\LibStub\LibStub.lua"/>
+    <Include file="_ExtLib_WowAce.xml"/>
+    <Include file='ExtLib\Kapresoft-LibUtil\_Lib.xml'/>
+
+</Ui>

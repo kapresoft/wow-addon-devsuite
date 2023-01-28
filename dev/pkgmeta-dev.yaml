@@ -1,0 +1,66 @@
+package-as: Dev
+# --------------------------
+manual-changelog:
+  filename: CHANGELOG.txt
+  markup-type: markdown
+
+externals:
+  Core/ExtLib/Kapresoft-LibUtil:
+    url: https://github.com/kapresoft/wow-lib-util
+    tag: latest
+  # Sourcing Ace3 addon directly from github
+  # LibStub is included in Ace3 add
+  Core/ExtLib/WowAce/Ace3:
+    url: https://repos.wowace.com/wow/ace3/trunk
+    tag: latest
+  Core/ExtLib/WowAce/LibSharedMedia/LibSharedMedia-3.0:
+    url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+    tag: latest
+
+ignore:
+  - "*.sh"
+  - "*.md"
+  - "*.yaml"
+  - "*.yml"
+  - dev
+  - doc
+  - scripts
+  - Core/_Core.lua
+  - Core/_Core.xml
+  - Core/_ExtLib.xml
+  - Core/_ExtLib_WowAce.xml
+  - Core/AddonLib
+  - Core/Assets
+  - Core/Global
+  - Core/Interface
+  - Core/Lib
+  - Retail
+  - TBC
+  - Vanilla
+  - Wrath
+  - Bindings.xml
+  - Core/ExtLib/Kapresoft-LibUtil/External
+  - Core/ExtLib/Kapresoft-LibUtil/Kapresoft-LibUtil.toc
+  - Core/ExtLib/Kapresoft-LibUtil/LICENSE
+  - Core/ExtLib/Kapresoft-LibUtil/dev
+  - Core/ExtLib/Kapresoft-LibUtil/doc
+  - Core/ExtLib/WowAce/LibQTip/LibQTip-1.0/LibStub
+  - Core/ExtLib/WowAce/LibQTip/LibQTip-1.0/LibQTip-1.0.toc
+  - Core/ExtLib/WowAce/Ace3/tests
+  - Core/ExtLib/WowAce/Ace3/Ace3.lua
+  - Core/ExtLib/WowAce/Ace3/Ace3.toc
+  - Core/ExtLib/WowAce/Ace3/Ace3_TBC.toc
+  - Core/ExtLib/WowAce/Ace3/Ace3_Vanilla.toc
+  - Core/ExtLib/WowAce/Ace3/Ace3_Wrath.toc
+  - Core/ExtLib/WowAce/Ace3/Bindings.xml
+  - "*.toc"
+
+## Potentially helpful libraries
+## - https://www.wowace.com/projects/libactionbutton-1-0
+
+move-folders:
+  Dev/Core/ExtLib/Kapresoft-LibUtil: ../Core/ExtLib/Kapresoft-LibUtil
+  Dev/Core/ExtLib/WowAce/Ace3: ../Core/ExtLib/WowAce/Ace3
+  Dev/Core/ExtLib/WowAce/LibQTip/LibQTip-1.0: ../Core/ExtLib/WowAce/LibQTip/LibQTip-1.0
+  Dev/Core/ExtLib/WowAce/LibCompress/LibCompress: ../Core/ExtLib/WowAce/LibCompress/LibCompress
+  Dev/Core/ExtLib/WowAce/LibSharedMedia/LibSharedMedia-3.0: ../Core/ExtLib/WowAce/LibSharedMedia/LibSharedMedia-3.0

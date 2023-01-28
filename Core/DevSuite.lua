@@ -8,24 +8,24 @@ Blizzard Vars
 -------------------------------------------------------------------------------]]
 local UISpecialFrames = UISpecialFrames
 local ReloadUI, IsShiftKeyDown = ReloadUI, IsShiftKeyDown
+local CreateFrame = CreateFrame
+local RegisterFrameForEvents = FrameUtil.RegisterFrameForEvents
 
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub, M, G = DEVS_LibGlobals:LibPack()
-local Table, String, Assert, Mixin = DEVS_LibGlobals:LibPack_Utils()
----@type DebugDialog
+--- @type Namespace
+local _, ns = ...
+
+local commandTextFormat = 'Type %s on the console for available commands.'
+
+local O, GC, M, LibStub, Ace = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.O.AceLibrary
+local Table, String = O.Table, O.String
+--- @type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
-local Constants, ObjectFactory = DEVS_Constants, DEVS_ObjectFactory
 
-
-local C = G:Lib_Config()
-local AddonDetails = Constants.AddonDetails
-local ADDON_NAME = AddonDetails.name
-local ADDON_PREFIX = AddonDetails.prefix
-
-local ACELIB = G:LibPack_AceLibFactory()
-local ACEDB, ACEDBO, ACECFG, ACECFGD = G:LibPack_AceAddonLibs()
+local C = O.Config
+local AceConfigDialog = Ace.AceConfigDialog
 
 local unpack = Table.unpackIt
 local print, format = print, string.format
@@ -33,16 +33,13 @@ local tostring, type = tostring, type
 local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
 
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
-local MAJOR, MINOR = AddonDetails.name .. '-1.0', 1 -- Bump minor on changes
+local MAJOR, MINOR = ns.name .. '-1.0', 1 -- Bump minor on changes
 
----@class DevSuite
-local A = LibStub:NewAddon(G.addonName)
-if not A then return end
+--- @class DevSuite
+local A = LibStub:NewAddon(ns.name); if not A then return end
+local p = ns:NewLogger(ns.name)
 
---local p = DEVS_logger:NewLogger('DebugDialog')
-local LogFactory = G:Lib_LogFactory()
-local p = LogFactory()
----@type DebugDialogWidget
+--- @type DebugDialogWidget
 local debugDialog
 
 
@@ -98,33 +95,14 @@ function A:EvalObject(o, varName, _isGlobal)
     debugDialog:Show()
 end
 
-function A:Version()
-    self:Printf("DevSuite Version: %s", "1.0")
-    self:Print("")
-end
-
 function A:Help()
-    A:Version()
     local ftext = '  %-30s - %s'
-    print("Available commands:")
-    print(format(ftext, "help", "show this help text"))
-    print(format(ftext, "config", "open config UI"))
-    print(format(ftext, "profile", "show current profile data"))
-    print(' ')
-    print("Other commands:")
-    print(format("/devsuite_c    - %s", "open config UI"))
-    print(format("/devsuite_p   - %s", "show current profile"))
-end
-
-function A:RegisterKeyBindings()
-    --SetBindingClick("SHIFT-T", self:Info())
-    --SetBindingClick("SHIFT-F1", BoxerButton3:GetName())
-    --SetBindingClick("ALT-CTRL-F1", BoxerButton1:GetName())
-
-    -- Warning: Replaces F5 keybinding in Wow Config
-    -- SetBindingClick("F5", BoxerButton3:GetName())
-    -- TODO: Configure Button 1 to be the Boxer Follow Button (or create an invisible one)
-    --SetBindingClick("SHIFT-R", BoxerButton1:GetName())
+    p:log(' ')
+    p:log("Available commands:")
+    p:log(format(ftext, "help", "show this help text"))
+    p:log(format(ftext, "config", "open config UI"))
+    p:log(format(ftext, "profile", "show current profile data"))
+    p:log(' ')
 end
 
 function A:OnProfileChanged()
@@ -139,63 +117,13 @@ function A:ConfirmReloadUI()
     ShowReloadUIConfirmation()
 end
 
-function A:OpenConfig(_)
-    ACECFGD:Open(AddonDetails.name)
-end
-
-function A:OnUpdate()
-    self:log('OnUpdate called...')
-end
-
--- AceAddon Hook
---function A:OnEnable() self:log('OnEnable...') end
--- AceAddon Hook
---function A:OnDisable() self:log('OnDisable...') end
-
-function A:InitDbDefaults()
-
-    ---@class ProfileDb
-    local defaultProfile = {
-        ['enabled'] = true,
-        ['debugDialog'] = {
-            maxHistory = 9,
-            items = { }
-        },
-    }
-    local defaults = { profile =  defaultProfile }
-    self.db:RegisterDefaults(defaults)
-    self.profile = self.db.profile
-    --if table.isEmpty(ABP_PLUS_DB.profiles[profileName]) then
-    --    ABP_PLUS_DB.profiles[profileName] = defaultProfile
-end
-
+function A:OpenConfig(_) AceConfigDialog:Open(ns.name) end
 function A:GetCurrentProfileData() return self.profile end
 
 function A:OnInitialize()
-    -- Set up our database
-    self.db = ACEDB:New(Constants.DB_NAME)
-    self.db.RegisterCallback(self, "OnProfileChanged", "OnProfileChanged")
-    self.db.RegisterCallback(self, "OnProfileReset", "OnProfileChanged")
-    self.db.RegisterCallback(self, "OnProfileCopied", "OnProfileChanged")
-    self:InitDbDefaults()
-
-    --debugDialog = self:CreateDebugPopupDialog()
-    --ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, debugDialog.frame)
-
-    local options = C:GetOptions()
-    -- Register options table and slash command
-    ACECFG:RegisterOptionsTable(ADDON_NAME, options, { "devsuite_options" })
-    --cfgDialog:SetDefaultSize(ADDON_NAME, 800, 500)
-    ACECFGD:AddToBlizOptions(ADDON_NAME, ADDON_NAME)
-
-    -- Get the option table for profiles
-    options.args.profiles = ACEDBO:GetOptionsTable(self.db)
-
+    O.AceDbInitializerMixin:New(self):InitDb()
+    O.OptionsMixin:New(self):InitOptions()
     self:RegisterSlashCommands()
-    self:RegisterKeyBindings()
-
-    --macroIcons = self:FetchMacroIcons()
-    C:OnAfterInitialize{ profile = self.db.profile }
     debugDialog = DebugDialog(self.profile)
 end
 
@@ -203,11 +131,7 @@ end
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 
-function A:RegisterSlashCommands()
-    self:RegisterChatCommand("devsuite_c", "OpenConfig")
-    self:RegisterChatCommand("devsuite_p", "Handle_SlashCommand_ShowProfile")
-    self:RegisterChatCommand("devsuite", "Handle_SlashCommands")
-end
+function A:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "Handle_SlashCommands") end
 
 function A:Handle_SlashCommands(input)
     local args = ToTable(input)
@@ -217,8 +141,6 @@ function A:Handle_SlashCommands(input)
     if 'profile' == cmd then return A:ShowDebugDialogCurrentProfile() end
     A:Help()
 end
-
-function A:Handle_SlashCommand_ShowProfile() A:ShowDebugDialogCurrentProfile() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -233,24 +155,35 @@ function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 
-function A.OnAddonLoaded(frame, event, ...)
+---@param frame DevSuite_Frame
+---@param event string The event name
+local function OnPlayerEnteringWorld(frame, event, ...)
     local isLogin, isReload = ...
-    --for _, module in ipairs(libModules) do module:OnAddonLoaded() end
-    local prefix = format(ADDON_PREFIX, '')
-    if not isLogin then return end
-    p:log('%s.%s initialized', MAJOR, MINOR)
 
-    local cprefix = format('|cfffc4e03%s|r', '/devsuite')
-    print(format('%s: Available commands: ' .. cprefix, prefix))
-    print(format('%s: More at https://kapresoft.com/wow-addon-devsuite', prefix))
+    local addon = frame.ctx.addon
+    addon:SendMessage(GC.M.OnAddonReady)
+
+    --@debug@
+    isLogin = true
+    --@end-debug@
+
+    if not isLogin then return end
+
+    local version = GC:GetAddonInfo()
+    p:log('%s Initialized. %s', version, ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.HELP_COMMAND))
+    p:log('Type %s for available commands', GC.C.COMMAND)
 end
 
----@type DevSuite
+---@param addon DevSuite | AceEvent
+local function RegisterEvents(addon)
+    --- @class DevSuite_Frame: _Frame
+    local f = CreateFrame('Frame',  ns.name .. 'Frame', UIParent)
+    f.ctx = { addon = addon }
+    f:SetScript(GC.E.OnEvent, OnPlayerEnteringWorld)
+    RegisterFrameForEvents(f, { GC.E.PLAYER_ENTERING_WORLD })
+end
+RegisterEvents(A)
+
+--- @type DevSuite
 DEVS = A
 
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
-local frame = CreateFrame("Frame", Constants.AddonDetails.name .. "Frame", UIParent)
-frame:SetScript("OnEvent", DEVS.OnAddonLoaded)
-frame:RegisterEvent("PLAYER_ENTERING_WORLD")

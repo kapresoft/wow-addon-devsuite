@@ -1,6 +1,6 @@
 -- ## External -------------------------------------------------
 local format = string.format
----@class LibStub Ace3 LibStub
+---@type LibStub
 local LibStub = LibStub
 
 -- ## Local ----------------------------------------------------
@@ -15,8 +15,9 @@ local versionFormat = pkg .. '-%s-1.0'
 -- ## LocalLibStub ---------------------------------------------
 -- ## ----------------------------------------------------------
 
+-- todo next: delete old LocalLibstub in _Core.lua
 ---Version Format: ActionbarPlus-[LibName]-1.0, Example: LibStub('ActionbarPlus-Logger-1.0')
----@class LocalLibStub
+--- @class LocalLibStubx
 local _S = {
     mixins = {},
     package = pkg,
@@ -121,7 +122,7 @@ function _S:Embed(o, name, major, minor)
         self.profile = context.addon.profile
         if type(self.OnAfterInitialize) == 'function' then self:OnAfterInitialize() end
     end
-    self:EmbedLoggerIfAvailable(o)
+    --self:EmbedLoggerIfAvailable(o)
 end
 
 function _S:EmbedLoggerIfAvailable(o)
@@ -174,12 +175,6 @@ end
 
 ---@return LibStub
 function _L:LibPack_Ace() return LibStub end
-
----@return Mixin
-function _L:LibPack_Mixin() return _S:GetLibrary('Mixin') end
-
----@return LibGlobals
-function _L:LibPack_Globals() return _G['DEVS_LibGlobals'] end
 
 ---@return LocalLibStub
 function _L:LibStub() return _S end
@@ -274,8 +269,8 @@ function _L:InitPrettyPrint()
     self:SetGlobal('PrettyPrint', pformat)
 end
 
-function _L:Init() self:InitPrettyPrint() end
-_L:Init()
+--function _L:Init() self:InitPrettyPrint() end
+--_L:Init()
 
 local _LIB = {}
 function _LIB:GetLibraries(...)
