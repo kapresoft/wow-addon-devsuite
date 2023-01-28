@@ -5,7 +5,7 @@
     <Script file="OptionsMixin.lua" />
 
     <Include file="Widget\_Widget.xml"/>
-    <!--    TODO: Migrate locales -->
+
     <Include file="Locales\_Locales.xml"/>
     <Include file="Developer\_Developer.xml"/>
 

@@ -114,7 +114,6 @@ end
 
 --- @param o GlobalConstants
 local function Methods(o)
-    --  TODO
 
     function o:GetLogName()
         local logName = addon
