@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  addonName: AddonTemplate
+  addonName: DevSuite
   curseForgeProjectId: 782096
   releaseDir: ./.release
 
