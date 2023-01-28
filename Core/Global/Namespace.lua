@@ -162,7 +162,7 @@ local function NameSpacePropertiesAndMethods(o)
 
     --- @param moduleName string The module name, i.e. Logger
     --- @param optionalMajorVersion number|string
-    --- @return string The complete module name, i.e. 'ActionbarPlus-Logger-1.0'
+    --- @return string The complete module name, i.e. 'DevSuite-Logger-1.0'
     function o:LibName(moduleName, optionalMajorVersion) return GC.LibName(moduleName, optionalMajorVersion) end
     --- @param moduleName string The module name, i.e. Logger
     function o:ToStringFunction(moduleName) return GC.ToStringFunction(moduleName) end

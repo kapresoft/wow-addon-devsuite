@@ -22,9 +22,9 @@ DevSuite is a comprehensive set of tools specifically designed for World of Warc
 ![pixel-line-500px](https://user-images.githubusercontent.com/1599306/209889477-315aa4bb-1e92-4e5f-b684-7d5296427ada.png)
 
 ### Author Notes
-- Please submit bugs and feature requests at [Github/ActionbarPlus/issues](https://github.com/kapresoft/wow-addon-actionbar-plus/issues)
-- [Milestones](https://github.com/kapresoft/wow-addon-actionbar-plus/milestones)
-- [Releases](https://github.com/kapresoft/wow-addon-actionbar-plus/releases)
+- Please submit bugs and feature requests at [Github/DevSuite/issues](https://github.com/kapresoft/wow-addon-devsuite/issues)
+- [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones)
+- [Releases](https://github.com/kapresoft/wow-addon-devsuite/releases)
 - [About the Author (Tony Lagnada)](https://tony.resume.lagnada.com/)
 
 ### Donations

@@ -91,7 +91,7 @@ More at https://support.curseforge.com/en/support/solutions/articles/9000197281-
 ## Steps to get the latest external lib dependencies
 
 ### Prerequisite
-- Install BigWigMods Packager  (See [README-BigWigsMods-Packager.md](README-BigWigsMods-Packager.md))
+- Install BigWigMods Packager
 
 #### Linking BigWigMods/release.sh
 
@@ -109,5 +109,5 @@ Or Equivalent
 # generate
 $ release-wow-addon -cdzulo
 # sync with local
-$ rsyncw -s .release/ActionbarPlus/Core/ExtLib/WowAce Core/ExtLib/WowAce/
+$ rsyncw -s .release/DevSuite/Core/ExtLib/WowAce Core/ExtLib/WowAce/
 ```
