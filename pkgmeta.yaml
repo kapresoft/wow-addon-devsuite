@@ -12,16 +12,8 @@ externals:
   Core/ExtLib/WowAce/Ace3:
     url: https://repos.wowace.com/wow/ace3/trunk
     tag: latest
-  Core/ExtLib/WowAce/LibCompress/LibCompress:
-    # https://www.wowace.com/projects/libcompress
-    url: https://repos.wowace.com/wow/libcompress/trunk
-    tag: latest
   Core/ExtLib/WowAce/LibSharedMedia/LibSharedMedia-3.0:
     url: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
-    tag: latest
-  Core/ExtLib/WowAce/LibQTip/LibQTip-1.0:
-    # https://www.wowace.com/projects/libqtip-1-0
-    url: https://repos.wowace.com/wow/libqtip-1-0
     tag: latest
 
 ignore:

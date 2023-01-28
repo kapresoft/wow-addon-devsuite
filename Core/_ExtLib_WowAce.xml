@@ -2,8 +2,6 @@
 ..\FrameXML\UI.xsd">
 
     <!-- LibSharedMedia, LibCompress,LibQTip requires LibStub-->
-    <Include file="ExtLib\WowAce\LibCompress\LibCompress\lib.xml"/>
-    <Include file="ExtLib\WowAce\LibQTip\LibQTip-1.0\lib.xml"/>
 
     <Include file="ExtLib\WowAce\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.xml"/>
     <Include file="ExtLib\WowAce\Ace3\AceAddon-3.0\AceAddon-3.0.xml"/>

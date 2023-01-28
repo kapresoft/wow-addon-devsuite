@@ -1,19 +1,26 @@
-local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
-local Table, String = G:LibPack_Utils()
-local AceEvent, AceGUI, AceHook = G:LibPack_AceLibrary()
+--[[-----------------------------------------------------------------------------
+Lua Vars
+-------------------------------------------------------------------------------]]
+local tinsert = table.insert
+
+--- @type Namespace
+local _, ns = ...
+local O, M, LibStub, Ace, pformat = ns.O, ns.M, ns.O.LibStub, ns.O.AceLibrary, ns.pformat
+
+local Table, String = O.Table, O.String
+local AceGUI = Ace.AceGUI
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
+
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
 ---@class DebugDialog : DialogWidgetMixin
 local D = LibStub:NewLibrary(M.DebugDialog)
-local p = LogFactory(M.DebugDialog)
----@type DialogWidgetMixin
-G:Mixin(D, LibStub:GetMixin(M.DialogWidgetMixin))
+O.Mixin:Mixin(D, O.DialogWidgetMixin)
 D.mt.__call = function (_, ...) return D:Constructor(...) end
-
+local p = D.logger
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -132,7 +139,7 @@ end
 Constructor
 -------------------------------------------------------------------------------]]
 ---@return DebugDialogWidget
----@param profile ProfileDb
+---@param profile Profile_Config
 function D:Constructor(profile)
     ---@class DebugDialogAceFrameWidget
     local frame = AceGUI:Create("Frame")
@@ -173,7 +180,7 @@ function D:Constructor(profile)
     local orderKeys = {}
     local list = {}
     for k,_ in pairs(profile.debugDialog.items) do
-        Table.insert(orderKeys, k)
+        tinsert(orderKeys, k)
         list[k] = k
     end
     table.sort(orderKeys)

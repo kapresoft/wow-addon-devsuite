@@ -2,20 +2,27 @@
 Lua Vars
 -------------------------------------------------------------------------------]]
 local setglobal = setglobal
+local tinsert = table.insert
+
+--[[-----------------------------------------------------------------------------
+Blizzard Vars
+-------------------------------------------------------------------------------]]
+local UISpecialFrames = UISpecialFrames
 
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
-local Table = G:LibPack_Utils()
-local tinsert = Table.insert
+--- @type Namespace
+local _, ns = ...
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.LibStub
 
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
----@class DialogWidgetMixin : BaseMixin
-local L = LibStub:NewMixin(M.DialogWidgetMixin)
-local p = LogFactory(M.DialogWidgetMixin)
+--- @class DialogWidgetMixin : BaseLibraryObject
+local L = {}
+ns:Register(M.DialogWidgetMixin, L)
+local p = ns:NewLogger(M.DialogWidgetMixin)
 
 ---@param frameName string
 ---@param frameInstance table The frame object

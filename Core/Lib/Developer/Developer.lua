@@ -14,18 +14,17 @@ local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSave
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local addon, ns = ...
+--- @type Namespace
+local _, ns = ...
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+local reloadUI = ns.name .. '_CONFIRM_RELOAD_UI'
 
-local LibStub, M, LogFactory, G = DEVS_LibGlobals:LibPack_NewLibrary()
-local reloadUI = addon .. '_CONFIRM_RELOAD_UI'
 
-
----@class Developer
-local L = LibStub:NewLibrary(M.Developer)
---- This means the library is already loaded in case of multiple libs
-if not L then return end
-
-local p = LogFactory(M.Developer)
+---@class Developer : BaseLibraryObject
+local L = LibStub:NewLibrary(M.Developer); if not L then return end
+--- DevSuite_D is global
+_G[ns.name .. '_D'] = L
+local p = L.logger
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -151,5 +150,3 @@ local function Methods(o)
 end
 
 Methods(L)
-
-_G[addon .. '_D'] = L
