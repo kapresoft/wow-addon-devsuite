@@ -24,7 +24,8 @@ local ns
 addon, ns = ...
 
 local addonShortName = 'DS'
-local consoleCommand = "devssuite"
+local consoleCommand = "devsuite"
+local consoleCommandShort = "ds"
 local useShortName = true
 
 --- The original Ace LibStub
@@ -66,12 +67,14 @@ local function GlobalConstantProperties(o)
     local consoleCommandTextFormat = '|cfd2db9fb%s|r'
     local consoleKeyValueTextFormat = '|cfdfbeb2d%s|r: %s'
     local command = sformat("/%s", consoleCommand)
+    local commandShort = sformat("/%s", consoleCommandShort)
 
     --- @class GlobalAttributes
     local C = {
         DB_NAME = 'DEVS_DB',
         CHECK_VAR_SYNTAX_FORMAT = '|cfdeab676%s ::|r %s',
         CONSOLE_COMMAND = consoleCommand,
+        CONSOLE_COMMAND_SHORT = consoleCommandShort,
         CONSOLE_HEADER_FORMAT = '|cfdeab676### %s ###|r',
         CONSOLE_OPTIONS_FORMAT = '  - %-8s|cfdeab676:: %s|r',
 
@@ -79,7 +82,8 @@ local function GlobalConstantProperties(o)
         CONSOLE_KEY_VALUE_TEXT_FORMAT = consoleKeyValueTextFormat,
 
         CONSOLE_PLAIN = command,
-        COMMAND      = sformat(consoleCommandTextFormat, command),
+        COMMAND       = sformat(consoleCommandTextFormat, command),
+        COMMAND_SHORT = sformat(consoleCommandTextFormat, commandShort),
         HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
     }
 

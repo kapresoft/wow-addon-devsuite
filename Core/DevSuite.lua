@@ -17,10 +17,12 @@ Local Vars
 --- @type Namespace
 local _, ns = ...
 
-local commandTextFormat = 'Type %s on the console for available commands.'
+local commandTextFormat = 'Type %s or %s on the console for available commands.'
 
 local O, GC, M, LibStub, Ace = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.O.AceLibrary
 local Table, String = O.Table, O.String
+local pformat, sformat = ns.pformat, ns.sformat
+
 --- @type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
 
@@ -37,6 +39,9 @@ local MAJOR, MINOR = ns.name .. '-1.0', 1 -- Bump minor on changes
 
 --- @class DevSuite
 local A = LibStub:NewAddon(ns.name); if not A then return end
+--- @type PopupDebugDialog
+A.PopupDialog = nil
+
 local p = ns:NewLogger(ns.name)
 
 --- @type DebugDialogWidget
@@ -58,17 +63,13 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function A:GetMouseOver()
-    p:log('GetMouseOver: entering...')
-end
-
-function A:ShowDebugDialogCurrentProfile()
-    local profileData = self:GetCurrentProfileData()
-    local profileName = self.db:GetCurrentProfile()
-    debugDialog:SetCodeText('')
-    debugDialog:SetContent(profileData)
-    debugDialog:SetStatusText(format('Current Profile Data for [%s]', profileName))
-    debugDialog:Show()
+function A:GetMouseFocus()
+    --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
+    local o = GetMouseFocus()
+    if not o then return end
+    local name = 'Mouse Focused Object'
+    if type(o.GetName) == 'function' then name = o:GetName() end
+    self.PopupDialog:EvalObjectThenShow(o, name)
 end
 
 function A:EvalVar(globalVarName)
@@ -101,7 +102,7 @@ function A:Help()
     p:log("Available commands:")
     p:log(format(ftext, "help", "show this help text"))
     p:log(format(ftext, "config", "open config UI"))
-    p:log(format(ftext, "profile", "show current profile data"))
+    p:log(format(ftext, "dialog", "open config UI"))
     p:log(' ')
 end
 
@@ -132,13 +133,14 @@ end
 -- ## -------------------------------------------------------------------------
 
 function A:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "Handle_SlashCommands") end
+function A:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "Handle_SlashCommands") end
 
 function A:Handle_SlashCommands(input)
     local args = ToTable(input)
     local cmd = args[1] or ''
     if String.IsBlank(cmd) then return A:Help() end
     if 'config' == cmd then return A:OpenConfig() end
-    if 'profile' == cmd then return A:ShowDebugDialogCurrentProfile() end
+    if 'dialog' == cmd then return debugDialog:Show() end
     A:Help()
 end
 
@@ -149,7 +151,7 @@ end
 function A.BINDING_DEVS_OPTIONS_DLG() A:OpenConfig() end
 
 function A.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
-function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseOver() end
+function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseFocus() end
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -162,7 +164,9 @@ local function OnPlayerEnteringWorld(frame, event, ...)
 
     local addon = frame.ctx.addon
     addon:SendMessage(GC.M.OnAddonReady)
-
+    if not addon.PopupDialog then
+        addon.PopupDialog = O.PopupDebugDialog()
+    end
     --@debug@
     isLogin = true
     --@end-debug@
@@ -170,7 +174,8 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     if not isLogin then return end
 
     local version = GC:GetAddonInfo()
-    p:log('%s Initialized. %s', version, ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.HELP_COMMAND))
+    p:log('%s Initialized. %s', version,
+            ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.COMMAND_SHORT, GC.C.HELP_COMMAND))
     p:log('Type %s for available commands', GC.C.COMMAND)
 end
 

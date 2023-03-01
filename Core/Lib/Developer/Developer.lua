@@ -3,6 +3,7 @@ Lua Vars
 -------------------------------------------------------------------------------]]
 local geterrorhandler = geterrorhandler
 local str_lower = string.lower
+local sformat = string.format
 
 --[[-----------------------------------------------------------------------------
 Blizzard Vars
@@ -11,6 +12,8 @@ local EnableAddOn, DisableAddOn = EnableAddOn, DisableAddOn
 local StaticPopupDialogs, ReloadUI = StaticPopupDialogs, ReloadUI
 local StaticPopup_Visible, StaticPopup_Show = StaticPopup_Visible, StaticPopup_Show
 local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSavedInstanceInfo
+local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetCVarBool, RestartGx
+
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -22,6 +25,7 @@ local reloadUI = ns.name .. '_CONFIRM_RELOAD_UI'
 
 ---@class Developer : BaseLibraryObject
 local L = LibStub:NewLibrary(M.Developer); if not L then return end
+DS = L
 --- DevSuite_D is global
 _G[ns.name .. '_D'] = L
 local p = L.logger
@@ -60,6 +64,44 @@ Methods
 ---@param o Developer
 local function Methods(o)
 
+    function o:T() self:ToggleWindowed() end
+    function o:ToggleWindowed()
+        local isMaximized = GetCVarBool(GX_MAXIMIZE)
+        SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
+        RestartGx()
+    end
+    function o:MaxScreen() SetCVar(GX_MAXIMIZE, 1); RestartGx() end
+    function o:Windowed() SetCVar(GX_MAXIMIZE, 0); RestartGx() end
+
+
+    local function OutputAPIMatches(out, doc, apiMatches, headerName)
+        if apiMatches and #apiMatches > 0 then
+            for i, api in ipairs(apiMatches) do
+                table.insert(out, api:GetSingleOutputLine())
+            end
+        end
+    end
+
+    local function OutputAllSystemAPI(doc, system)
+        local apiMatches = system:ListAllAPI();
+        local out = {}
+        if apiMatches then
+            OutputAPIMatches(out, doc, apiMatches.functions, "function(s)");
+            OutputAPIMatches(out, doc, apiMatches.events, "events(s)");
+            OutputAPIMatches(out, doc, apiMatches.tables, "table(s)");
+        end
+        return out
+    end
+
+    function o:API(name)
+        -- call /api first
+        local doc = APIDocumentation
+        local api = doc:FindSystemByName(name)
+        local t = OutputAllSystemAPI(doc, api)
+        t.__tostring = true
+        return t
+    end
+
     function o:GetAllAddOns()
         local count = GetNumAddOns()
         ---@type table<string, AddOnInfo>
@@ -88,16 +130,18 @@ local function Methods(o)
     ---@param addons table<number, string>
     function o:EnableAddOns(addons)
         self:ForEachAddons(addons, function(addonName)
-            EnableAddOn(addonName)
-            p:log('Addons Enabled: %s', addonName)
+            local player = UnitName('player')
+            EnableAddOn(addonName, player)
+            p:log('Addons Enabled[%s]: %s', player, addonName)
         end)
     end
 
     ---@param addons table<number, string>
     function o:DisableAddOns(addons)
         self:ForEachAddons(addons, function(addonName)
-            DisableAddOn(addonName)
-            p:log('Addons Disabled: %s', addonName)
+            local player = UnitName('player')
+            DisableAddOn(addonName, player)
+            p:log('Addons Disabled[%s]: %s', player, addonName)
         end)
     end
 

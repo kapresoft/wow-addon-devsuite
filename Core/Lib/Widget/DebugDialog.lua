@@ -1,6 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Lua Vars
 -------------------------------------------------------------------------------]]
+local loadstring = loadstring
 local tinsert = table.insert
 
 --- @type Namespace
@@ -12,7 +13,7 @@ local AceGUI = Ace.AceGUI
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
-
+local EqualsIgnoreCase = String.EqualsIgnoreCase
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
@@ -32,17 +33,30 @@ local function OnClose(w)
     w:SetStatusText('')
 end
 
+---@param name string
+---@return Profile_Config_Item
+---@param items table<number, Profile_Config_Item>
+local function findItem(name, items)
+    for i, item in ipairs(items) do
+        if EqualsIgnoreCase(name, item.name) then return item end
+    end
+end
+
 ---@param w DebugDialogWidget
 local function OnShow(w)
     w:EnableAcceptButtonDelayed()
     --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
     local text
+    local items = w.profile.debugDialog.items
     if w.profile.last_eval then
-        text = w.profile.debugDialog.items[w.profile.last_eval]
+        local item = items[w.profile.last_eval]
+        if item then text = item.value end
         w.histDropdown:SetValue(w.profile.last_eval)
     end
     if not text then
-        text = w.profile.debugDialog.items[w.histDropdown:GetValue()]
+        local sel = w.histDropdown:GetValue()
+        local item = findItem(sel, items)
+        if item then text = item.value end
     end
     w:SetCodeText(text)
 end
@@ -53,25 +67,52 @@ local function CodeEditBox_OnEditFocusGained(w) w:EnableAcceptButton() end
 ---@param w DebugDialogWidget
 local function CodeEditBox_OnEnterPressed(w, literalVarName)
     if IsBlank(literalVarName) then return end
-    local scriptToEval = format([[ return %s]], literalVarName)
+    local scriptToEval = ns.sformat([[ return %s ]], literalVarName)
     local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
+    if errorMessage then
+        w.f:SetStatusText(errorMessage)
+        return
+    end
+    local env = { pformat = ns.pformat, sformat = ns.sformat }
+    env.mt = { __index = _G }
+    setmetatable(env, env.mt)
+    setfenv(func, env)
+
     w.f:SetStatusText(errorMessage)
     local val = func()
+
     if type(val) == 'function' then
         local status, error = pcall(function() val = val() end)
         if not status then
             val = nil
             w:SetStatusText(string.format("ERROR: %s", tostring(error)))
+            w:SetContent('')
+            return
         end
+
+        local replace = O.String.replace
+
+        if 'table' == type(val) and val.__tostring then
+            local text = ''
+            for i, v in ipairs(val) do
+                v = replace(v, 'function ', 'function A:')
+                text = text .. v .. ' end;'
+            end
+            w:SetContent(text)
+            return
+        end
+
     end
     w:SetContent(val)
 end
 
 ---@param w DebugDialogWidget
-local function HistDropDown_OnValueChanged(w, selectedIndex)
-    w.profile.last_eval = w.histDropdown:GetValue()
-    local val = w.profile.debugDialog.items[selectedIndex]
-    w:SetCodeText(val)
+local function HistDropDown_OnValueChanged(w, selectedValue)
+    w.profile.last_eval = selectedValue
+    local items = w.profile.debugDialog.items
+    local selItem = findItem(selectedValue, items)
+    if not selItem then return end
+    w:SetCodeText(selItem.value)
     w:EnableAcceptButtonDelayed()
 end
 
@@ -128,10 +169,14 @@ local function widgetMethods(w)
     -- /dump DEVS.profile.debugDialog.items
     function w:SaveHistory()
         local codeText = w.codeEditBox:GetText()
-        if IsNotBlank(codeText) then
-            local selectedKey = w.histDropdown:GetValue()
-            w.profile.debugDialog.items[selectedKey] = codeText
-        end
+        if IsBlank(codeText) then return end
+        local selectedKey = w.histDropdown:GetValue()
+        if IsBlank(selectedKey) then return end
+
+        local items = w.profile.debugDialog.items
+        local item = findItem(selectedKey, items)
+        if item then item.value = codeText; return end
+        p:log('SaveHistory::Error: failed to save history.')
     end
 end
 
@@ -155,6 +200,11 @@ function D:Constructor(profile)
     frame:SetHeight(800)
     --frame:SetWidth(800)
 
+    local label = AceGUI:Create("Label")
+    label:SetFullWidth(true)
+    label:SetText(' Evaluate a variable or return a function')
+    frame:AddChild(label)
+
     local inlineGroup = AceGUI:Create("InlineGroup")
     inlineGroup:SetLayout("List")
     inlineGroup:SetFullWidth(true)
@@ -177,13 +227,15 @@ function D:Constructor(profile)
     ---@class DebugDialog_History_Dropdown
     local histDropdown = AceGUI:Create("Dropdown")
     histDropdown:SetLabel("History:")
+    --- @type table<number, Profile_Config_Item>
     local orderKeys = {}
     local list = {}
-    for k,_ in pairs(profile.debugDialog.items) do
-        tinsert(orderKeys, k)
-        list[k] = k
+
+    for i, item in ipairs(profile.debugDialog.items) do
+        tinsert(orderKeys, item.name)
+        list[item.name] = item.name
     end
-    table.sort(orderKeys)
+
     histDropdown:SetList(list, orderKeys)
     if #orderKeys > 1 then
         histDropdown:SetValue(orderKeys[1])
