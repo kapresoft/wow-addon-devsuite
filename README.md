@@ -5,14 +5,16 @@ DevSuite
 
 ### Description
 
-DevSuite is a comprehensive set of tools specifically designed for World of Warcraft developers. It provides a wide range of functionalities that allows them to inspect, analyze and debug their add-ons, UI and game mechanics. It includes features such as a code inspector, a console, a data visualizer, performance analysis tools and an API reference, among many others. This makes DevSuite an essential tool for any World of Warcraft developer, allowing them to optimize their add-ons and enhance the player's experience.
+DevSuite is a comprehensive set of tools specifically designed for World of Warcraft developers. It provides a debug dialog UI that allows evaluation and saving of custom debugging code.
 
 ### Features
+- World of warcraft keybind support for popping up the debug tool
+- A slash command `/devsuite dialog` for popping up the debug dialog tool
 
-- a UI Debug Tool that allows evaluation and saving of custom debugging code
-
-### Future Features
-- a UI Tool for displaying current Ace3 AceConfig data
+#### Debug Dialog Tool
+- Evaluate a Lua variable
+- A Debug Tool that allows evaluation and saving of custom debugging code
+- Enhance your Lua scripting capabilities by creating a custom function that incorporates sophisticated logic.
 
 ### Docs
 - [Getting Started](https://github.com/kapresoft/wow-addon-devsuite/wiki/Getting-Started)

@@ -64,6 +64,8 @@ local GlobalObjects = {
 
     --- @type DialogWidgetMixin
     DialogWidgetMixin = {},
+    --- @type PopupDebugDialog
+    PopupDebugDialog = {},
     --- @type GlobalConstants
     GlobalConstants = {},
     --- @type Logger
@@ -97,6 +99,7 @@ local M = {
     -- ## Widgets ## --
     DialogWidgetMixin = 'DialogWidgetMixin',
     DebugDialog = 'DebugDialog',
+    PopupDebugDialog = 'PopupDebugDialog',
     Developer = 'Developer',
 }
 

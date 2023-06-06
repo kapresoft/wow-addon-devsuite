@@ -4,5 +4,6 @@
 
     <Script file="DialogWidgetMixin.lua"/>
     <Script file="DebugDialog.lua"/>
+    <Script file="PopupDebugDialog.lua"/>
 
 </Ui>

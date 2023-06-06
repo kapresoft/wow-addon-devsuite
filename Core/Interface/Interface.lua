@@ -72,11 +72,19 @@ local Namespace = {
     pformat = {}
 }
 
+--- @class Profile_Config_Item
+local item = {
+    name = 'Saved #1',
+    sortIndex = 1,
+    value = ''
+}
+
 --- @class Profile_Config
 local defaultProfile = {
     ['enabled'] = true,
     ['debugDialog'] = {
         maxHistory = 9,
+        --- @type table<number, Profile_Config_Item>
         items = { }
     },
 }

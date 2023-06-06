@@ -5,9 +5,26 @@ Local Vars
 local _, ns = ...
 local O, LibStub, M, GC = ns.O, ns.LibStub, ns.M, ns.O.GlobalConstants
 local LibUtil, KO = ns:K(), ns:KO()
+local pformat, sformat = ns.pformat, ns.sformat
 
 local AceDB = O.AceLibrary.AceDB
 local IsEmptyTable = KO.Table.isEmpty
+local fn1 = [[-- evaluate a variable
+{ GetBuildInfo() }]]
+local fn2 = [[-- return a function
+function()
+  local version, build, date, tocversion = GetBuildInfo()
+  local ret = {
+    version=version, build=build, date=date, tocversion=tocversion
+  }
+  return ret
+end]]
+local fnN = [[
+function()
+  local ret = {
+  }
+  return ret
+end]]
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -61,16 +78,30 @@ local function Methods(o)
         self:InitDbDefaults()
     end
 
+
     function o:InitDbDefaults()
         local profileName = self.addon.db:GetCurrentProfile()
         --- @type Profile_Config
         local defaultProfile = {
-            ['enabled'] = true,
             ['debugDialog'] = {
-                maxHistory = 9,
-                items = { }
+                maxHistory = 15,
+                items = {
+                    { name='Saved #1', value=fn1, sortIndex=1 },
+                    { name='Saved #2', value=fn2, sortIndex=2 },
+                }
             },
         }
+        for i = 3, defaultProfile.debugDialog.maxHistory do
+            local name = sformat('Saved #%s', i)
+            --- @type Profile_Config_Item
+            local t = { name=name, value = fnN, sortIndex = i, }
+            table.insert(defaultProfile.debugDialog.items, t)
+        end
+        ---@param a Profile_Config_Item
+        ---@param b Profile_Config_Item
+        local function sortFn(a,b) return a.sortIndex <= b.sortIndex end
+        table.sort(defaultProfile.debugDialog.items, sortFn)
+
         local defaults = { profile = defaultProfile }
         self.db:RegisterDefaults(defaults)
         self.addon.profile = self.db.profile
