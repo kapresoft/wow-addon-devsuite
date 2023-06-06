@@ -25,7 +25,7 @@ local reloadUI = ns.name .. '_CONFIRM_RELOAD_UI'
 
 ---@class Developer : BaseLibraryObject
 local L = LibStub:NewLibrary(M.Developer); if not L then return end
-DS = L
+
 --- DevSuite_D is global
 _G[ns.name .. '_D'] = L
 local p = L.logger
@@ -189,6 +189,22 @@ local function Methods(o)
         end
         return t
 
+    end
+
+    --- @see Interface/SharedXML/Color.lua
+    function o:GetColors()
+        local ret = {
+            names = {},
+            codes = {}
+        }
+        do
+            local DBColors = C_UIColor.GetColors();
+            for _, dbColor in ipairs(DBColors) do
+                table.insert(ret.names, dbColor.baseTag)
+                table.insert(ret.codes, dbColor.baseTag .. "_CODE")
+            end
+        end
+        return ret
     end
 
 end
