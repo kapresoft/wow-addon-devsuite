@@ -21,7 +21,7 @@ New Library
 local D = LibStub:NewLibrary(M.DebugDialog)
 O.Mixin:Mixin(D, O.DialogWidgetMixin)
 D.mt.__call = function (_, ...) return D:Constructor(...) end
-local p = D.logger
+local p = D.logger()
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -46,12 +46,13 @@ end
 local function OnShow(w)
     w:EnableAcceptButtonDelayed()
     --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
+    local profile = ns:profile()
     local text
-    local items = w.profile.debugDialog.items
-    if w.profile.last_eval then
-        local item = items[w.profile.last_eval]
+    local items = profile.debugDialog.items
+    if profile.last_eval then
+        local item = items[profile.last_eval]
         if item then text = item.value end
-        w.histDropdown:SetValue(w.profile.last_eval)
+        w.histDropdown:SetValue(profile.last_eval)
     end
     if not text then
         local sel = w.histDropdown:GetValue()
@@ -108,8 +109,9 @@ end
 
 ---@param w DebugDialogWidget
 local function HistDropDown_OnValueChanged(w, selectedValue)
-    w.profile.last_eval = selectedValue
-    local items = w.profile.debugDialog.items
+    local profile = ns:profile()
+    profile.last_eval = selectedValue
+    local items = profile.debugDialog.items
     local selItem = findItem(selectedValue, items)
     if not selItem then return end
     w:SetCodeText(selItem.value)
@@ -173,7 +175,7 @@ local function widgetMethods(w)
         local selectedKey = w.histDropdown:GetValue()
         if IsBlank(selectedKey) then return end
 
-        local items = w.profile.debugDialog.items
+        local items = ns:profile().debugDialog.items
         local item = findItem(selectedKey, items)
         if item then item.value = codeText; return end
         p:log('SaveHistory::Error: failed to save history.')

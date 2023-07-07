@@ -3,7 +3,12 @@
 
     <!-- LibStub needs to be at the top -->
     <Script file="ExtLib\WowAce\Ace3\LibStub\LibStub.lua"/>
-    <Include file="_ExtLib_WowAce.xml"/>
+
+    <!-- Install Lib:Ace3 and comment WowAce3 Below for Perf -->
+    <Include file="_ExtLib_WowAce_Ace3.xml"/>
+
+    <Include file="_ExtLib_WowAce_Misc.xml"/>
+
     <Include file='ExtLib\Kapresoft-LibUtil\_Lib.xml'/>
 
 </Ui>

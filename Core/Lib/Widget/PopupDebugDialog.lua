@@ -15,7 +15,8 @@ local LuaEvaluator = ns:KO().LuaEvaluator
 
 local L = LibStub:NewLibrary('PopupDebugDialog')
 --- @type LoggerTemplate
-local p = L:GetLogger()
+local p = L.logger()
+
 local FRAME_NAME = ns.name .. 'DebugDialog'
 local FRAME_TITLE = ns.name .. ' Dialog'
 

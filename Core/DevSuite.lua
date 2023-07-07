@@ -118,14 +118,15 @@ function A:ConfirmReloadUI()
     ShowReloadUIConfirmation()
 end
 
-function A:OpenConfig(_) AceConfigDialog:Open(ns.name) end
-function A:GetCurrentProfileData() return self.profile end
+function A:OpenConfig() self:OpenConfigAutoLoadedOptions() end
+function A:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
+function A:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'autoload_addons')) end
 
 function A:OnInitialize()
     O.AceDbInitializerMixin:New(self):InitDb()
     O.OptionsMixin:New(self):InitOptions()
     self:RegisterSlashCommands()
-    debugDialog = DebugDialog(self.profile)
+    debugDialog = DebugDialog(ns:profile())
 end
 
 -- ## -------------------------------------------------------------------------
@@ -179,7 +180,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     p:log('Type %s for available commands', GC.C.COMMAND)
 end
 
----@param addon DevSuite | AceEvent
+--- @param addon DevSuite | AceEvent
 local function RegisterEvents(addon)
     --- @class DevSuite_Frame: _Frame
     local f = CreateFrame('Frame',  ns.name .. 'Frame', UIParent)

@@ -7,8 +7,13 @@ local O, LibStub, M, GC = ns.O, ns.LibStub, ns.M, ns.O.GlobalConstants
 local LibUtil, KO = ns:K(), ns:KO()
 local pformat, sformat = ns.pformat, ns.sformat
 
-local AceDB = O.AceLibrary.AceDB
+local AceDB, AceDBOptions = O.AceLibrary.AceDB, O.AceLibrary.AceDBOptions
 local IsEmptyTable = KO.Table.isEmpty
+
+local OnProfileChanged = "OnProfileChanged"
+local OnProfileReset = "OnProfileReset"
+local OnProfileCopied = "OnProfileCopied"
+
 local fn1 = [[-- evaluate a variable
 { GetBuildInfo() }]]
 local fn2 = [[-- return a function
@@ -29,17 +34,18 @@ end]]
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
----@class AceDbInitializerMixin : BaseLibraryObject
+--- @alias AceDbInitializer AceDbInitializerMixin
+--- @class AceDbInitializerMixin : BaseLibraryObject
 local L = LibStub:NewLibrary(M.AceDbInitializerMixin)
-local p = L.logger;
+local p = L.logger();
 
 --- Called by Mixin Automatically
 --- @param addon DevSuite
 function L:Init(addon)
     self.addon = addon
-    self.addon.db = AceDB:New(GC.C.DB_NAME)
-    self.addon.dbInit = self
-    self.db = self.addon.db
+    --- @type AddOn_DB
+    self.db = AceDB:New(GC.C.DB_NAME)
+    ns:SetAddOnDB(self.db)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -47,15 +53,9 @@ Methods
 -------------------------------------------------------------------------------]]
 ---@param a DevSuite
 local function AddonCallbackMethods(a)
-    function a:OnProfileChanged()
-        p:log('OnProfileChanged called...')
-    end
-    function a:OnProfileChanged()
-        p:log('OnProfileReset called...')
-    end
-    function a:OnProfileChanged()
-        p:log('OnProfileCopied called...')
-    end
+    function a:OnProfileChanged() ns:GC():ConfirmAndReload() end
+    function a:OnProfileCopied() ns:GC():ConfirmAndReload() end
+    function a:OnProfileReset() ns:GC():ConfirmAndReload() end
 end
 
 ---@param o AceDbInitializerMixin
@@ -63,33 +63,42 @@ local function Methods(o)
 
     --- Usage:  local instance = AceDbInitializerMixin:New(addon)
     --- @param addon DevSuite
-    --- @return AceDbInitializerMixin
+    --- @return AceDbInitializer
     function o:New(addon) return LibUtil:CreateAndInitFromMixin(o, addon) end
-
-    ---@return AceDB
-    function o:GetDB() return self.addon.db end
 
     function o:InitDb()
         p:log(100, 'Initialize called...')
         AddonCallbackMethods(self.addon)
-        self.db.RegisterCallback(self.addon, "OnProfileChanged", "OnProfileChanged")
-        self.db.RegisterCallback(self.addon, "OnProfileReset", "OnProfileChanged")
-        self.db.RegisterCallback(self.addon, "OnProfileCopied", "OnProfileChanged")
+        self.db.RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+        self.db.RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
+        self.db.RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
         self:InitDbDefaults()
     end
 
+    --- @return AddOn_DB
+    function o:GetDefaultDB()
 
-    function o:InitDbDefaults()
-        local profileName = self.addon.db:GetCurrentProfile()
+        --- @type AutoLoadedAddons
+        local autoLoadedAddons = {
+            ['!BugGrabber'] = true,
+            ['BugSack'] = true,
+            ['AddonUsage'] = true,
+            ['Ace3'] = true,
+            ['Boxer'] = false,
+            ['M6'] = false,
+        }
+
         --- @type Profile_Config
         local defaultProfile = {
-            ['debugDialog'] = {
+            enable = true,
+            debugDialog = {
                 maxHistory = 15,
                 items = {
                     { name='Saved #1', value=fn1, sortIndex=1 },
                     { name='Saved #2', value=fn2, sortIndex=2 },
                 }
             },
+            auto_loaded_addons = autoLoadedAddons
         }
         for i = 3, defaultProfile.debugDialog.maxHistory do
             local name = sformat('Saved #%s', i)
@@ -102,13 +111,24 @@ local function Methods(o)
         local function sortFn(a,b) return a.sortIndex <= b.sortIndex end
         table.sort(defaultProfile.debugDialog.items, sortFn)
 
-        local defaults = { profile = defaultProfile }
-        self.db:RegisterDefaults(defaults)
-        self.addon.profile = self.db.profile
-        local wowDB = _G[GC.C.DB_NAME]
-        if IsEmptyTable(wowDB.profiles[profileName]) then wowDB.profiles[profileName] = defaultProfile end
-        self.addon.profile.enable = false
-        p:log(10, 'Profile: %s', self.db:GetCurrentProfile())
+        --- @type AddOn_DB
+        local defaultDb = {
+            global = {
+                show_fps = true,
+                auto_loaded_addons_characterSpecific = false,
+                addon_addonUsage_auto_show_ui = true,
+                auto_loaded_addons = autoLoadedAddons
+            },
+            profile = defaultProfile
+        }
+        return defaultDb
+    end
+
+    function o:InitDbDefaults()
+        local profileName = self.db:GetCurrentProfile()
+        p:log('profile: %s [%s]', profileName, type(self.db.RegisterDefaults))
+        self.db:RegisterDefaults(self:GetDefaultDB())
+
     end
 end
 

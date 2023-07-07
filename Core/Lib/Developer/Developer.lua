@@ -28,7 +28,7 @@ local L = LibStub:NewLibrary(M.Developer); if not L then return end
 
 --- DevSuite_D is global
 _G[ns.name .. '_D'] = L
-local p = L.logger
+local p = L.logger()
 
 --[[-----------------------------------------------------------------------------
 Support Functions

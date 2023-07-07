@@ -62,6 +62,8 @@ local GlobalObjects = {
     --- @type OptionsMixin
     OptionsMixin = {},
 
+    --- @type DeveloperModeMixin
+    DeveloperModeMixin = {},
     --- @type DialogWidgetMixin
     DialogWidgetMixin = {},
     --- @type PopupDebugDialog
@@ -94,13 +96,13 @@ local M = {
     Assert = 'Assert',
     Mixin = 'Mixin',
 
+    -- Local Types
     Config = 'Config',
-
-    -- ## Widgets ## --
-    DialogWidgetMixin = 'DialogWidgetMixin',
     DebugDialog = 'DebugDialog',
-    PopupDebugDialog = 'PopupDebugDialog',
     Developer = 'Developer',
+    DeveloperModeMixin = 'DeveloperModeMixin',
+    DialogWidgetMixin = 'DialogWidgetMixin',
+    PopupDebugDialog = 'PopupDebugDialog',
 }
 
 local LibUtilObjects = LibUtil.Objects
@@ -132,9 +134,9 @@ local function InitLocalLibStub(n)
                 --- @type Logger
                 local loggerLib = LibStub(n:LibName(n.M.Logger))
                 if loggerLib then
-                    newLibInstance.logger = loggerLib:NewLogger(name)
-                    newLibInstance.logger:log(20, 'New Lib: %s', newLibInstance.major)
-                    function newLibInstance:GetLogger() return self.logger end
+                    local logger = loggerLib:NewLogger(name)
+                    newLibInstance.logger = function() return logger  end
+                    logger:log(20, 'New Lib: %s', newLibInstance.major)
                 end
                 n:Register(name, newLibInstance)
             end)
@@ -148,6 +150,9 @@ local function NameSpacePropertiesAndMethods(o)
     Mixin(o, Kapresoft_LibUtil_Mixins)
 
     local getSortedKeys = o:KO().Table.getSortedKeys
+
+    --- @type AddOn_DB
+    local addonDb
 
     --- @type string
     o.nameShort = GC:GetLogName()
@@ -163,6 +168,8 @@ local function NameSpacePropertiesAndMethods(o)
     o.sformat = sformat
     o.M = M
 
+    if not _G['pformat'] then _G['pformat'] = o.pformat end
+
     --- @param moduleName string The module name, i.e. Logger
     --- @param optionalMajorVersion number|string
     --- @return string The complete module name, i.e. 'DevSuite-Logger-1.0'
@@ -175,6 +182,23 @@ local function NameSpacePropertiesAndMethods(o)
         if not (libName or obj) then return end
         self.O[libName] = obj
     end
+
+    --- @param db AddOn_DB
+    function o:SetAddOnDB(db) addonDb = db end
+
+    --- @return AddOn_DB
+    function o:db() return addonDb end
+
+    --- @return Profile_Config
+    function o:profile() return addonDb and addonDb.profile end
+
+    --- @return GlobalConstants
+    function o:GC() return self.O.GlobalConstants end
+
+    --- @return EventNames
+    function o:E() return self:GC().E end
+
+    function o:GetAceLocale() return LibStub("AceLocale-3.0"):GetLocale(self.name, true) end
 
     --- @param libName string The library name. Ex: 'GlobalConstants'
     --- @return Logger
