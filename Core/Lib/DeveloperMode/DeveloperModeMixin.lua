@@ -76,7 +76,10 @@ local function PropsAndMethods(o)
         }
     end
 
-    function o:OnLoad() self:RegisterEvent(ns:E().PLAYER_ENTERING_WORLD) end
+    function o:OnLoad()
+        self:RegisterEvent(ns:E().PLAYER_ENTERING_WORLD)
+        ns:Register(M.DeveloperMode, self)
+    end
 
     function o:OnEvent(event, ...)
         if (event ~= ns:E().PLAYER_ENTERING_WORLD) then return end
@@ -92,11 +95,7 @@ local function PropsAndMethods(o)
         return reason and O.String.EqualsIgnoreCase(reason, 'disabled')
     end
 
-    function o:InitializeDevMode()
-        if DEV_MODE.enable ~= true then return end
-
-        self:InitStaticDialog()
-
+    function o:RefreshAutoLoadedAddons()
         local addons = ns:profile().auto_loaded_addons
         if not addons then return end
 
@@ -120,6 +119,12 @@ local function PropsAndMethods(o)
             if AddonUsage and g.addon_addonUsage_auto_show_ui == true then AddonUsage:Show(); end
             if g.show_fps == true then ToggleFramerate() end
         end)
+    end
+
+    function o:InitializeDevMode()
+        if DEV_MODE.enable ~= true then return end
+        self:InitStaticDialog()
+        self:RefreshAutoLoadedAddons()
     end
 
 end; PropsAndMethods(L)

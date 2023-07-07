@@ -39,6 +39,7 @@ local MAJOR, MINOR = ns.name .. '-1.0', 1 -- Bump minor on changes
 
 --- @class DevSuite
 local A = LibStub:NewAddon(ns.name); if not A then return end
+
 --- @type PopupDebugDialog
 A.PopupDialog = nil
 
@@ -63,96 +64,129 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function A:GetMouseFocus()
-    --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
-    local o = GetMouseFocus()
-    if not o then return end
-    local name = 'Mouse Focused Object'
-    if type(o.GetName) == 'function' then name = o:GetName() end
-    self.PopupDialog:EvalObjectThenShow(o, name)
-end
+--- @param o DevSuite | AceHook
+local function PropsAndMethods(o)
 
-function A:EvalVar(globalVarName)
-    --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
-    debugDialog:SetCodeText(globalVarName)
-    debugDialog:SetContent(pformat(getglobal(globalVarName)))
-    local label = format('Global variable name: %s', globalVarName)
-    debugDialog:SetStatusText(label)
-    debugDialog:Show()
-end
-
-function A:EvalObject(o, varName, _isGlobal)
-    local isGlobal = _isGlobal or false
-    local codeText = ''
-    local localityLabel = 'Local'
-    if isGlobal then
-        codeText = varName
-        localityLabel = 'Global'
+    function o:GetMouseFocus()
+        --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
+        local mf = GetMouseFocus()
+        if not mf then return end
+        local name = 'Mouse Focused Object'
+        if type(mf.GetName) == 'function' then name = mf:GetName() end
+        self.PopupDialog:EvalObjectThenShow(mf, name)
     end
-    debugDialog:SetCodeText(codeText)
-    debugDialog:SetContent(pformat(o))
-    local label = format('%s variable name: %s', localityLabel, varName)
-    debugDialog:SetStatusText(label)
-    debugDialog:Show()
-end
 
-function A:Help()
-    local ftext = '  %-30s - %s'
-    p:log(' ')
-    p:log("Available commands:")
-    p:log(format(ftext, "help", "show this help text"))
-    p:log(format(ftext, "config", "open config UI"))
-    p:log(format(ftext, "dialog", "open config UI"))
-    p:log(' ')
-end
-
-function A:OnProfileChanged()
-    self:ConfirmReloadUI()
-end
-
-function A:ConfirmReloadUI()
-    if IsShiftKeyDown() then
-        ReloadUI()
-        return
+    function o:EvalVar(globalVarName)
+        --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
+        debugDialog:SetCodeText(globalVarName)
+        debugDialog:SetContent(pformat(getglobal(globalVarName)))
+        local label = format('Global variable name: %s', globalVarName)
+        debugDialog:SetStatusText(label)
+        debugDialog:Show()
     end
-    ShowReloadUIConfirmation()
-end
 
-function A:OpenConfig() self:OpenConfigAutoLoadedOptions() end
-function A:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
-function A:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'autoload_addons')) end
+    function o:EvalObject(obj, varName, _isGlobal)
+        local isGlobal = _isGlobal or false
+        local codeText = ''
+        local localityLabel = 'Local'
+        if isGlobal then
+            codeText = varName
+            localityLabel = 'Global'
+        end
+        debugDialog:SetCodeText(codeText)
+        debugDialog:SetContent(pformat(obj))
+        local label = format('%s variable name: %s', localityLabel, varName)
+        debugDialog:SetStatusText(label)
+        debugDialog:Show()
+    end
 
-function A:OnInitialize()
-    O.AceDbInitializerMixin:New(self):InitDb()
-    O.OptionsMixin:New(self):InitOptions()
-    self:RegisterSlashCommands()
-    debugDialog = DebugDialog(ns:profile())
-end
+    function o:Help()
+        local ftext = '  %-30s - %s'
+        p:log(' ')
+        p:log("Available commands:")
+        p:log(format(ftext, "help", "show this help text"))
+        p:log(format(ftext, "config", "open config UI"))
+        p:log(format(ftext, "dialog", "open config UI"))
+        p:log(' ')
+    end
 
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
+    function o:OnProfileChanged()
+        self:ConfirmReloadUI()
+    end
 
-function A:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "Handle_SlashCommands") end
-function A:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "Handle_SlashCommands") end
+    function o:ConfirmReloadUI()
+        if IsShiftKeyDown() then
+            ReloadUI()
+            return
+        end
+        ShowReloadUIConfirmation()
+    end
 
-function A:Handle_SlashCommands(input)
-    local args = ToTable(input)
-    local cmd = args[1] or ''
-    if String.IsBlank(cmd) then return A:Help() end
-    if 'config' == cmd then return A:OpenConfig() end
-    if 'dialog' == cmd then return debugDialog:Show() end
-    A:Help()
-end
+    function o:OpenConfig()
+        self:OpenConfigAutoLoadedOptions()
+        self.onHideHooked = self.onHideHooked or false
+        self.configDialogWidget = AceConfigDialog.OpenFrames[ns.name]
 
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
+        PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+        if not self.onHideHooked then
+            self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
+            self.onHideHooked = true
+        end
+    end
 
-function A.BINDING_DEVS_OPTIONS_DLG() A:OpenConfig() end
+    function o:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
+    function o:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'autoload_addons')) end
 
-function A.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
-function A.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() A:GetMouseFocus() end
+    function o:OnHide_Config_WithSound() self:OnHide_Config(true) end
+    function o:OnHide_Config_WithoutSound()
+        self:OnHide_Config() end
+
+    --- @param enableSound BooleanOptional
+    function o:OnHide_Config(enableSound)
+        local enable = enableSound == true
+        p:log(10, 'OnHide_Config called with enableSound=%s', tostring(enable))
+        if true == enable then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
+        O.DeveloperMode:RefreshAutoLoadedAddons()
+    end
+
+    function o:RegisterHooks()
+        local f = SettingsPanel or InterfaceOptionsFrame
+        if f then self:HookScript(f, 'OnHide', 'OnHide_Config_WithoutSound') end
+    end
+
+    function o:OnInitialize()
+        O.AceDbInitializerMixin:New(self):InitDb()
+        O.OptionsMixin:New(self):InitOptions()
+        self:RegisterSlashCommands()
+        self:RegisterHooks()
+        debugDialog = DebugDialog(ns:profile())
+    end
+
+    -- ## -------------------------------------------------------------------------
+    -- ## -------------------------------------------------------------------------
+    -- ## -------------------------------------------------------------------------
+
+    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "Handle_SlashCommands") end
+    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "Handle_SlashCommands") end
+
+    function o:Handle_SlashCommands(input)
+        local args = ToTable(input)
+        local cmd = args[1] or ''
+        if String.IsBlank(cmd) then return o:Help() end
+        if 'config' == cmd then return o:OpenConfig() end
+        if 'dialog' == cmd then return debugDialog:Show() end
+        o:Help()
+    end
+
+    -- ## -------------------------------------------------------------------------
+    -- ## -------------------------------------------------------------------------
+    -- ## -------------------------------------------------------------------------
+
+    function o.BINDING_DEVS_OPTIONS_DLG() o:OpenConfig() end
+
+    function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
+    function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
+end; PropsAndMethods(A)
 
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------

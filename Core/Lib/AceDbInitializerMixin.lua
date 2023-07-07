@@ -128,7 +128,6 @@ local function Methods(o)
         local profileName = self.db:GetCurrentProfile()
         p:log('profile: %s [%s]', profileName, type(self.db.RegisterDefaults))
         self.db:RegisterDefaults(self:GetDefaultDB())
-
     end
 end
 
