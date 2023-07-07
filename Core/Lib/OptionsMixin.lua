@@ -60,6 +60,7 @@ local function AutoLoadAddOnsSet(addonName)
     --- @param v boolean
     return function(_, v)
         ns:db().profile.auto_loaded_addons[addonName] = v
+        ns.requiresReload = true
     end
 end
 

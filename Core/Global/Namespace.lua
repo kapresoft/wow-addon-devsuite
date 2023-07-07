@@ -62,6 +62,8 @@ local GlobalObjects = {
     --- @type OptionsMixin
     OptionsMixin = {},
 
+    --- @type DeveloperMode
+    DeveloperMode = {},
     --- @type DeveloperModeMixin
     DeveloperModeMixin = {},
     --- @type DialogWidgetMixin
@@ -100,6 +102,8 @@ local M = {
     Config = 'Config',
     DebugDialog = 'DebugDialog',
     Developer = 'Developer',
+    -- This is the instance of DeveloperModeMixin
+    DeveloperMode = 'DeveloperMode',
     DeveloperModeMixin = 'DeveloperModeMixin',
     DialogWidgetMixin = 'DialogWidgetMixin',
     PopupDebugDialog = 'PopupDebugDialog',
@@ -167,8 +171,15 @@ local function NameSpacePropertiesAndMethods(o)
     o.pformat = o.O.pformat
     o.sformat = sformat
     o.M = M
+    o.requiresReload = false
 
     if not _G['pformat'] then _G['pformat'] = o.pformat end
+
+    function o:RequiresReload() return self.requiresReload == true end
+    function o:NotifyIfRequiresReload()
+        if not self:RequiresReload() then return end
+        self:db().callbacks:Fire('OnProfileChanged')
+    end
 
     --- @param moduleName string The module name, i.e. Logger
     --- @param optionalMajorVersion number|string
