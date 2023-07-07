@@ -5,16 +5,30 @@ DevSuite
 
 ### Description
 
-DevSuite is a comprehensive set of tools specifically designed for World of Warcraft developers. It provides a debug dialog UI that allows evaluation and saving of custom debugging code.
+DevSuite is a powerful toolkit tailored for World of Warcraft developers, offering an extensive range of features to streamline the development process. With its intuitive debug dialog UI, developers gain easy access to advanced debugging capabilities and the ability to evaluate and save custom debugging code.
 
-### Features
-- World of warcraft keybind support for popping up the debug tool
-- A slash command `/devsuite dialog` for popping up the debug dialog tool
+DevSuite is the ultimate companion for World of Warcraft developers, providing indispensable tools to enhance productivity, streamline debugging, and optimize add-on development.
 
-#### Debug Dialog Tool
-- Evaluate a Lua variable
-- A Debug Tool that allows evaluation and saving of custom debugging code
-- Enhance your Lua scripting capabilities by creating a custom function that incorporates sophisticated logic.
+### Key Features
+
+#### Debug UI Evaluation Tool 
+Enhance your debugging workflow with a versatile tool that allows you to evaluate Lua variables and create custom functions with sophisticated logic. This empowers you to fine-tune your Lua scripting and accelerate your development process.
+
+#### Get Frame On Mouse Over
+
+Identify the frame directly beneath the mouse cursor with this convenient tool. It provides invaluable assistance in pinpointing specific UI elements, allowing for precise targeting and troubleshooting.
+
+#### Auto-Load Add-Ons
+
+Simplify your development environment by enabling automatic loading of add-ons essential for your development tasks. DevSuite takes care of loading the necessary add-ons, ensuring a seamless workflow without the need for manual intervention.
+
+#### Auto-Show/Activate UI Components
+
+Customize your development experience by automatically displaying or activating specific UI components, such as "Frames Per Second" or add-on-specific elements like the "Addon Usage" UI. This saves time and enables you to focus on critical aspects of your development workflow.
+
+#### Global or Per Character Add-On Control
+
+Enjoy flexible control over add-ons with the ability to manage them globally or on a per-character basis. DevSuite empowers you to fine-tune your add-on configuration and tailor it to your specific needs.
 
 ### Docs
 - [Getting Started](https://github.com/kapresoft/wow-addon-devsuite/wiki/Getting-Started)
