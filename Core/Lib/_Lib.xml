@@ -8,5 +8,6 @@
 
     <Include file="Locales\_Locales.xml"/>
     <Include file="Developer\_Developer.xml"/>
+    <Include file="DeveloperMode\_DeveloperMode.xml"/>
 
 </Ui>

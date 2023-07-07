@@ -4,9 +4,12 @@
     The contents of this file will be generated automatically.
     
 ]]--
+local L = LibStub('AceLocale-3.0'):NewLocale('DevSuite', 'enUS', true);
 
-local L = LibStub("AceLocale-3.0"):NewLocale("DevSuite", "enUS", true);
-
-L["BINDING_NAME_DEVS_OPTIONS_DLG"]                  = 'Options Dialog'
-L["BINDING_NAME_DEVS_DEBUG_DLG"]                    = 'Debug Dialog'
-L["BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER"]     = 'Get Details On Mouse Over'
+L['BINDING_NAME_DEVS_OPTIONS_DLG']                  = 'Options Dialog'
+L['BINDING_NAME_DEVS_DEBUG_DLG']                    = 'Debug Dialog'
+L['BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER']     = 'Get Details On Mouse Over'
+L['REQUIRES_RELOAD']                                = 'Additional addons require a reload to take effect. Would you like to reload now?\n\n'
+L['Add-On Specific Options']                        = true
+L['Available Add-Ons']                              = true
+L['Available Add-Ons::Description']                 = 'Please select the add-ons and their dependencies from the list below. If selected, the add-on will be automatically enabled on UI Reload.'

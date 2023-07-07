@@ -84,6 +84,9 @@ local function GlobalConstantProperties(o)
         CONSOLE_PLAIN = command,
         COMMAND       = sformat(consoleCommandTextFormat, command),
         COMMAND_SHORT = sformat(consoleCommandTextFormat, commandShort),
+
+        CONFIRM_RELOAD_UI = 'CONFIRM_RELOAD_UI',
+
         HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
     }
 
@@ -162,6 +165,11 @@ local function Methods(o)
         )
     end
 
+    function o:ConfirmAndReload()
+        local reloadUI = self.C.CONFIRM_RELOAD_UI
+        if StaticPopup_Visible(reloadUI) == nil then return StaticPopup_Show(reloadUI) end
+        return false
+    end
 end
 
 GlobalConstantProperties(L)
