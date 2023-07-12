@@ -117,7 +117,7 @@ local function PropsAndMethods(o)
         C_Timer.After(3, function()
             local g = ns:db().global
             if AddonUsage and g.addon_addonUsage_auto_show_ui == true then AddonUsage:Show(); end
-            if g.show_fps == true then ToggleFramerate() end
+            if ToggleFramerate and g.show_fps == true then ToggleFramerate() end
         end)
     end
 

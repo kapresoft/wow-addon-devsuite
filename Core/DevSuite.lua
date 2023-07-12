@@ -70,6 +70,7 @@ local function PropsAndMethods(o)
     function o:GetMouseFocus()
         --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
         local mf = GetMouseFocus()
+        DEVS_MF = mf
         if not mf then return end
         local name = 'Mouse Focused Object'
         if type(mf.GetName) == 'function' then name = mf:GetName() end
