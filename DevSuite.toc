@@ -1,4 +1,4 @@
-## Interface: 100105
+## Interface: 100200
 ## Version: 1.0
 ## Title: Dev|cff1784d1Suite|r Retail
 ## Notes: DevSuite Addon for World of Warcraft
