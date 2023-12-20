@@ -38,9 +38,10 @@ Methods
 local function EnableAddOns(addons)
     if #addons <= 0 then return end
     local charSpecific = ns:db().global.auto_loaded_addons_characterSpecific
-    local enableAddOnForAllCharacters = charSpecific ~= true
+    local charName
+    if charSpecific == true then charName = UnitName("player") end
     for i, name in ipairs(addons) do
-        EnableAddOn(name, enableAddOnForAllCharacters)
+        C_AddOns.EnableAddOn(name, charName)
     end
 end
 
