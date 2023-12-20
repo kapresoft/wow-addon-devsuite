@@ -1,7 +1,7 @@
 DevSuite
 ==================
 
-[Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues)
+[Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues) | [CurseForge](https://legacy.curseforge.com/wow/addons/devsuite/files)
 
 ### Description
 
