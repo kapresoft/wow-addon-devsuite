@@ -159,6 +159,10 @@ local function PropsAndMethods(o)
         O.AceDbInitializerMixin:New(self):InitDb()
         O.OptionsMixin:New(self):InitOptions()
         self:RegisterSlashCommands()
+    end
+
+    --- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
+    function o:OnEnable()
         self:RegisterHooks()
         debugDialog = DebugDialog(ns:profile())
     end
