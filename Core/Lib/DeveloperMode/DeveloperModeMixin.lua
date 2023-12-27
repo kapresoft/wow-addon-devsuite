@@ -10,6 +10,7 @@ Local Vars
 local _, ns = ...
 local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 local LL = ns:GetAceLocale()
+local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -41,7 +42,7 @@ local function EnableAddOns(addons)
     local charName
     if charSpecific == true then charName = UnitName("player") end
     for i, name in ipairs(addons) do
-        C_AddOns.EnableAddOn(name, charName)
+        EnableAddOn(name, charName)
     end
 end
 
