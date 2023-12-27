@@ -8,7 +8,7 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Blizzard Vars
 -------------------------------------------------------------------------------]]
-local EnableAddOn, DisableAddOn = EnableAddOn, DisableAddOn
+local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
 local StaticPopupDialogs, ReloadUI = StaticPopupDialogs, ReloadUI
 local StaticPopup_Visible, StaticPopup_Show = StaticPopup_Visible, StaticPopup_Show
 local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSavedInstanceInfo
