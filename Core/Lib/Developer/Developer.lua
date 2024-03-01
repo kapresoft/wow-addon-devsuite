@@ -20,31 +20,14 @@ Local Vars
 --- @type Namespace
 local _, ns = ...
 local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
-local reloadUI = ns.name .. '_CONFIRM_RELOAD_UI'
-
 
 ---@class Developer : BaseLibraryObject
-local L = LibStub:NewLibrary(M.Developer); if not L then return end
-
---- DevSuite_D is global
-_G[ns.name .. '_D'] = L
-local p = L.logger()
+local L = LibStub:NewLibrary(M.Developer); if not L then return end; DD = L
+local p = ns:LC().DEV:NewLogger(M.Developer)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
-StaticPopupDialogs[reloadUI] = {
-    text = "Reload UI?", button1 = "Yes", button2 = "No",
-    timeout = 0, whileDead = true, hideOnEscape = true,
-    OnAccept = function() ReloadUI() end,
-    preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
-}
-
-local function ConfirmAndReload()
-    if StaticPopup_Visible(reloadUI) == nil then return StaticPopup_Show(reloadUI) end
-    return false
-end
-
 local function errorhandler(err) return geterrorhandler()(err) end
 
 local function safecall(func, ...)
@@ -53,16 +36,15 @@ local function safecall(func, ...)
     end
 end
 
----@class AddOnInfo
-local _AddOnInfo = {
-    name = '', title = '', notes = '', loadable = true,
-    reason = '', security = '', newVersion = false
-}
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
 ---@param o Developer
 local function Methods(o)
+
+    function o:GetProfile() return ns:db().profile end
+    function o:GetProfileNames() return ns:db():GetProfiles() end
+    function o:GetAddOnCheckboxes() return self:GetProfile().auto_loaded_addons end
 
     function o:T() self:ToggleWindowed() end
     function o:ToggleWindowed()
@@ -104,7 +86,7 @@ local function Methods(o)
 
     function o:GetAllAddOns()
         local count = GetNumAddOns()
-        ---@type table<string, AddOnInfo>
+        --- @type table<string, AddOnInfo>
         local addons = {}
         for i=1,count do
             local name, title, notes, loadable, reason, security, newVersion = GetAddOnInfo(i)
@@ -132,7 +114,7 @@ local function Methods(o)
         self:ForEachAddons(addons, function(addonName)
             local player = UnitName('player')
             EnableAddOn(addonName, player)
-            p:log('Addons Enabled[%s]: %s', player, addonName)
+            p:v(function() return 'Addons Enabled[%s]: %s', player, addonName end)
         end)
     end
 
@@ -141,7 +123,7 @@ local function Methods(o)
         self:ForEachAddons(addons, function(addonName)
             local player = UnitName('player')
             DisableAddOn(addonName, player)
-            p:log('Addons Disabled[%s]: %s', player, addonName)
+            p:v(function() return 'Addons Disabled[%s]: %s', player, addonName end)
         end)
     end
 
@@ -158,15 +140,23 @@ local function Methods(o)
                 local status = safecall(applyFn, info.name)
                 if not status then
                     overallStatus = false
-                    p:log('Failed to Enable AddOn: %s', info.name)
+                    p:v(function() return 'Failed to Enable AddOn: %s', info.name end)
                 end
             else
-                p:log('AddOn Not Found: %s', n)
+                p:v(function() return 'AddOn Not Found: %s', n end)
                 assert(false, 'AddOn Not Found: ' .. n)
                 overallStatus = false
             end
         end
-        if overallStatus then ConfirmAndReload() return end
+        if overallStatus then GC:ConfirmAndReload() return end
+    end
+
+    function o:All()
+        local a = {}
+        O.AddOnMixin:ForEachAddOn(function(addOn)
+            a[addOn.name] = addOn
+        end)
+        return a
     end
 
     function o:GetSavedInstances()
@@ -207,6 +197,6 @@ local function Methods(o)
         return ret
     end
 
-end
+end; Methods(L)
 
-Methods(L)
+

@@ -4,7 +4,7 @@
 ## Notes: DevSuite Addon for World of Warcraft
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
-## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE
+## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
 ## LoadManagers: AddonLoader
 

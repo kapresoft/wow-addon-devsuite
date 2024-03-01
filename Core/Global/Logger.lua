@@ -19,7 +19,7 @@ local sformat, pformat = string.format, K.pformat
 local tableUnpack = Table.tableUnpack
 
 --- Colors are in hex:6-char
---- @type Kapresoft_LibUtil_ConsoleColor
+--- @type Kapresoft_LibUtil_ColorDefinition
 local consoleColors = ns.consoleColors or {
     primary   = 'a65673',
     secondary = 'b393b5',

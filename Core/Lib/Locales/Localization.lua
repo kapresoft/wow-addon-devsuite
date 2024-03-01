@@ -1,8 +1,8 @@
 --[[
     DevSuite Addon
 --]]
-
-local L = LibStub("AceLocale-3.0"):GetLocale("DevSuite")
+local addon = ...
+local L = LibStub("AceLocale-3.0"):GetLocale(addon)
 
 -- General
 DEVS_TITLE                                = "DevSuite"
