@@ -5,28 +5,27 @@ Global Vars
 pformat = {}
 
 --[[-----------------------------------------------------------------------------
+Aliases and Callbacks
+-------------------------------------------------------------------------------]]
+--- @alias AddOnCallbackFn fun(addOn:AddOnInfo) | "function(addOn) print('addOn:', pformat(addOn)) end"
+
+--[[-----------------------------------------------------------------------------
 BaseLibraryObject
 -------------------------------------------------------------------------------]]
-local function BaseLibraryObject_Def()
-    --- @class BaseLibraryObject
-    local o = {}
-    --- @type table
-    o.mt = { __tostring = function() end }
-    --- @type fun() : Logger
-    o.logger = {}
-end
+--- @class BaseLibraryObject A base library object class definition.
+--- @field mt table The metatable for objects of this class, including a custom `__tostring` function for debugging or logging purposes.
+--- @field name string Retrieves the module's name. This is an instance method that should be implemented to return the name of the module.
+--- @field major string Retrieves the major version of the module. i.e., <LibName>-1.0
+--- @field minor string Retrieves the minor version of the module. i.e., <LibName>-1.0
 
 --[[-----------------------------------------------------------------------------
 BaseLibraryObject_WithAceEvent
 -------------------------------------------------------------------------------]]
-local function BaseLibraryObject_WithAceEvent_Def()
-    --- @class BaseLibraryObject_WithAceEvent : AceEvent
-    local o = {}
-    --- @type table
-    o.mt = { __tostring = function() end }
-    --- @type Logger
-    o.logger = {}
-end
+--- @class BaseLibraryObject_WithAceEvent : AceEvent A base library object that includes AceEvent functionality.
+--- @field mt table The metatable for objects of this class, including a custom `__tostring` function for debugging or logging purposes.
+--- @field name string Retrieves the module's name. This is an instance method that should be implemented to return the name of the module.
+--- @field major string Retrieves the major version of the module. i.e., <LibName>-1.0
+--- @field minor string Retrieves the minor version of the module. i.e., <LibName>-1.0
 
 --[[-----------------------------------------------------------------------------
 DevSuite_AceDB
@@ -81,34 +80,15 @@ local DevSuite_AceDB = {
     --- @type table<string, Profile_Config>
     profiles = {}
 }
+
 --[[-----------------------------------------------------------------------------
-Namespace
+Type: AddOnInfo
 -------------------------------------------------------------------------------]]
---- @class Namespace
-local Namespace = {
-
-    --- @type string
-    name = "",
-    --- @type GlobalObjects
-    O = {},
-    --- @type Modules
-    M = {},
-
-    --- @type Kapresoft_LibUtil
-    Kapresoft_LibUtil = {},
-
-    --- @type fun(self:Namespace) : Kapresoft_LibUtil
-    K = {},
-    --- @type fun(self:Namespace) : Kapresoft_LibUtil_Objects
-    KO = {},
-
-    --- @type LocalLibStub
-    LibStub = {},
-
-    --- Used in TooltipFrame and BaseAttributeSetter to coordinate the GameTooltip Anchor
-    --- @see TooltipAnchor#SCREEN_* vars
-    --- @type string
-    GameTooltipAnchor = "",
-    --- @type fun(o:any, ...) : void
-    pformat = {}
-}
+--- @class AddOnInfo
+--- @field name AddOnName
+--- @field title AddOnTitle
+--- @field notes Notes
+--- @field loadable Boolean
+--- @field reason AddOnIsNotLoadableReason
+--- @field security AddOnSecurity
+--- @field newVersion Boolean Unused

@@ -19,7 +19,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type string
 local addon
---- @type Namespace
+--- @class GenericNamespace : Kapresoft_Base_Namespace
 local ns
 addon, ns = ...
 
@@ -27,6 +27,8 @@ local addonShortName = 'DS'
 local consoleCommand = "devsuite"
 local consoleCommandShort = "ds"
 local useShortName = true
+
+local CONFIRM_RELOAD_UI_NAME = addon .. '_CONFIRM_RELOAD_UI'
 
 --- The original Ace LibStub
 local LibStub = LibStub
@@ -50,6 +52,17 @@ local function ToStringFunction(moduleName)
     if moduleName then return function() return string.format(TOSTRING_SUBMODULE_FMT, name, moduleName) end end
     return function() return string.format(TOSTRING_ADDON_FMT, name) end
 end
+
+--[[-----------------------------------------------------------------------------
+ConfirmAndReload UI
+-------------------------------------------------------------------------------]]
+StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
+    text = "Reload UI?", button1 = "Yes", button2 = "No",
+    timeout = 0, whileDead = true, hideOnEscape = true,
+    --- @param messageName Name|nil
+    OnAccept = function(self) ReloadUI() end,
+    preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+}
 
 --[[-----------------------------------------------------------------------------
 GlobalConstants
@@ -85,8 +98,6 @@ local function GlobalConstantProperties(o)
         COMMAND       = sformat(consoleCommandTextFormat, command),
         COMMAND_SHORT = sformat(consoleCommandTextFormat, commandShort),
 
-        CONFIRM_RELOAD_UI = 'CONFIRM_RELOAD_UI',
-
         HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
     }
 
@@ -106,16 +117,34 @@ local function GlobalConstantProperties(o)
         PLAYER_ENTERING_WORLD = 'PLAYER_ENTERING_WORLD',
         UPDATE_INSTANCE_INFO = 'UPDATE_INSTANCE_INFO',
     }
-    local function newMessage(name) return sformat('%s::' .. name, addonShortName)  end
+
     --- @class MessageNames
-    local M = {
-        OnAfterInitialize = newMessage('OnAfterInitialize'),
-        OnAddonReady = newMessage('OnAddonReady'),
-    }
+    local MessageNames = {
+        --- @type Name
+        OnAfterInitialize = {},
+        --- @type Name
+        OnAddonReady = {},
+        --- @type Name
+        OnToggleFrameRate = {},
+        --- @type Name
+        OnApplyAndRestart = {},
+        --- @type Name
+        OnSyncAddOnEnabledState = {},
+    };
+    local function InitMessageNames()
+        local function uniqueName(name)
+            local prefix = (useShortName and addonShortName) or addon
+            return sformat('%s::%s', prefix, name)
+        end
+        for n,_ in pairs(MessageNames) do
+            local addOnMessage = uniqueName(n)
+            MessageNames[n] = addOnMessage
+        end
+    end; InitMessageNames(MessageNames)
 
     o.C = C
     o.E = E
-    o.M = M
+    o.M = MessageNames
 
 end
 
@@ -166,8 +195,7 @@ local function Methods(o)
     end
 
     function o:ConfirmAndReload()
-        local reloadUI = self.C.CONFIRM_RELOAD_UI
-        if StaticPopup_Visible(reloadUI) == nil then return StaticPopup_Show(reloadUI) end
+        if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME) end
         return false
     end
 end

@@ -6,25 +6,67 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
-local _, ns = ...
-local O, LibStub, M = ns.O, ns.LibStub, ns.M
-local LibUtil = ns.Kapresoft_LibUtil
+local ns = devsuite_ns(...)
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 
-local ACE = O.AceLibrary
+local ACE, API = O.AceLibrary, O.API
 local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions
+local DebugSettings = O.DebuggingSettingsGroup
+local AceEvent = ns:AceEvent()
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
----@class OptionsMixin : BaseLibraryObject
-local L = LibStub:NewLibrary(M.OptionsMixin)
-local p = L.logger();
+--- @class OptionsMixin : BaseLibraryObject
+local libName = M.OptionsMixin
+local LIB = LibStub:NewLibrary(libName)
+local p = ns:CreateDefaultLogger(libName)
 
----@param addon DevSuite
-function L:Init(addon)
-    self.addon = addon
-    self.LL = ns:GetAceLocale()
+--[[-----------------------------------------------------------------------------
+Types: ProfileSelectValues
+-------------------------------------------------------------------------------]]
+--- @return ProfileSelect
+local function CreateProfileSelect()
+
+    local function GetProfiles() return ns:db():GetProfiles() end
+    local function GetCurrentProfile() return ns:db():GetCurrentProfile()  end
+    --- @param info table Ignored
+    --- @param val string The profile name selected
+    local function SetCurrentProfile(info, val) ns:db():SetProfile(val) end
+    --- Get the Profile names to be used for the select values
+    --- @return table<string, string> key is the same as value
+    local function GetSortedProfiles()
+        local profiles = {}
+        for _, profileName in ipairs(GetProfiles()) do
+            profiles[profileName] = profileName
+        end
+        return O.Table.getSortedKeys(profiles)
+    end
+    --- Get the Profile names to be used for the select values
+    --- This table has to match the order of the original profile
+    --- @return table<string, string> key is the same as value
+    local function GetProfilesKV()
+        local profiles = {}
+        for _, pr in ipairs(GetProfiles()) do
+            profiles[pr] = pr
+        end
+        return profiles
+    end
+
+    --- @class ProfileSelect
+    local ret = {
+        kvPairs = GetProfilesKV,
+        sorting = GetSortedProfiles,
+        get = GetCurrentProfile,
+        set = SetCurrentProfile,
+    }
+    return ret
+end
+
+--- @see GlobalConstants#M for Message names
+---@param optionalVal any|nil
+local function SendMessage(addOnMessage, optionalVal)
+    AceEvent:SendMessage(addOnMessage, libName, optionalVal)
 end
 
 --- @param propKey string
@@ -43,8 +85,13 @@ local function GlobalGet(key, fallback)
     end
 end
 --- @param key string The key value
-local function GlobalSet(key)
-    return function(_, v) _SetGlobalValue(key, v) end
+local function GlobalSet(key, eventMessageToFire)
+    return function(_, v)
+        _SetGlobalValue(key, v)
+        if 'string' == type(eventMessageToFire) then
+            SendMessage(eventMessageToFire, v)
+        end
+    end
 end
 
 --- @param fallback boolean The fallback value
@@ -66,11 +113,18 @@ end
 
 ---@param o OptionsMixin
 local function Methods(o)
+    local L = ns:AceLocale()
+
+    --- Automatically called by CreateAndInitFromMixin(..)
+    --- @param addon DevSuite
+    function o:Init(addon)
+        self.addon = addon
+    end
 
     --- Usage:  local instance = OptionsMixin:New(addon)
     --- @param addon DevSuite
     --- @return OptionsMixin
-    function o:New(addon) return LibUtil:CreateAndInitFromMixin(o, addon) end
+    function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
 
     function o:CreateOptions()
         local order = ns:K():CreateIncrementer(1, 1)
@@ -82,8 +136,8 @@ local function Methods(o)
             args = {
                 general = {
                     type = "group",
-                    name = "General",
-                    desc = "General Settings",
+                    name = L['General'],
+                    desc = L['General::Desc'],
                     order = order:next(),
                     args = {
                         desc = { name = " General Configuration ", type = "header", order = 1 },
@@ -94,12 +148,12 @@ local function Methods(o)
                             desc = "Shows the Blizzard Frames-per-second display (Global Setting)",
                             order = order:next(),
                             get = GlobalGet('show_fps', false),
-                            set = GlobalSet('show_fps')
+                            set = GlobalSet('show_fps', GC.M.OnToggleFrameRate)
                         },
                     },
                 },
                 autoload_addons = self:CreateAutoLoadAddOnsGroup(order),
-                debugging = self:CreateDebuggingGroup(),
+                debugging = DebugSettings:CreateDebuggingGroup(),
             }
         }
         return options
@@ -109,14 +163,15 @@ local function Methods(o)
     function o:CreateAutoLoadAddOnsGroup(order)
         return {
             type = 'group',
-            name = 'Auto-Loaded Add-Ons',
-            desc = 'Settings for Auto-Loading Add-Ons',
+            name = L['Add-On Management'],
+            desc = L['Add-On Management::Desc'],
             order = order:next(),
             args = self:CreateAddOnsOptions()
         }
     end
 
     function o:CreateAddOnsOptions()
+        local ps = CreateProfileSelect()
         local order = ns:K():CreateIncrementer(1, 1)
         local options = {
             header1 = {
@@ -135,13 +190,13 @@ local function Methods(o)
             header2 = {
                 order = order:next(),
                 type = 'header',
-                name = sformat('      %s      ', self.LL['Add-On Specific Options']),
+                name = sformat('      %s      ', L['Add-On Specific Options']),
             },
             addonUsage_AutomaticallyShow = {
                 order = order:next(),
                 width = 'full',
-                name = "Addon Usage: Automatically Show UI",
-                desc = "If enabled, this will automatically show the [Addon Usage] UI after player login. (Global Setting)",
+                name = L['Addon Usage: Automatically Show UI (Global)'],
+                desc = L['Addon Usage: Automatically Show UI (Global)::Desc'],
                 type = 'toggle',
                 get = GlobalGet('addon_addonUsage_auto_show_ui'),
                 set = GlobalSet('addon_addonUsage_auto_show_ui')
@@ -150,10 +205,25 @@ local function Methods(o)
             header3 = {
                 order = order:next(),
                 type = 'header',
-                name = sformat('      %s      ', self.LL['Available Add-Ons']),
+                name = sformat('      %s      ', L['Available Add-Ons']),
             },
             spacer2 = { order = order:next(), type = "description", name = "\n" },
-            spacer3 = { order = order:next(), type = "description", name = self.LL['Available Add-Ons::Description'] .. '\n\n' },
+            spacer3 = { order = order:next(), type = "description", name = L['Available Add-Ons::Desc'] .. '\n\n' },
+            applyAll = {
+                name = L['Apply and ReloadUI'], desc = L['Apply and ReloadUI::Desc'],
+                type = "execute", order = order:next(), width = 'normal',
+                func = function()
+                    AceEvent:SendMessage(GC.M.OnApplyAndRestart, libName)
+                end
+            },
+            profileSelection = {
+                name = L['Select Profile'] .. ':', desc = L['Select Profile::Desc'], order = order:next(),
+                type = "select", width="normal",
+                values = ps.kvPairs, sorting = ps.sorting,
+                get = ps.get,
+                set = ps.set
+            },
+            spacer4 = { order = order:next(), type='description', name='', width='full' }
         }
 
         local addOnCount = GetNumAddOns()
@@ -164,20 +234,19 @@ local function Methods(o)
             return options
         end
 
-        for i = 1, addOnCount do
-            local name, title = GetAddOnInfo(i)
+        API:ForEachAddOn(function(addOn)
+            local name = addOn.name
             if name ~= ns.name then
                 options[name] = {
                     order = order:next(),
-                    name = title,
+                    name = addOn.title,
                     type = 'toggle',
                     width = 1.3,
                     get = AutoLoadAddOnsGet(name),
                     set = AutoLoadAddOnsSet(name)
                 }
             end
-        end
-
+        end)
 
         return options
     end
@@ -214,8 +283,11 @@ local function Methods(o)
 
         AceConfig:RegisterOptionsTable(ns.name, options, { "devsuite_options" })
         AceConfigDialog:AddToBlizOptions(ns.name, ns.name)
+
+        --- TODO: Make it an option "Larger Options Frame: true/false"
+        -- AceConfigDialog:SetDefaultSize(ns.name, 950, 750)
     end
 
 end
 
-Methods(L)
+Methods(LIB)

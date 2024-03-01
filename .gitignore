@@ -61,4 +61,5 @@ luac.out
 !/Core/ExtLib/_ExtLib.lua
 !/Core/ExtLib/ExtLib.lua
 
-
+# Ignore Saved Variables folder with symlinks
+/_SV

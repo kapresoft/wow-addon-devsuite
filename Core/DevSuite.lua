@@ -14,37 +14,30 @@ local RegisterFrameForEvents = FrameUtil.RegisterFrameForEvents
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
-local _, ns = ...
+local ns = devsuite_ns(...)
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+local Ace = ns.O.AceLibrary
+local AceConfigDialog = Ace.AceConfigDialog
 
-local commandTextFormat = 'Type %s or %s on the console for available commands.'
-
-local O, GC, M, LibStub, Ace = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.O.AceLibrary
 local Table, String = O.Table, O.String
-local pformat, sformat = ns.pformat, ns.sformat
+local ToTable = String.ToTable
+local pformat, sformat = ns.pformat, string.format
+local tostring, type = tostring, type
+local commandTextFormat = 'Type %s or %s on the console for available commands.'
 
 --- @type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
 
-local C = O.Config
-local AceConfigDialog = Ace.AceConfigDialog
 
-local unpack = Table.unpackIt
-local print, format = print, string.format
-local tostring, type = tostring, type
-local IsNotBlank, ToTable = String.IsNotBlank, String.ToTable
-
-local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
-local MAJOR, MINOR = ns.name .. '-1.0', 1 -- Bump minor on changes
-
+--[[-----------------------------------------------------------------------------
+NewAddOn
+-------------------------------------------------------------------------------]]
 --- @class DevSuite
 local A = LibStub:NewAddon(ns.name); if not A then return end
+local p = ns:CreateDefaultLogger(ns.name)
 
 --- @type PopupDebugDialog
 A.PopupDialog = nil
-
-local p = ns:NewLogger(ns.name)
-
 --- @type DebugDialogWidget
 local debugDialog
 
@@ -81,7 +74,7 @@ local function PropsAndMethods(o)
         --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
         debugDialog:SetCodeText(globalVarName)
         debugDialog:SetContent(pformat(getglobal(globalVarName)))
-        local label = format('Global variable name: %s', globalVarName)
+        local label = sformat('Global variable name: %s', globalVarName)
         debugDialog:SetStatusText(label)
         debugDialog:Show()
     end
@@ -96,31 +89,19 @@ local function PropsAndMethods(o)
         end
         debugDialog:SetCodeText(codeText)
         debugDialog:SetContent(pformat(obj))
-        local label = format('%s variable name: %s', localityLabel, varName)
+        local label = sformat('%s variable name: %s', localityLabel, varName)
         debugDialog:SetStatusText(label)
         debugDialog:Show()
     end
 
     function o:Help()
         local ftext = '  %-30s - %s'
-        p:log(' ')
-        p:log("Available commands:")
-        p:log(format(ftext, "help", "show this help text"))
-        p:log(format(ftext, "config", "open config UI"))
-        p:log(format(ftext, "dialog", "open config UI"))
-        p:log(' ')
-    end
-
-    function o:OnProfileChanged()
-        self:ConfirmReloadUI()
-    end
-
-    function o:ConfirmReloadUI()
-        if IsShiftKeyDown() then
-            ReloadUI()
-            return
-        end
-        ShowReloadUIConfirmation()
+        p:vv(' ')
+        p:vv("Available commands:")
+        p:vv(sformat(ftext, "help", "show this help text"))
+        p:vv(sformat(ftext, "config", "open config UI"))
+        p:vv(sformat(ftext, "dialog", "open config UI"))
+        p:vv(' ')
     end
 
     function o:OpenConfig()
@@ -137,6 +118,7 @@ local function PropsAndMethods(o)
 
     function o:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
     function o:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'autoload_addons')) end
+    function o:DebugSettings() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'debugging')) end
 
     function o:OnHide_Config_WithSound() self:OnHide_Config(true) end
     function o:OnHide_Config_WithoutSound()
@@ -145,9 +127,9 @@ local function PropsAndMethods(o)
     --- @param enableSound BooleanOptional
     function o:OnHide_Config(enableSound)
         local enable = enableSound == true
-        p:log(10, 'OnHide_Config called with enableSound=%s', tostring(enable))
+        p:d(function() return 'OnHide_Config called with enableSound=%s', tostring(enable) end)
         if true == enable then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
-        O.DeveloperMode:RefreshAutoLoadedAddons()
+        O.DevSuiteController:RefreshAutoLoadedAddons()
     end
 
     function o:RegisterHooks()
@@ -214,9 +196,9 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     if not isLogin then return end
 
     local version = GC:GetAddonInfo()
-    p:log('%s Initialized. %s', version,
-            ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.COMMAND_SHORT, GC.C.HELP_COMMAND))
-    p:log('Type %s for available commands', GC.C.COMMAND)
+    p:vv(function() return '%s Initialized. %s', version,
+            ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.COMMAND_SHORT, GC.C.HELP_COMMAND) end)
+    p:vv(function() return 'Type %s for available commands', GC.C.COMMAND end)
 end
 
 --- @param addon DevSuite | AceEvent

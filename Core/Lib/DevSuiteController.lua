@@ -6,31 +6,17 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
-local _, ns = ...
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
-local LL = ns:GetAceLocale()
+local ns = devsuite_ns(...)
+local O, GC, M, LibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.LogCategories()
+local LL, AceEvent = ns:AceLocale(), ns:AceEvent()
 local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @alias DeveloperMode DeveloperModeMixin | _Frame
---- @class DeveloperModeMixin : BaseLibraryObject
-local L = LibStub:NewLibrary(M.DeveloperModeMixin); if not L then return end
---- @type DeveloperModeMixin
-DS_DeveloperModeMixin = L
-local p = L.logger()
-
---[[-----------------------------------------------------------------------------
-Developer Mode Settings
- • Enabling this will load addons needed for development
--------------------------------------------------------------------------------]]
-local DEV_MODE = {
-    enable = true,
-    enableAddOnForAllCharacters = false,
-    addOns = { 'AddonUsage', 'Boxer', 'M6', '!BugGrabber', 'BugSack', 'Ace3' }
-}
+--- @class DevSuiteController : BaseLibraryObject
+local L = LibStub:NewLibrary(M.DevSuiteController); if not L then return end
+local p = ns:CreateDefaultLogger(M.DevSuiteController)
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -78,22 +64,12 @@ local function PropsAndMethods(o)
         }
     end
 
-    function o:OnLoad()
-        self:RegisterEvent(ns:E().PLAYER_ENTERING_WORLD)
-        ns:Register(M.DeveloperMode, self)
-    end
-
-    function o:OnEvent(event, ...)
-        if (event ~= ns:E().PLAYER_ENTERING_WORLD) then return end
-        self:InitializeDevMode()
-    end
-
     --- @param nameOrIndex string|Index
     --- @return Disabled
     function L:IsAddonDisabled(nameOrIndex)
         local name, title, notes, loadable, reason, security = GetAddOnInfo(nameOrIndex)
-        p:log(5, 'name: %s loadable=%s r=%s s=%s',
-                name, tostring(loadable), tostring(reason), security)
+        p:f2(function()
+            return 'Add-On: %s loadable=%s r=%s s=%s', name, tostring(loadable), tostring(reason), security end)
         return reason and O.String.EqualsIgnoreCase(reason, 'disabled')
     end
 
@@ -110,24 +86,46 @@ local function PropsAndMethods(o)
         end
 
         if #addonsToEnable > 0 then
-            p:log('ActionbarPlus is in Developer mode and needs to restart to load additional addons.')
+            p:vv('ActionbarPlus is in Developer mode and needs to restart to load additional addons.')
             local dlg = StaticPopup_Show(DEV_RELOAD_CONFIRM, AddOnsToString(addonsToEnable))
             dlg.data = addonsToEnable
         end
 
         -- AddonUsage is the "Addon Usage" global var
-        C_Timer.After(3, function()
-            local g = ns:db().global
-            if AddonUsage and g.addon_addonUsage_auto_show_ui == true then AddonUsage:Show(); end
-            if ToggleFramerate and g.show_fps == true then ToggleFramerate() end
-        end)
+        C_Timer.After(3, function() self:ApplyInitialStates() end)
+    end
+
+    function o:ApplyInitialStates()
+        local g = ns:db().global
+        self:InitAddonUsage()
+        if ToggleFramerate and g.show_fps == true then ToggleFramerate() end
+    end
+
+    function o:InitAddonUsage()
+        local g = ns:db().global
+        --- @type _Frame
+        local au = AddonUsage
+        local autoShowUI = au and g.addon_addonUsage_auto_show_ui == true
+        if not autoShowUI then return end
+
+        -- TODO: Add "compact" option
+        au:SetSize(385, 200)
+        if ChatFrame1Tab then
+            -- TODO: Add "align" option
+            au:ClearAllPoints()
+            au:SetPoint("BOTTOM", ChatFrame1Tab, "TOP", 155, 0)
+        end
+        au:Show();
     end
 
     function o:InitializeDevMode()
-        if DEV_MODE.enable ~= true then return end
         self:InitStaticDialog()
         self:RefreshAutoLoadedAddons()
     end
 
 end; PropsAndMethods(L)
 
+AceEvent:RegisterMessage(GC.M.OnAddonReady, function(msg, source, ...)
+    p:d(function() return "MSG:R:%s", msg end)
+    L:InitializeDevMode()
+end)
