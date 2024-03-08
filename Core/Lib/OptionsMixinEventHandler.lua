@@ -7,7 +7,7 @@ local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAd
 Local Vars
 -------------------------------------------------------------------------------]]
 local ns = devsuite_ns(...)
-local O, GC, M, LibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.LogCategories()
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 local reloadUI = ns.name .. '_CONFIRM_RELOAD_UI'
 local API = O.API
 
@@ -22,7 +22,7 @@ end
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @return OptionsMixinEventHandler, LoggerV2
+--- @return OptionsMixinEventHandler, Kapresoft_CategoryLogger
 local function CreateLib()
     local libName = M.OptionsMixinEventHandler or 'OptionsMixinEventHandler'
     --- @class OptionsMixinEventHandler : BaseLibraryObject

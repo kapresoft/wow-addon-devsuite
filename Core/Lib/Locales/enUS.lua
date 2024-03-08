@@ -12,7 +12,7 @@ L['BINDING_NAME_DEVS_DEBUG_DLG']                       = 'Debug Dialog'
 L['BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER']        = 'Get Details On Mouse Over'
 
 L['Debugging::Category::Enable All::Button']           = 'Enable All'
-L['Debugging::Category::Enable All::Button::Desc']     = 'Enables all log categories below.'
+L['Debugging::Category::Enable All::Button::Desc']     = 'Enables all log categories below. Note that the default category (not shown here) will always be active.'
 L['Debugging::Category::Disable All::Button']          = 'Disable All'
 L['Debugging::Category::Disable All::Button::Desc']    = 'Disables all log categories below. Note that the default category (not shown here) will always be active.'
 L['Addon Usage: Automatically Show UI (Global)']       = true

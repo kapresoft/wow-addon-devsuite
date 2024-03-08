@@ -21,7 +21,7 @@ New Library
 local D = LibStub:NewLibrary(M.DebugDialog)
 O.Mixin:Mixin(D, O.DialogWidgetMixin)
 D.mt.__call = function (_, ...) return D:Constructor(...) end
-local p = D.logger()
+local p = ns:CreateDefaultLogger(M.DebugDialog)
 
 --[[-----------------------------------------------------------------------------
 Support Functions

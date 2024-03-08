@@ -251,31 +251,6 @@ local function Methods(o)
         return options
     end
 
-    function o:CreateDebuggingGroup()
-        return {
-            type = 'group',
-            name = 'Debugging',
-            desc = 'Debug Settings for troubleshooting',
-            -- Place right before Profiles
-            order = 90,
-            args = {
-                desc = { name = sformat(" %s ", 'Debugging Configuration'), type = "header", order = 0 },
-                log_level = {
-                    type = 'range',
-                    order = 1,
-                    step = 5,
-                    min = 0,
-                    max = 50,
-                    width = 1.2,
-                    name = 'Log Level',
-                    desc = 'Higher log levels generate more logs',
-                    get = function(_) return ns:GetLogLevel() end,
-                    set = function(_, v) ns:SetLogLevel(v) end,
-                },
-            },
-        }
-    end
-
     function o:InitOptions()
         local options = self:CreateOptions()
         -- This creates the Profiles Tab/Section in Settings UI

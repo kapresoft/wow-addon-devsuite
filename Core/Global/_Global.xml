@@ -3,7 +3,5 @@
 
     <Script file="GlobalConstants.lua"/>
     <Script file="Namespace.lua"/>
-    <Script file="Logger.lua"/>
-    <Script file="LoggerMixinV2.lua"/>
 
 </Ui>

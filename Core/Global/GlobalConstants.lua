@@ -22,6 +22,7 @@ local addon
 --- @class GenericNamespace : Kapresoft_Base_Namespace
 local ns
 addon, ns = ...
+local kch = ns.Kapresoft_LibUtil.CH
 
 local addonShortName = 'DS'
 local consoleCommand = "devsuite"
@@ -65,11 +66,22 @@ StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
 }
 
 --[[-----------------------------------------------------------------------------
+Console Colors
+-------------------------------------------------------------------------------]]
+--- @type Kapresoft_LibUtil_ColorDefinition
+local consoleColors = {
+    primary   = 'FF780A',
+    secondary = 'fbeb2d',
+    tertiary = 'ffffff',
+}
+local command = kch:FormatColor(consoleColors.primary, '/' .. consoleCommand)
+local commandShort = kch:FormatColor(consoleColors.primary, '/' .. consoleCommandShort)
+
+--[[-----------------------------------------------------------------------------
 GlobalConstants
 -------------------------------------------------------------------------------]]
 --- @class GlobalConstants
 local L = LibStub:NewLibrary(LibName('GlobalConstants'), 1); if not L then return end
-local p = L.logger
 
 --- @param o GlobalConstants
 local function GlobalConstantProperties(o)
@@ -78,9 +90,6 @@ local function GlobalConstantProperties(o)
     o.ToStringFunction = ToStringFunction
 
     local consoleCommandTextFormat = '|cfd2db9fb%s|r'
-    local consoleKeyValueTextFormat = '|cfdfbeb2d%s|r: %s'
-    local command = sformat("/%s", consoleCommand)
-    local commandShort = sformat("/%s", consoleCommandShort)
 
     --- @class GlobalAttributes
     local C = {
@@ -88,16 +97,10 @@ local function GlobalConstantProperties(o)
         CHECK_VAR_SYNTAX_FORMAT = '|cfdeab676%s ::|r %s',
         CONSOLE_COMMAND = consoleCommand,
         CONSOLE_COMMAND_SHORT = consoleCommandShort,
+        CONSOLE_COLORS = consoleColors,
         CONSOLE_HEADER_FORMAT = '|cfdeab676### %s ###|r',
         CONSOLE_OPTIONS_FORMAT = '  - %-8s|cfdeab676:: %s|r',
-
-        CONSOLE_COMMAND_TEXT_FORMAT = consoleCommandTextFormat,
-        CONSOLE_KEY_VALUE_TEXT_FORMAT = consoleKeyValueTextFormat,
-
         CONSOLE_PLAIN = command,
-        COMMAND       = sformat(consoleCommandTextFormat, command),
-        COMMAND_SHORT = sformat(consoleCommandTextFormat, commandShort),
-
         HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
     }
 
@@ -192,6 +195,14 @@ local function Methods(o)
                 sformat(ADDON_INFO_FMT, 'Last-Update', lastUpdate),
                 sformat(ADDON_INFO_FMT, 'Interface-Version', wowInterfaceVersion)
         )
+    end
+
+    function o:GetMessageLoadedText()
+        local consoleCommandMessageFormat = sformat('Type %s or %s for available commands.',
+                command, commandShort)
+        return sformat("%s version %s by %s is loaded. %s",
+                kch:P(addon) , self:GetAddonInfo(), kch:FormatColor(consoleColors.primary, 'kapresoft'),
+                consoleCommandMessageFormat)
     end
 
     function o:ConfirmAndReload()

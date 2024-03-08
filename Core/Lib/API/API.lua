@@ -7,12 +7,12 @@ local GetAddOnInfo = GetAddOnInfo or C_AddOns.GetAddOnInfo
 Local Vars
 -------------------------------------------------------------------------------]]
 local ns = devsuite_ns(...)
-local O, GC, M, LibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.LogCategories()
+local O, GC, M, LibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns:LC()
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @return API, LoggerV2
+--- @return API, Kapresoft_CategoryLogger
 local function CreateLib()
     local libName = M.API
     --- @class API : BaseLibraryObject
