@@ -22,7 +22,7 @@ New Library
 --- @class DialogWidgetMixin : BaseLibraryObject
 local L = {}
 ns:Register(M.DialogWidgetMixin, L)
-local p = ns:NewLogger(M.DialogWidgetMixin)
+local p = ns:CreateDefaultLogger(M.DialogWidgetMixin)
 
 ---@param frameName string
 ---@param frameInstance table The frame object

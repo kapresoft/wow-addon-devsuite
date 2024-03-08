@@ -23,7 +23,7 @@ local Table, String = O.Table, O.String
 local ToTable = String.ToTable
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
-local commandTextFormat = 'Type %s or %s on the console for available commands.'
+local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.isEmpty
 
 --- @type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
@@ -41,24 +41,20 @@ A.PopupDialog = nil
 --- @type DebugDialogWidget
 local debugDialog
 
-
---[[-----------------------------------------------------------------------------
-Support Functions
--------------------------------------------------------------------------------]]
---_G[TEXTURE_DIALOG_GLOBAL_FRAME_NAME] = frame.frame
---table.insert(UISpecialFrames, TEXTURE_DIALOG_GLOBAL_FRAME_NAME)
-local function ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
-    local frame = frameInstance
-    if frameInstance.frame then frame = frameInstance.frame end
-    setglobal(frameName, frame)
-    Table.insert(UISpecialFrames, frameName)
-end
-
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
 --- @param o DevSuite | AceHook
 local function PropsAndMethods(o)
+    O.MainController:Init(o)
+
+    function o:OnInitialize()
+        O.AceDbInitializerMixin:New(self):InitDb()
+        O.OptionsMixin:New(self.addon):InitOptions()
+        self:SendMessage(GC.M.OnAfterInitialize, self)
+        self:RegisterSlashCommands()
+    end
+
 
     function o:GetMouseFocus()
         --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
@@ -94,26 +90,26 @@ local function PropsAndMethods(o)
         debugDialog:Show()
     end
 
-    function o:Help()
-        local ftext = '  %-30s - %s'
-        p:vv(' ')
-        p:vv("Available commands:")
-        p:vv(sformat(ftext, "help", "show this help text"))
-        p:vv(sformat(ftext, "config", "open config UI"))
-        p:vv(sformat(ftext, "dialog", "open config UI"))
-        p:vv(' ')
-    end
-
     function o:OpenConfig()
-        self:OpenConfigAutoLoadedOptions()
+        if AceConfigDialog.OpenFrames[ns.name] then return end
+        AceConfigDialog:SelectGroup(ns.name)
+        self:DialogGlitchHack();
         self.onHideHooked = self.onHideHooked or false
-        self.configDialogWidget = AceConfigDialog.OpenFrames[ns.name]
-
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+        self.configDialogWidget = AceConfigDialog.OpenFrames[ns.name]
         if not self.onHideHooked then
             self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
             self.onHideHooked = true
         end
+    end
+    --- This hacks solves the range UI notch not positioning properly
+    function o:DialogGlitchHack()
+        AceConfigDialog:SelectGroup(ns.name, "debugging")
+        AceConfigDialog:Open(ns.name)
+        C_Timer.After(0.01, function()
+            AceConfigDialog:ConfigTableChanged('anyEvent', ns.name)
+            AceConfigDialog:SelectGroup(ns.name, "autoload_addons")
+        end)
     end
 
     function o:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
@@ -129,18 +125,12 @@ local function PropsAndMethods(o)
         local enable = enableSound == true
         p:d(function() return 'OnHide_Config called with enableSound=%s', tostring(enable) end)
         if true == enable then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
-        O.DevSuiteController:RefreshAutoLoadedAddons()
+        O.MainController:RefreshAutoLoadedAddons()
     end
 
     function o:RegisterHooks()
         local f = SettingsPanel or InterfaceOptionsFrame
         if f then self:HookScript(f, 'OnHide', 'OnHide_Config_WithoutSound') end
-    end
-
-    function o:OnInitialize()
-        O.AceDbInitializerMixin:New(self):InitDb()
-        O.OptionsMixin:New(self):InitOptions()
-        self:RegisterSlashCommands()
     end
 
     --- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
@@ -153,16 +143,49 @@ local function PropsAndMethods(o)
     -- ## -------------------------------------------------------------------------
     -- ## -------------------------------------------------------------------------
 
-    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "Handle_SlashCommands") end
-    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "Handle_SlashCommands") end
+    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "SlashCommands") end
+    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "SlashCommands") end
 
-    function o:Handle_SlashCommands(input)
-        local args = ToTable(input)
-        local cmd = args[1] or ''
-        if String.IsBlank(cmd) then return o:Help() end
-        if 'config' == cmd then return o:OpenConfig() end
-        if 'dialog' == cmd then return debugDialog:Show() end
-        o:Help()
+    function o:SlashCommand_Config_Handler()
+        self:OpenConfig()
+    end
+    function o:SlashCommand_Dialog_Handler()
+        debugDialog:Show()
+    end
+    function o:SlashCommand_Info_Handler()
+        p:vv(GC:GetAddonInfoFormatted())
+    end
+    function o:SlashCommand_Help_Handler()
+        p:vv('')
+        local COMMAND_DIALOG_TEXT = "Shows debug dialog UI"
+        local COMMAND_CONFIG_TEXT = "Shows the config UI"
+        local COMMAND_HELP_TEXT = "Shows this help"
+        local OPTIONS_LABEL = "options"
+        local USAGE_LABEL = sformat("usage: %s [%s]", GC.C.CONSOLE_PLAIN, OPTIONS_LABEL)
+        p:vv(USAGE_LABEL)
+        p:vv(OPTIONS_LABEL .. ":")
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT
+        end)
+    end
+
+    --- @param spaceSeparatedArgs string
+    function o:SlashCommands(spaceSeparatedArgs)
+        local args = Table.parseSpaceSeparatedVar(spaceSeparatedArgs)
+        if IsEmptyTable(args) then
+            self:SlashCommand_Help_Handler(); return
+        end
+        if IsAnyOf('config', unpack(args)) or IsAnyOf('conf', unpack(args)) then
+            self:SlashCommand_Config_Handler(); return
+        end
+        if IsAnyOf('dialog', unpack(args)) then
+            self:SlashCommand_Dialog_Handler(); return
+        end
+        if IsAnyOf('info', unpack(args)) then
+            self:SlashCommand_Info_Handler(); return
+        end        -- Otherwise, show help
+        self:SlashCommand_Help_Handler(); return
     end
 
     -- ## -------------------------------------------------------------------------
@@ -173,44 +196,4 @@ local function PropsAndMethods(o)
 
     function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
     function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
-end; PropsAndMethods(A)
-
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
--- ## -------------------------------------------------------------------------
-
----@param frame DevSuite_Frame
----@param event string The event name
-local function OnPlayerEnteringWorld(frame, event, ...)
-    local isLogin, isReload = ...
-
-    local addon = frame.ctx.addon
-    addon:SendMessage(GC.M.OnAddonReady)
-    if not addon.PopupDialog then
-        addon.PopupDialog = O.PopupDebugDialog()
-    end
-    --@debug@
-    isLogin = true
-    --@end-debug@
-
-    if not isLogin then return end
-
-    local version = GC:GetAddonInfo()
-    p:vv(function() return '%s Initialized. %s', version,
-            ns.sformat(commandTextFormat, GC.C.COMMAND, GC.C.COMMAND_SHORT, GC.C.HELP_COMMAND) end)
-    p:vv(function() return 'Type %s for available commands', GC.C.COMMAND end)
-end
-
---- @param addon DevSuite | AceEvent
-local function RegisterEvents(addon)
-    --- @class DevSuite_Frame: _Frame
-    local f = CreateFrame('Frame',  ns.name .. 'Frame', UIParent)
-    f.ctx = { addon = addon }
-    f:SetScript(GC.E.OnEvent, OnPlayerEnteringWorld)
-    RegisterFrameForEvents(f, { GC.E.PLAYER_ENTERING_WORLD })
-end
-RegisterEvents(A)
-
---- @type DevSuite
-DEVS = A
-
+end; PropsAndMethods(A); DEV_SUITE = A

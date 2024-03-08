@@ -13,9 +13,9 @@ local O, LibStub = ns.O, ns.LibStub
 local AceGUI = O.AceLibrary.AceGUI
 local LuaEvaluator = ns:KO().LuaEvaluator
 
-local L = LibStub:NewLibrary('PopupDebugDialog')
---- @type LoggerTemplate
-local p = L.logger()
+local libName = 'PopupDebugDialog'
+local L = LibStub:NewLibrary(libName)
+local p = ns:CreateDefaultLogger(libName)
 
 local FRAME_NAME = ns.name .. 'DebugDialog'
 local FRAME_TITLE = ns.name .. ' Dialog'

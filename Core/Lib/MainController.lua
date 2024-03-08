@@ -4,19 +4,57 @@ Lua Vars
 local sformat = string.format
 
 --[[-----------------------------------------------------------------------------
+Blizzard Vars
+-------------------------------------------------------------------------------]]
+local CreateFrame, FrameUtil = CreateFrame, FrameUtil
+local RegisterFrameForEvents, RegisterFrameForUnitEvents = FrameUtil.RegisterFrameForEvents, FrameUtil.RegisterFrameForUnitEvents
+local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
+
+--[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
 local ns = devsuite_ns(...)
-local O, GC, M, LibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub, ns.LogCategories()
-local LL, AceEvent = ns:AceLocale(), ns:AceEvent()
-local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.LibStub
+local E, MSG, LL, AceEvent = GC.E, GC.M, ns:AceLocale(), ns:AceEvent()
+local Ace = ns.KO().AceLibrary.O
+
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class DevSuiteController : BaseLibraryObject
-local L = LibStub:NewLibrary(M.DevSuiteController); if not L then return end
-local p = ns:CreateDefaultLogger(M.DevSuiteController)
+--- @class MainController : BaseLibraryObject
+local L = LibStub:NewLibrary(M.MainController); if not L then return end
+Ace.AceEvent:Embed(L)
+local p = ns:CreateDefaultLogger(M.MainController)
+local pp = ns:CreateDefaultLogger(ns.name)
+
+--[[-----------------------------------------------------------------------------
+Support Functions
+-------------------------------------------------------------------------------]]
+---Other modules can listen to message
+---```Usage:
+---AceEvent:RegisterMessage(MSG.OnAddonReady, function(evt, ...) end
+---```
+
+---@param frame MainControllerFrame
+---@param event string The event name
+local function OnPlayerEnteringWorld(frame, event, ...)
+    local isLogin, isReload = ...
+
+    local addon = frame.ctx.addon
+    addon:SendMessage(MSG.OnAddonReady)
+    if not addon.PopupDialog then
+        addon.PopupDialog = O.PopupDebugDialog()
+    end
+
+    --@debug@
+    isLogin = true
+    --@end-debug@
+
+    if not isLogin then return end
+
+    pp:vv(GC:GetMessageLoadedText())
+end
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -44,6 +82,34 @@ end
 ---@param o DialogWidgetMixin|_Frame|BaseLibraryObject
 local function PropsAndMethods(o)
     local DEV_RELOAD_CONFIRM = 'DEV_RELOAD_CONFIRM'
+
+    ---Init Method: Called by DevSuite.lua
+    --- @param addon DevSuite
+    function o:Init(addon)
+        self.addon = addon
+        self:RegisterMessage(MSG.OnAfterInitialize, function(evt, ...) self:OnAfterInitialize() end)
+    end
+
+    function o:OnAfterInitialize() self:RegisterEvents() end
+
+    --- @private
+    function o:RegisterEvents()
+        p:f1("RegisterEvents called...")
+        self:RegisterOnPlayerEnteringWorld()
+        self:RegisterMessage(MSG.OnAddonReady, function() self:OnAddonReady()  end)
+    end
+
+    --- @private
+    function o:OnAddonReady()
+        -- add downstream handlers here
+    end
+
+    --- @private
+    function o:RegisterOnPlayerEnteringWorld()
+        local f = self:CreateEventFrame()
+        f:SetScript(E.OnEvent, OnPlayerEnteringWorld)
+        RegisterFrameForEvents(f, { E.PLAYER_ENTERING_WORLD })
+    end
 
     --- #### See Also:
     --- - [Creating_simple_pop-up_dialog_boxes](https://wowpedia.fandom.com/wiki/Creating_simple_pop-up_dialog_boxes)
@@ -121,6 +187,28 @@ local function PropsAndMethods(o)
     function o:InitializeDevMode()
         self:InitStaticDialog()
         self:RefreshAutoLoadedAddons()
+    end
+
+    --- @param eventFrame MainControllerFrame
+    --- @return MainEventContext
+    function o:CreateEventContext(eventFrame)
+        --- @class MainEventContext
+        --- @field frame MainControllerFrame
+        --- @field addon AddOnSecurity
+        local ctx = {
+            frame = eventFrame,
+            addon = self.addon,
+        }
+        return ctx
+    end
+
+    --- @return MainControllerFrame
+    function o:CreateEventFrame()
+        --- @class MainControllerFrame : _Frame
+        --- @field ctx MainEventContext
+        local f = CreateFrame("Frame", nil, self.addon.frame)
+        f.ctx = self:CreateEventContext(f)
+        return f
     end
 
 end; PropsAndMethods(L)

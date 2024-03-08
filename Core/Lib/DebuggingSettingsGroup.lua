@@ -9,7 +9,7 @@ local sformat = string.format
 New Instance
 -------------------------------------------------------------------------------]]
 
---- @return DebuggingSettingsGroup, LoggerV2
+--- @return DebuggingSettingsGroup, Kapresoft_CategoryLogger
 local function CreateLib()
     local libName = M.DebuggingSettingsGroup
     --- @class DebuggingSettingsGroup : BaseLibraryObject
@@ -85,7 +85,7 @@ local function PropsAndMethods(o)
             end }
         conf.args.spacer2 = { type="description", name=sp, width="full", order = dbgSeq:next() },
 
-        ns.LogCategory():ForEachCategory(function(cat)
+        ns.LogCategory:ForEachCategory(function(cat)
             local elem = {
                 type = 'toggle', name=cat.labelFn(), order=dbgSeq:next(), width=1.2,
                 get = function() return ns:IsLogCategoryEnabled(cat.name) end,
