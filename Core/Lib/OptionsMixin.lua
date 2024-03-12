@@ -63,37 +63,6 @@ local function CreateProfileSelect()
     return ret
 end
 
---- @see GlobalConstants#M for Message names
----@param optionalVal any|nil
-local function SendMessage(addOnMessage, optionalVal)
-    AceEvent:SendMessage(addOnMessage, libName, optionalVal)
-end
-
---- @param propKey string
---- @param defVal any
-local function _GetGlobalValue(propKey, defVal) return ns:db().global[propKey] or defVal end
-
---- @param propKey string
---- @param val any
-local function _SetGlobalValue(propKey, val) ns:db().global[propKey] = val end
-
---- @param fallback any The fallback value
---- @param key string The key value
-local function GlobalGet(key, fallback)
-    return function(_)
-        return _GetGlobalValue(key, fallback)
-    end
-end
---- @param key string The key value
-local function GlobalSet(key, eventMessageToFire)
-    return function(_, v)
-        _SetGlobalValue(key, v)
-        if 'string' == type(eventMessageToFire) then
-            SendMessage(eventMessageToFire, v)
-        end
-    end
-end
-
 --- @param fallback boolean The fallback value
 --- @param addonName string The key value
 local function AutoLoadAddOnsGet(addonName, fallback)
@@ -112,13 +81,14 @@ local function AutoLoadAddOnsSet(addonName)
 end
 
 ---@param o OptionsMixin
-local function Methods(o)
+local function MethodsAndProps(o)
     local L = ns:AceLocale()
 
     --- Automatically called by CreateAndInitFromMixin(..)
     --- @param addon DevSuite
     function o:Init(addon)
         self.addon = addon
+        self.util = O.OptionsUtil:New(o)
     end
 
     --- Usage:  local instance = OptionsMixin:New(addon)
@@ -144,11 +114,20 @@ local function Methods(o)
                         showFPS = {
                             type = 'toggle',
                             width = 'full',
-                            name = "Show Frames-Per-Second (FPS)",
-                            desc = "Shows the Blizzard Frames-per-second display (Global Setting)",
+                            name = L['Show Frames-Per-Second (FPS)'],
+                            desc = L['Show Frames-Per-Second (FPS)::Desc'],
                             order = order:next(),
-                            get = GlobalGet('show_fps', false),
-                            set = GlobalSet('show_fps', GC.M.OnToggleFrameRate)
+                            get = self.util:GlobalGet('show_fps', false),
+                            set = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
+                        },
+                        promptForReload = {
+                            type = 'toggle',
+                            width = 'full',
+                            name = L['Prompt to Reload and Enable Addons'],
+                            desc = L['Prompt to Reload and Enable Addons::Desc'],
+                            order = order:next(),
+                            get = self.util:GlobalGet('prompt_for_reload_to_enable_addons'),
+                            set = self.util:GlobalSet('prompt_for_reload_to_enable_addons')
                         },
                     },
                 },
@@ -179,14 +158,6 @@ local function Methods(o)
                 type = 'header',
                 name = '  Auto-Loaded Add-Ons Settings ',
             },
-            characterSpecific = {
-                order = order:next(),
-                width = 'full',
-                name = "Character Specific",
-                type = 'toggle',
-                get = GlobalGet('auto_loaded_addons_characterSpecific'),
-                set = GlobalSet('auto_loaded_addons_characterSpecific')
-            },
             header2 = {
                 order = order:next(),
                 type = 'header',
@@ -198,8 +169,8 @@ local function Methods(o)
                 name = L['Addon Usage: Automatically Show UI (Global)'],
                 desc = L['Addon Usage: Automatically Show UI (Global)::Desc'],
                 type = 'toggle',
-                get = GlobalGet('addon_addonUsage_auto_show_ui'),
-                set = GlobalSet('addon_addonUsage_auto_show_ui')
+                get = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
+                set = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
             },
             spacer1 = { order = order:next(), type = "description", name = "\n" },
             header3 = {
@@ -265,4 +236,4 @@ local function Methods(o)
 
 end
 
-Methods(LIB)
+MethodsAndProps(LIB)

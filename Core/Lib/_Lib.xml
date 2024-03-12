@@ -4,10 +4,12 @@
     <Include file="Locales\_Locales.xml"/>
     <Include file="API\_API.xml"/>
 
+    <Script file="ConfigDialogController.lua" />
     <Script file="MainController.lua" />
     <Script file="AceDbInitializerMixin.lua"/>
     <Script file="DebuggingSettingsGroup.lua" />
     <Script file="OptionsMixinEventHandler.lua" />
+    <Script file="OptionsUtil.lua" />
     <Script file="OptionsMixin.lua" />
 
     <Include file="Widget\_Widget.xml"/>
