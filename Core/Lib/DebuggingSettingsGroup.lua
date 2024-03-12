@@ -37,8 +37,8 @@ local function PropsAndMethods(o)
             type = 'group',
             name = L['Debugging'],
             desc = L['Debugging::Desc'],
-            -- Place right before Profiles
-            order = 90,
+            -- Place right after Profiles
+            order = 101,
 
             args = {
                 desc = { name = sformat(" %s ", L['Debugging Configuration']), type = "header", order = dbgSeq:next() },

@@ -7,6 +7,7 @@ pformat = {}
 --[[-----------------------------------------------------------------------------
 Aliases and Callbacks
 -------------------------------------------------------------------------------]]
+--- @alias AutoLoadedAddons table<AddOnName, Boolean>
 --- @alias AddOnCallbackFn fun(addOn:AddOnInfo) | "function(addOn) print('addOn:', pformat(addOn)) end"
 
 --[[-----------------------------------------------------------------------------
@@ -28,58 +29,51 @@ BaseLibraryObject_WithAceEvent
 --- @field minor string Retrieves the minor version of the module. i.e., <LibName>-1.0
 
 --[[-----------------------------------------------------------------------------
-DevSuite_AceDB
+Type: Profile_Config_Item
 -------------------------------------------------------------------------------]]
 --- @class Profile_Config_Item
-local item = {
-    name = 'Saved #1',
-    sortIndex = 1,
-    value = ''
-}
+--- @field name string
+--- @field value string
+--- @field sortIndex number
 
---- @alias AutoLoadedAddons table<AddOnName, Boolean>
+--[[-----------------------------------------------------------------------------
+Type: Profile_Config_DebugDialog
+-------------------------------------------------------------------------------]]
+--- @class Profile_Config_DebugDialog
+--- @field maxHistory number
+--- @field items table<number, Profile_Config_Item>
 
+--[[-----------------------------------------------------------------------------
+Type: Profile_Config
+-------------------------------------------------------------------------------]]
 --- @class Profile_Config : AceDB_Profile
-local Profile_Config = {
-    enable = true,
-    debugDialog = {
-        maxHistory = 9,
-        --- @type table<number, Profile_Config_Item>
-        items = { item }
-    },
-    --- @type AutoLoadedAddons
-    auto_loaded_addons = AutoLoadedAddOns,
-}
+--- @field enable boolean This is the standard enable. Don't use.
+--- @field auto_loaded_addons AutoLoadedAddons
+--- @field debugDialog Profile_Config_DebugDialog
 
+--[[-----------------------------------------------------------------------------
+Type: Profile_DB_ProfileKeys
+-------------------------------------------------------------------------------]]
 --- ``` ["Azwang - Smolderweb"] = "Azwang - Smolderweb" ```
 --- @class Profile_DB_ProfileKeys : table<string, string>
-local Profile_DB_ProfileKeys = { }
 
+--[[-----------------------------------------------------------------------------
+Type: Profile_Global_Config
+-------------------------------------------------------------------------------]]
 --- @class Profile_Global_Config : AceDB_Global
-local Profile_Global_Config = {
-    --- @type Boolean
-    show_fps = true,
-    --- @type Boolean
-    auto_loaded_addons_characterSpecific = true,
-    --- Addon: Addon Usage specific option
-    --- @type Boolean
-    addon_addonUsage_auto_show_ui = true,
-    --- @type AutoLoadedAddons
-    auto_loaded_addons = {},
-}
+--- @field show_fps boolean
+--- @field addon_addonUsage_auto_show_ui boolean
+--- @field prompt_for_reload_to_enable_addons boolean
+--- @field auto_loaded_addons AutoLoadedAddons
 
+--[[-----------------------------------------------------------------------------
+Type: AddOn_DB
+-------------------------------------------------------------------------------]]
 --- @class AddOn_DB : AceDB
-local DevSuite_AceDB = {
-    --- @type Profile_Global_Config
-    global = Profile_Global_Config,
-    --- @type Profile_Config
-    profile = Profile_Config,
-
-    --- @type Profile_DB_ProfileKeys
-    profileKeys = Profile_DB_ProfileKeys,
-    --- @type table<string, Profile_Config>
-    profiles = {}
-}
+--- @field global Profile_Global_Config
+--- @field profile Profile_Config
+--- @field profileKeys Profile_DB_ProfileKeys
+--- @field profiles table<string, Profile_Config>
 
 --[[-----------------------------------------------------------------------------
 Type: AddOnInfo

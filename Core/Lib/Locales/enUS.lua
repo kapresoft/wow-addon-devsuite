@@ -18,12 +18,16 @@ L['Debugging::Category::Disable All::Button::Desc']    = 'Disables all log categ
 L['Addon Usage: Automatically Show UI (Global)']       = true
 L['Addon Usage: Automatically Show UI (Global)::Desc'] = 'If enabled, this will automatically show the [Addon Usage] UI after player login. (Global Setting)'
 
-
 L['REQUIRES_RELOAD']          = 'Additional addons require a reload to take effect. Would you like to reload now?\n\n'
 L['General']                  = true
 L['General::Desc']            = "General Settings"
 L['Add-On Management']        = true
 L['Add-On Management::Desc']  = 'Easily enable or disable and customize some of your WoW add-ons for a tailored gameplay experience.'
+
+L['Show Frames-Per-Second (FPS)']               = true
+L['Show Frames-Per-Second (FPS)::Desc']         = 'Shows the Blizzard Frames-per-second display (Global Setting)'
+L['Prompt to Reload and Enable Addons']         = true
+L['Prompt to Reload and Enable Addons::Desc']   = 'Prompts player to Reload UI if addons need to be enabled after closing the Settings Dialog. (Global Setting)'
 
 L['Add-On Specific Options']  = true
 L['Available Add-Ons']        = true

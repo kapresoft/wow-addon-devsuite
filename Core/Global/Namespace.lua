@@ -61,80 +61,61 @@ local LogCategories = {
 GlobalObjects
 -------------------------------------------------------------------------------]]
 --- @class GlobalObjects
-local GlobalObjects = {
-    --- @type Kapresoft_LibUtil_Table
-    Table = {},
-    --- @type Kapresoft_LibUtil_String
-    String = {},
-    --- @type Kapresoft_LibUtil_Assert
-    Assert = {},
-    --- @type Kapresoft_LibUtil_Mixin
-    Mixin = {},
-    --- @type Kapresoft_LibUtil_AceLibraryObjects
-    AceLibrary = {},
-    --- @type LibStub
-    LibStubAce = {},
-    --- @type LocalLibStub
-    LibStub = {},
-    --- @type fun(fmt:string, ...)|fun(val:string)
-    pformat = {},
-    --- @type fun(fmt:string, ...)|fun(val:string)
-    sformat = {},
-
-    --- @type AceDbInitializerMixin
-    AceDbInitializerMixin = {},
-    --- @type API
-    API = {},
-    --- @type OptionsMixin
-    OptionsMixin = {},
-    --- @type OptionsMixinEventHandler
-    OptionsMixinEventHandler = {},
-    --- @type DebuggingSettingsGroup
-    DebuggingSettingsGroup = {},
-    --- @type MainController
-    MainController = {},
-    --- @type DialogWidgetMixin
-    DialogWidgetMixin = {},
-    --- @type PopupDebugDialog
-    PopupDebugDialog = {},
-    --- @type GlobalConstants
-    GlobalConstants = {},
-    --- @type Logger
-    Logger = {},
-}
+--- @field LibStubAce LibStub
+--- @field LibStub LocalLibStub
+--- @field Table Kapresoft_LibUtil_Table
+--- @field String Kapresoft_LibUtil_String
+--- @field Assert Kapresoft_LibUtil_Assert
+--- @field Mixin Kapresoft_LibUtil_Mixin
+--- @field AceLibrary Kapresoft_LibUtil_AceLibraryObjects
+--- @field AceDbInitializerMixin AceDbInitializerMixin
+--- @field API API
+--- @field OptionsMixin OptionsMixin
+--- @field OptionsMixinEventHandler OptionsMixinEventHandler
+--- @field DebuggingSettingsGroup DebuggingSettingsGroup
+--- @field ConfigDialogController ConfigDialogController
+--- @field MainController MainController
+--- @field DialogWidgetMixin DialogWidgetMixin
+--- @field PopupDebugDialog PopupDebugDialog
+--- @field GlobalConstants GlobalConstants
+--- @field OptionsUtil OptionsUtil
+--- @field pformat fun(fmt:string, ...)|fun(val:string)
+--- @field sformat fun(fmt:string, ...)|fun(val:string)
 
 --[[-----------------------------------------------------------------------------
 Modules
 -------------------------------------------------------------------------------]]
 --- @class Modules
 local M = {
-    LibStubAce = 'LibStubAce',
-    LU = 'LU',
-    pformat = 'pformat',
-    sformat = 'sformat',
-    AceLibrary = 'AceLibrary',
+    LibStubAce = '',
+    LU = '',
+    pformat = '',
+    sformat = '',
+    AceLibrary = '',
 
-    GlobalConstants = 'GlobalConstants',
-    Logger = 'Logger',
-    AceLibFactory = 'AceLibFactory',
+    GlobalConstants = '',
+    Logger = '',
+    AceLibFactory = '',
 
-    Table = 'Table',
-    String = 'String',
-    Assert = 'Assert',
-    Mixin = 'Mixin',
+    Table = '',
+    String = '',
+    Assert = '',
+    Mixin = '',
     -- Local Types
-    AceDbInitializerMixin = 'AceDbInitializerMixin',
-    API = 'API',
-    Config = 'Config',
-    DebugDialog = 'DebugDialog',
-    DebuggingSettingsGroup = 'DebuggingSettingsGroup',
-    Developer = 'Developer',
-    MainController = 'MainController',
-    DialogWidgetMixin = 'DialogWidgetMixin',
-    OptionsMixin = 'OptionsMixin',
-    OptionsMixinEventHandler = 'OptionsMixinEventHandler',
-    PopupDebugDialog = 'PopupDebugDialog',
-}
+    AceDbInitializerMixin = '',
+    API = '',
+    Config = '',
+    DebugDialog = '',
+    DebuggingSettingsGroup = '',
+    ConfigDialogController = '',
+    Developer = '',
+    MainController = '',
+    DialogWidgetMixin = '',
+    OptionsMixin = '',
+    OptionsMixinEventHandler = '',
+    OptionsUtil = '',
+    PopupDebugDialog = '',
+}; for moduleName in pairs(M) do M[moduleName] = moduleName end
 
 local LibUtilObjects = LibUtil.Objects
 local AceLibraryObjects = LibUtilObjects.AceLibrary.O
@@ -250,20 +231,36 @@ local function NameSpacePropertiesAndMethods(o)
         self.O[libName] = obj
     end
 
-    --- @param db AddOn_DB
-    function o:SetAddOnDB(db) addonDb = db end
+    --- Simple Library
+    function o:NewLib(libName, ...)
+        assert(libName, "LibName is required")
+        local newLib = {}
+        local len = select("#", ...)
+        if len > 0 then newLib = self:K():Mixin({}, ...) end
+        newLib.mt = { __tostring = GC.ToStringFunction(libName)}
+        setmetatable(newLib, newLib.mt)
+        self.O[libName] = newLib
+        return newLib
+    end
+    function o:NewLibWithEvent(libName, ...)
+        assert(libName, "LibName is required")
+        local newLib = self.O.AceLibrary.AceEvent:Embed({})
+        local len = select("#", ...)
+        if len > 0 then newLib = self:K():Mixin(newLib, ...) end
+        newLib.mt = { __tostring = GC.ToStringFunction(libName)}
+        setmetatable(newLib, newLib.mt)
+        self.O[libName] = newLib
+        return newLib
+    end
+
+    --- @param dbfn fun() | "function() return addon.db end"
+    function o:SetAddOnFn(dbfn) self.addonDbFn = dbfn end
 
     --- @return AddOn_DB
-    function o:db() return addonDb end
+    function o:db() return self.addonDbFn() end
 
     --- @return Profile_Config
-    function o:profile() return addonDb and addonDb.profile end
-
-    --- @return GlobalConstants
-    function o:GC() return self.O.GlobalConstants end
-
-    --- @return EventNames
-    function o:E() return self:GC().E end
+    function o:profile() local db = self.addonDbFn(); return db and db.profile end
 
     --- @return Logger
     function o:ToStringNamespaceKeys() return self.pformat(getSortedKeys(self)) end
@@ -307,10 +304,13 @@ local function CreateNameSpace(...)
     ns.name = addon
     --- @type string
     ns.nameShort = GC:GetLogName()
+    ns.GC = GC
+
+    NameSpacePropertiesAndMethods(ns)
+
     ns.mt = { __tostring = function() return addon .. '::Namespace'  end }
     setmetatable(ns, ns.mt)
 
-    NameSpacePropertiesAndMethods(ns)
 
     --- print(ns.name .. '::Namespace:: pformat:', pformat)
     --- Global Function

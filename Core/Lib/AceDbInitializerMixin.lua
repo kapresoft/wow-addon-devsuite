@@ -72,8 +72,8 @@ local function Methods(o)
     function o:Init(addon)
         self.addon = addon
         --- @type AddOn_DB
-        self.db = AceDB:New(GC.C.DB_NAME)
-        ns:SetAddOnDB(self.db)
+        self.addon.db = AceDB:New(GC.C.DB_NAME)
+        ns:SetAddOnFn(function() return self.addon.db end)
     end
 
     --- Usage:  local instance = AceDbInitializerMixin:New(addon)
@@ -88,9 +88,10 @@ local function Methods(o)
         local OnProfileChanged = "OnProfileChanged"
         local OnProfileReset = "OnProfileReset"
         local OnProfileCopied = "OnProfileCopied"
-        self.db.RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
-        self.db.RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
-        self.db.RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
+        ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+        ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+        ns:db().RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
+        ns:db().RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
         self:InitDbDefaults()
     end
 
@@ -110,6 +111,7 @@ local function Methods(o)
         --- @type Profile_Config
         local defaultProfile = {
             enable = true,
+            auto_loaded_addons = autoLoadedAddons,
             debugDialog = {
                 maxHistory = 15,
                 items = {
@@ -117,7 +119,6 @@ local function Methods(o)
                     { name='Saved #2', value=fn2, sortIndex=2 },
                 }
             },
-            auto_loaded_addons = autoLoadedAddons
         }
         for i = 3, defaultProfile.debugDialog.maxHistory do
             local name = sformat('Saved #%s', i)
@@ -134,9 +135,8 @@ local function Methods(o)
         local defaultDb = {
             global = {
                 show_fps = true,
-                auto_loaded_addons_characterSpecific = false,
-                addon_addonUsage_auto_show_ui = true,
-                auto_loaded_addons = autoLoadedAddons
+                prompt_for_reload_to_enable_addons = true,
+                addon_addonUsage_auto_show_ui = true
             },
             profile = defaultProfile
         }
@@ -144,9 +144,9 @@ local function Methods(o)
     end
 
     function o:InitDbDefaults()
-        local profileName = self.db:GetCurrentProfile()
+        local profileName = ns:db():GetCurrentProfile()
         p:d(function() return 'profile: %s', profileName end)
-        self.db:RegisterDefaults(self:GetDefaultDB())
+        ns:db():RegisterDefaults(self:GetDefaultDB())
     end
 end
 

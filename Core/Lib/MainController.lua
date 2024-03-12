@@ -17,15 +17,15 @@ local ns = devsuite_ns(...)
 local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.LibStub
 local E, MSG, LL, AceEvent = GC.E, GC.M, ns:AceLocale(), ns:AceEvent()
 local Ace = ns.KO().AceLibrary.O
-
+local libName = M.MainController
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class MainController : BaseLibraryObject
-local L = LibStub:NewLibrary(M.MainController); if not L then return end
+--- @class MainController : BaseLibraryObject_WithAceEvent
+local L = LibStub:NewLibrary(libName); if not L then return end
 Ace.AceEvent:Embed(L)
-local p = ns:CreateDefaultLogger(M.MainController)
+local p = ns:CreateDefaultLogger(libName)
 local pp = ns:CreateDefaultLogger(ns.name)
 
 --[[-----------------------------------------------------------------------------
@@ -60,17 +60,6 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 ---@param addons table<number, AddOnName>
-local function EnableAddOns(addons)
-    if #addons <= 0 then return end
-    local charSpecific = ns:db().global.auto_loaded_addons_characterSpecific
-    local charName
-    if charSpecific == true then charName = UnitName("player") end
-    for i, name in ipairs(addons) do
-        EnableAddOn(name, charName)
-    end
-end
-
----@param addons table<number, AddOnName>
 local function AddOnsToString(addons)
     if #addons <=0 then return '' end
     local str = ''
@@ -79,7 +68,7 @@ local function AddOnsToString(addons)
     end
     return str
 end
----@param o DialogWidgetMixin|_Frame|BaseLibraryObject
+---@param o MainController
 local function PropsAndMethods(o)
     local DEV_RELOAD_CONFIRM = 'DEV_RELOAD_CONFIRM'
 
@@ -101,8 +90,10 @@ local function PropsAndMethods(o)
 
     --- @private
     function o:OnAddonReady()
-        -- add downstream handlers here
+        self:ToggleFramerateIfConfigured()
     end
+
+    function o:ToggleFramerateIfConfigured() self:SendMessage(MSG.OnToggleFrameRate, libName) end
 
     --- @private
     function o:RegisterOnPlayerEnteringWorld()
@@ -120,8 +111,7 @@ local function PropsAndMethods(o)
             button1 = YES,
             button2 = NO,
             OnAccept = function(self, addonsToEnable)
-                EnableAddOns(addonsToEnable)
-                ReloadUI()
+                O.OptionsMixinEventHandler:ApplyAndRestart()
             end,
             timeout = 0,
             whileDead = true,
@@ -151,7 +141,7 @@ local function PropsAndMethods(o)
             end
         end
 
-        if #addonsToEnable > 0 then
+        if true == ns:db().global.prompt_for_reload_to_enable_addons and  #addonsToEnable > 0 then
             p:vv('ActionbarPlus is in Developer mode and needs to restart to load additional addons.')
             local dlg = StaticPopup_Show(DEV_RELOAD_CONFIRM, AddOnsToString(addonsToEnable))
             dlg.data = addonsToEnable
