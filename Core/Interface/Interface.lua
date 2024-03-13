@@ -86,3 +86,4 @@ Type: AddOnInfo
 --- @field reason AddOnIsNotLoadableReason
 --- @field security AddOnSecurity
 --- @field newVersion Boolean Unused
+--- @field loadOnDemand BooleanOptional Custom

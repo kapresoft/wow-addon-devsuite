@@ -8,7 +8,6 @@
     <Script file="MainController.lua" />
     <Script file="AceDbInitializerMixin.lua"/>
     <Script file="DebuggingSettingsGroup.lua" />
-    <Script file="OptionsMixinEventHandler.lua" />
     <Script file="OptionsUtil.lua" />
     <Script file="OptionsMixin.lua" />
 

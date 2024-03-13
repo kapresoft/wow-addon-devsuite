@@ -1,11 +1,12 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local ns = devsuite_ns(...)
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+--- @type Namespace
+local ns = select(2, ...)
+local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 local LibUtil, AceEvent = ns:K(), ns:AceEvent()
 local sformat = ns.sformat
-local AceDB = O.AceLibrary.AceDB
+local AceDB, IsAddonSuiteEnabled = O.AceLibrary.AceDB, O.API.IsAddonSuiteEnabled
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.name .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 
@@ -59,9 +60,13 @@ end
 
 ---@param a DevSuite
 local function AddonCallbackMethods(a)
-    function a:OnProfileChanged() ConfirmAndReload().data = GC.M.OnSyncAddOnEnabledState end
-    function a:OnProfileCopied() ConfirmAndReload().data = GC.M.OnSyncAddOnEnabledState end
-    function a:OnProfileReset() ConfirmAndReload().data = GC.M.OnSyncAddOnEnabledState end
+    local function DoConfirmAndReload()
+        if IsAddonSuiteEnabled() then return end
+        ConfirmAndReload().data = GC.M.OnSyncAddOnEnabledState
+    end
+    function a:OnProfileChanged() DoConfirmAndReload() end
+    function a:OnProfileCopied() DoConfirmAndReload() end
+    function a:OnProfileReset() DoConfirmAndReload() end
 end
 
 ---@param o AceDbInitializerMixin

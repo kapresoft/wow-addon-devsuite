@@ -11,7 +11,7 @@ local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 
 local ACE, API = O.AceLibrary, O.API
 local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions
-local DebugSettings = O.DebuggingSettingsGroup
+local DebugSettings, IsAddonSuiteEnabled = O.DebuggingSettingsGroup, O.API.IsAddonSuiteEnabled
 local AceEvent = ns:AceEvent()
 
 --[[-----------------------------------------------------------------------------
@@ -140,6 +140,11 @@ local function MethodsAndProps(o)
 
     --- @param order Kapresoft_Incrementer
     function o:CreateAutoLoadAddOnsGroup(order)
+        if IsAddonSuiteEnabled() then
+            p:w(function() return 'AddonSuite detected. The AddOn Management tab will be disabled to avoid conflict' end)
+            return nil
+        end
+
         return {
             type = 'group',
             name = L['Add-On Management'],
@@ -154,6 +159,7 @@ local function MethodsAndProps(o)
         local order = ns:K():CreateIncrementer(1, 1)
         local options = {
             header1 = {
+                hidden = true,
                 order = order:next(),
                 type = 'header',
                 name = '  Auto-Loaded Add-Ons Settings ',
@@ -229,9 +235,10 @@ local function MethodsAndProps(o)
 
         AceConfig:RegisterOptionsTable(ns.name, options, { "devsuite_options" })
         AceConfigDialog:AddToBlizOptions(ns.name, ns.name)
+        if API:GetUIScale() > 1.0 then return end
 
-        --- TODO: Make it an option "Larger Options Frame: true/false"
-        -- AceConfigDialog:SetDefaultSize(ns.name, 950, 750)
+        AceConfigDialog:SetDefaultSize(ns.name, 950, 600)
+
     end
 
 end
