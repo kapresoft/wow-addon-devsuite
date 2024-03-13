@@ -71,7 +71,6 @@ GlobalObjects
 --- @field AceDbInitializerMixin AceDbInitializerMixin
 --- @field API API
 --- @field OptionsMixin OptionsMixin
---- @field OptionsMixinEventHandler OptionsMixinEventHandler
 --- @field DebuggingSettingsGroup DebuggingSettingsGroup
 --- @field ConfigDialogController ConfigDialogController
 --- @field MainController MainController
@@ -112,7 +111,6 @@ local M = {
     MainController = '',
     DialogWidgetMixin = '',
     OptionsMixin = '',
-    OptionsMixinEventHandler = '',
     OptionsUtil = '',
     PopupDebugDialog = '',
 }; for moduleName in pairs(M) do M[moduleName] = moduleName end
@@ -171,6 +169,7 @@ local function NamespaceLoggerMethods(o, ns)
         return val == 1 or val == true
     end
     function o:LC() return LogCategories end
+    --- @return Kapresoft_CategoryLogger
     function o:CreateDefaultLogger(moduleName) return LogCategories.DEFAULT:NewLogger(moduleName) end
 
 end; NamespaceLoggerMethods(NamespaceLoggerMixin, nsfn)
@@ -269,6 +268,15 @@ local function NameSpacePropertiesAndMethods(o)
     function o:_ns() print('Namespace keys:', pformat(self:ToStringNamespaceKeys())) end
     function o:_o() print('Namespace Object keys:', pformat(self:ToStringObjectKeys())) end
 
+    --- @return GameVersion
+    function o:IsVanilla() return self.gameVersion == 'classic' end
+    --- @return GameVersion
+    function o:IsTBC() return self.gameVersion == 'tbc_classic' end
+    --- @return GameVersion
+    function o:IsWOTLK() return self == 'wotlk_classic' end
+    --- @return GameVersion
+    function o:IsRetail() return self.gameVersion == 'retail' end
+
     InitLocalLibStub(o)
 end
 
@@ -282,6 +290,7 @@ local function CreateNameSpace(...)
     --- @type string
     local addon
     --- @class __Namespace : __NamespaceLoggerMixin
+    --- @field gameVersion GameVersion
     --- @field O GlobalObjects
     --- @field LibStubAce LibStub
     --- @field LibStub LocalLibStub

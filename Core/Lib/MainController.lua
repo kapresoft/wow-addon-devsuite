@@ -13,10 +13,11 @@ local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAd
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local ns = devsuite_ns(...)
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.LibStub
+--- @type Namespace
+local ns = select(2, ...)
+local O, GC, M, LibStub, KO = ns.O, ns.GC, ns.M, ns.LibStub, ns:KO()
 local E, MSG, LL, AceEvent = GC.E, GC.M, ns:AceLocale(), ns:AceEvent()
-local Ace = ns.KO().AceLibrary.O
+local API, Ace, IsAddonSuiteEnabled = O.API, KO.AceLibrary.O, O.API.IsAddonSuiteEnabled
 local libName = M.MainController
 
 --[[-----------------------------------------------------------------------------
@@ -27,6 +28,7 @@ local L = LibStub:NewLibrary(libName); if not L then return end
 Ace.AceEvent:Embed(L)
 local p = ns:CreateDefaultLogger(libName)
 local pp = ns:CreateDefaultLogger(ns.name)
+local pm = ns:LC().MESSAGE:NewLogger(L.name)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -60,11 +62,12 @@ end
 Methods
 -------------------------------------------------------------------------------]]
 ---@param addons table<number, AddOnName>
-local function AddOnsToString(addons)
+---@param action string
+local function AddOnsToString(action, addons)
     if #addons <=0 then return '' end
     local str = ''
-    for i, n in ipairs(addons) do
-        str = str .. n .. '\n'
+    for _, n in ipairs(addons) do
+        str = sformat('%s%s (%s)\n', str, n, action)
     end
     return str
 end
@@ -85,15 +88,27 @@ local function PropsAndMethods(o)
     function o:RegisterEvents()
         p:f1("RegisterEvents called...")
         self:RegisterOnPlayerEnteringWorld()
-        self:RegisterMessage(MSG.OnAddonReady, function() self:OnAddonReady()  end)
+        self:RegisterMessage(MSG.OnAddonReady, function(msg) self:OnAddonReady(msg)  end)
     end
 
     --- @private
-    function o:OnAddonReady()
-        self:ToggleFramerateIfConfigured()
+    function o:OnAddonReady(msg)
+        p:d(function() return "MSG:R:%s", msg end)
+        self:InitializeState()
     end
 
-    function o:ToggleFramerateIfConfigured() self:SendMessage(MSG.OnToggleFrameRate, libName) end
+    function o:InitializeState()
+        self:InitStaticDialog()
+        self:RefreshAutoLoadedAddons()
+
+        -- AddonUsage is the "Addon Usage" global var
+        C_Timer.After(3, function()
+            self:OnToggleFrameRate()
+            self:InitAddonUsage()
+        end)
+    end
+
+    function o:OnToggleFrameRate() L:ShowFPS(ns:db().global.show_fps) end
 
     --- @private
     function o:RegisterOnPlayerEnteringWorld()
@@ -110,9 +125,7 @@ local function PropsAndMethods(o)
             text =  sformat(':: %s ::\n\n', ns.name) .. LL['REQUIRES_RELOAD'] .. '\n%s\n',
             button1 = YES,
             button2 = NO,
-            OnAccept = function(self, addonsToEnable)
-                O.OptionsMixinEventHandler:ApplyAndRestart()
-            end,
+            OnAccept = function() L:OnApplyAndRestart() end,
             timeout = 0,
             whileDead = true,
             hideOnEscape = true,
@@ -120,41 +133,104 @@ local function PropsAndMethods(o)
         }
     end
 
-    --- @param nameOrIndex string|Index
-    --- @return Disabled
-    function L:IsAddonDisabled(nameOrIndex)
-        local name, title, notes, loadable, reason, security = GetAddOnInfo(nameOrIndex)
-        p:f2(function()
-            return 'Add-On: %s loadable=%s r=%s s=%s', name, tostring(loadable), tostring(reason), security end)
-        return reason and O.String.EqualsIgnoreCase(reason, 'disabled')
+    --- @param callbackFn fun(info:AddOnInfo) | "function(info) end"
+    function o:ForEachCheckedAndLoadableAddon(callbackFn)
+        local addons = ns:profile().auto_loaded_addons
+        if not addons then return end
+        for name, checked in pairs(addons) do
+            if checked == true then
+                local info = API:GetAddOnInfo(name)
+                if info:CanBeEnabled() then callbackFn(info) end
+            end
+        end
+    end
+
+    function o:OnSyncAddOnEnabledState()
+        if IsAddonSuiteEnabled() then return end
+
+        local charName = UnitName("player")
+        p:d(function() return "CharName=%s", tostring(charName) end)
+        --- @table<string,boolean>
+        local addons = ns:db().profile.auto_loaded_addons
+
+        local enabled = {}
+        local disabled = {}
+        API:ForEachAddOn(function(addOn)
+            local shouldLoad = addons[addOn.name]
+            local name = addOn.name
+            if name ~= ns.name then
+                if shouldLoad and shouldLoad == true then
+                    EnableAddOn(name, charName)
+                    table.insert(enabled, name)
+                else
+                    DisableAddOn(name, charName)
+                    table.insert(disabled, name)
+                end
+            end
+        end)
+
+        EnableAddOn(ns.name, charName)
+        p:f1(function() return "Updating Add-On States:" end)
+        p:f1(function() return "%s (this): enabled=true", ns.name end)
+        p:f1(function() return "Enabled: %s", pformat(enabled) end)
+        p:f1(function() return "Disabled: %s", pformat(disabled) end)
+
+    end
+    function o:OnApplyAndRestart()
+        self:OnSyncAddOnEnabledState()
+        ReloadUI()
     end
 
     function o:RefreshAutoLoadedAddons()
+        if IsAddonSuiteEnabled() then return end
+
         local addons = ns:profile().auto_loaded_addons
         if not addons then return end
 
         local addonsToEnable = {}
-        for addonName, autoEnable in pairs(addons) do
-            if autoEnable == true then
-                local disabled = L:IsAddonDisabled(addonName)
-                if disabled == true then table.insert(addonsToEnable, addonName) end
+        local addonsToDisable = {}
+        self:ForEachCheckedAndLoadableAddon(function(info)
+            table.insert(addonsToEnable, info.name)
+        end)
+
+        API:ForEachAddOnThatCanBeDisabled(function(info)
+            p:vv(function() return 'Addon should be disabled: %s', info.name end)
+            table.insert(addonsToDisable, info.name)
+        end)
+
+        if true == ns:db().global.prompt_for_reload_to_enable_addons
+                and (#addonsToEnable > 0 or #addonsToDisable > 0) then
+            local prompt = ns:db().global.prompt_for_reload_to_enable_addons
+            p:vv(function() return 'prompt-for-reload=%s addons to enable=%s disable=%s',
+            tostring(prompt), pformat(addonsToEnable), pformat(addonsToDisable) end)
+
+            local msg = ''
+            if #addonsToEnable > 0 then
+                msg = AddOnsToString('Enable', addonsToEnable)
             end
-        end
+            if #addonsToDisable > 0 then
+                msg = msg .. AddOnsToString('Disable', addonsToDisable)
+            end
 
-        if true == ns:db().global.prompt_for_reload_to_enable_addons and  #addonsToEnable > 0 then
-            p:vv('ActionbarPlus is in Developer mode and needs to restart to load additional addons.')
-            local dlg = StaticPopup_Show(DEV_RELOAD_CONFIRM, AddOnsToString(addonsToEnable))
-            dlg.data = addonsToEnable
+            StaticPopup_Show(DEV_RELOAD_CONFIRM, msg)
         end
-
-        -- AddonUsage is the "Addon Usage" global var
-        C_Timer.After(3, function() self:ApplyInitialStates() end)
     end
 
-    function o:ApplyInitialStates()
-        local g = ns:db().global
-        self:InitAddonUsage()
-        if ToggleFramerate and g.show_fps == true then ToggleFramerate() end
+    ---@param val boolean The config value
+    function o:ShowFPS(val)
+        local frameShown = (FramerateText and FramerateText:IsShown()) or
+                (FramerateFrame and FramerateFrame:IsShown())
+        local toggleFn = function() ToggleFramerate()  end
+        --- @type _Frame
+        local f = FramerateFrame
+        if f then
+            toggleFn = function()
+                if f:IsShown() then f:Hide()
+                else f:Show() end
+            end
+        end
+        if true == frameShown then return val == false and toggleFn() end
+        return val == true and toggleFn()
     end
 
     function o:InitAddonUsage()
@@ -172,11 +248,6 @@ local function PropsAndMethods(o)
             au:SetPoint("BOTTOM", ChatFrame1Tab, "TOP", 155, 0)
         end
         au:Show();
-    end
-
-    function o:InitializeDevMode()
-        self:InitStaticDialog()
-        self:RefreshAutoLoadedAddons()
     end
 
     --- @param eventFrame MainControllerFrame
@@ -203,7 +274,15 @@ local function PropsAndMethods(o)
 
 end; PropsAndMethods(L)
 
-AceEvent:RegisterMessage(GC.M.OnAddonReady, function(msg, source, ...)
-    p:d(function() return "MSG:R:%s", msg end)
-    L:InitializeDevMode()
+AceEvent:RegisterMessage(GC.M.OnApplyAndRestart, function(msg, source, ...)
+    pm:d(function() return '%s: source=%s', GC.M.OnApplyAndRestart, source end)
+    L:OnApplyAndRestart()
+end)
+AceEvent:RegisterMessage(GC.M.OnSyncAddOnEnabledState, function(msg, source, ...)
+    pm:d(function() return '%s: source=%s', GC.M.OnSyncAddOnEnabledState, source end)
+    L:OnSyncAddOnEnabledState()
+end)
+AceEvent:RegisterMessage(GC.M.OnToggleFrameRate, function(msg, source, ...)
+    pm:f1(function() return '%s: source=%s', GC.M.OnToggleFrameRate, source end)
+    L:OnToggleFrameRate()
 end)
