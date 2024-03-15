@@ -1,5 +1,5 @@
 ## Interface: 30403
-## Version: 1.0
+## Version: @project-version@
 ## Title: Dev|cff1784d1Suite|r Wrath
 ## Notes: DevSuite Addon for World of Warcraft
 ## Author: kapresoft@gmail.com
