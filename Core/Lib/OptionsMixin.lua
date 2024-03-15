@@ -233,7 +233,8 @@ local function MethodsAndProps(o)
         -- This creates the Profiles Tab/Section in Settings UI
         options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
 
-        AceConfig:RegisterOptionsTable(ns.name, options, { "devsuite_options" })
+        AceConfig:RegisterOptionsTable(ns.name, options, {
+            ns.GC.C.CONSOLE_COMMAND_OPTIONS, ns.GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
         AceConfigDialog:AddToBlizOptions(ns.name, ns.name)
         if API:GetUIScale() > 1.0 then return end
 

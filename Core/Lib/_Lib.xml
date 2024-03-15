@@ -13,6 +13,4 @@
 
     <Include file="Widget\_Widget.xml"/>
 
-    <Include file="Developer\_Developer.xml"/>
-
 </Ui>
