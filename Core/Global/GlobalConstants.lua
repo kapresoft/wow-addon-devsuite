@@ -27,6 +27,8 @@ local kch = ns.Kapresoft_LibUtil.CH
 local addonShortName = 'DS'
 local consoleCommand = "devsuite"
 local consoleCommandShort = "ds"
+local consoleCommandOptions = consoleCommand .. '-options'
+local consoleCommandOptionsShort = consoleCommandShort .. '-options'
 local useShortName = true
 
 local CONFIRM_RELOAD_UI_NAME = addon .. '_CONFIRM_RELOAD_UI'
@@ -97,6 +99,8 @@ local function GlobalConstantProperties(o)
         CHECK_VAR_SYNTAX_FORMAT = '|cfdeab676%s ::|r %s',
         CONSOLE_COMMAND = consoleCommand,
         CONSOLE_COMMAND_SHORT = consoleCommandShort,
+        CONSOLE_COMMAND_OPTIONS = consoleCommandOptions,
+        CONSOLE_COMMAND_OPTIONS_SHORT = consoleCommandOptionsShort,
         CONSOLE_COLORS = consoleColors,
         CONSOLE_HEADER_FORMAT = '|cfdeab676### %s ###|r',
         CONSOLE_OPTIONS_FORMAT = '  - %-8s|cfdeab676:: %s|r',

@@ -1,5 +1,5 @@
 ## Interface: 100205
-## Version: 1.0
+## Version: @project-version@
 ## Title: Dev|cff1784d1Suite|r Retail
 ## Notes: DevSuite Addon for World of Warcraft
 ## Author: kapresoft@gmail.com
@@ -28,4 +28,7 @@
 # /run print(select(4, GetBuildInfo()))
 
 Core\_Core.xml
+#@do-not-package@
+Core\Lib\Developer\_Developer.xml
+#@end-do-not-package@
 Retail\_DevSuite.xml

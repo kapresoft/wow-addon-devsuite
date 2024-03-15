@@ -143,8 +143,11 @@ local function PropsAndMethods(o)
     -- ## -------------------------------------------------------------------------
     -- ## -------------------------------------------------------------------------
 
-    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "SlashCommands") end
-    function o:RegisterSlashCommands() self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "SlashCommands") end
+
+    function o:RegisterSlashCommands()
+        self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "SlashCommands")
+        self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "SlashCommands")
+    end
 
     function o:SlashCommand_Config_Handler()
         self:OpenConfig()
@@ -157,17 +160,20 @@ local function PropsAndMethods(o)
     end
     function o:SlashCommand_Help_Handler()
         p:vv('')
-        local COMMAND_DIALOG_TEXT = "Shows debug dialog UI"
-        local COMMAND_CONFIG_TEXT = "Shows the config UI"
-        local COMMAND_HELP_TEXT = "Shows this help"
-        local OPTIONS_LABEL = "options"
+        local COMMAND_DIALOG_TEXT = 'Shows debug dialog UI'
+        local COMMAND_CONFIG_TEXT = 'Shows the config UI'
+        local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
+        local COMMAND_HELP_TEXT = 'Shows this help'
+        local OPTIONS_LABEL = 'options'
         local USAGE_LABEL = sformat("usage: %s [%s]", GC.C.CONSOLE_PLAIN, OPTIONS_LABEL)
         p:vv(USAGE_LABEL)
         p:vv(OPTIONS_LABEL .. ":")
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
         p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT
-        end)
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
+        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
+        p:vv('Other commands:')
+        p:vv(function() return '/devsuite-options or /ds-options for the Ace3 AceConfig command line options.' end)
     end
 
     --- @param spaceSeparatedArgs string
