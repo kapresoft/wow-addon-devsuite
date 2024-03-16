@@ -141,7 +141,7 @@ local NamespaceLoggerMixin = {}
 local function NamespaceLoggerMethods(o, ns)
     DEVS_DEBUG_ENABLED_CATEGORIES = DEVS_DEBUG_ENABLED_CATEGORIES or {}
 
-    local CategoryLogger = KO.CategoryMixin
+    local CategoryLogger = KO.CategoryMixin:New()
     CategoryLogger:Configure(addonName, LogCategories, {
         consoleColors = GC.C.CONSOLE_COLORS,
         levelSupplierFn = function() return DEVS_LOG_LEVEL  end,
