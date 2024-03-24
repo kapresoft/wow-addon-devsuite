@@ -1,4 +1,4 @@
-## Interface: 100205
+## Interface: 100206
 ## Version: @project-version@
 ## Title: Dev|cff1784d1Suite|r Retail
 ## Notes: DevSuite Addon for World of Warcraft
