@@ -1,4 +1,4 @@
-## Interface: 11501
+## Interface: 11502
 ## Version: @project-version@
 ## Title: Dev|cff1784d1Suite|r Classic
 ## Notes: DevSuite Addon for World of Warcraft
