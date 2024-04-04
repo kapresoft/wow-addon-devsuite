@@ -26,6 +26,7 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
+Wrath\Wrath.lua
 Core\_Core.xml
 #@do-not-package@
 Core\Lib\Developer\_Developer.xml

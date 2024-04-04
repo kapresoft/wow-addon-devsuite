@@ -27,6 +27,7 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
+Retail\Retail.lua
 Core\_Core.xml
 #@do-not-package@
 Core\Lib\Developer\_Developer.xml
