@@ -25,19 +25,20 @@ ignore:
   - dev
   - doc
   - scripts
+  - Core/DevSuite.lua
+  - Core/Retail.lua
+  - Core/Vanilla.lua
+  - Core/Wrath.lua
+  - Core/Cata.lua
   - Core/_Core.lua
   - Core/_Core.xml
   - Core/_ExtLib.xml
-  - Core/_ExtLib_WowAce.xml
+  - Core/_ExtLib_WowAce_Ace3.xml
   - Core/AddonLib
   - Core/Assets
   - Core/Global
   - Core/Interface
   - Core/Lib
-  - Retail
-  - TBC
-  - Vanilla
-  - Wrath
   - Bindings.xml
   - Core/ExtLib/Kapresoft-LibUtil/External
   - Core/ExtLib/Kapresoft-LibUtil/Kapresoft-LibUtil.toc

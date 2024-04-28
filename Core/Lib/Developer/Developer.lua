@@ -21,9 +21,10 @@ Local Vars
 local _, ns = ...
 local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 
----@class Developer : BaseLibraryObject
-local L = LibStub:NewLibrary(M.Developer); if not L then return end; DD = L
-local p = ns:LC().DEV:NewLogger(M.Developer)
+local libName = M.Developer
+--- @class Developer : BaseLibraryObject
+local L = LibStub:NewLibrary(libName); if not L then return end;
+local p = ns:LC().DEV:NewLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -41,6 +42,10 @@ Methods
 -------------------------------------------------------------------------------]]
 ---@param o Developer
 local function Methods(o)
+
+    function o:log(...) ns.print(...)  end
+    function o:logp(...) ns.logp(libName, ...)  end
+    function o:ll() self:logp('Log Level:', DEVS_LOG_LEVEL) end
 
     function o:GetProfile() return ns:db().profile end
     function o:GetProfileNames() return ns:db():GetProfiles() end
@@ -197,6 +202,13 @@ local function Methods(o)
         return ret
     end
 
-end; Methods(L)
+    --- @see Interface/SharedXML/Dump.lua
+    --- @param varName string The global var name
+    function o:dump(varName)
+        ns.logp(libName, 'Dump:', tostring(varName))
+        ns.logp(libName, _G[varName] or 'nil')
+    end
 
+end; Methods(L)
+d = L
 

@@ -6,7 +6,7 @@ local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 local LibUtil, AceEvent = ns:K(), ns:AceEvent()
 local sformat = ns.sformat
-local AceDB, IsAddonSuiteEnabled = O.AceLibrary.AceDB, O.API.IsAddonSuiteEnabled
+local AceDB, IsAddonSuiteEnabled = ns:AceDB(), O.API.IsAddonSuiteEnabled
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.name .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 

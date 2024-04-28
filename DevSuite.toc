@@ -1,7 +1,7 @@
 ## Interface: 100206
 ## Version: @project-version@
-## Title: Dev|cff1784d1Suite|r Retail
-## Notes: DevSuite Addon for World of Warcraft
+## Title: DevSuite |cff1784d1Retail|r
+## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
@@ -23,13 +23,8 @@
 ## X-Github-Project-Last-Changed-Date: @project-date-iso@
 ## X-Github-Project-Version: @project-version@
 
-
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Retail\Retail.lua
+Core\Retail.lua
 Core\_Core.xml
-#@do-not-package@
-Core\Lib\Developer\_Developer.xml
-#@end-do-not-package@
-Retail\_DevSuite.xml

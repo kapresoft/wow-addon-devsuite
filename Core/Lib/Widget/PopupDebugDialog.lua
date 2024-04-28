@@ -10,7 +10,7 @@ Local Vars
 local _, ns = ...
 local pformat = ns.pformat
 local O, LibStub = ns.O, ns.LibStub
-local AceGUI = O.AceLibrary.AceGUI
+local AceGUI = ns:AceLibrary().AceGUI
 local LuaEvaluator = ns:KO().LuaEvaluator
 
 local libName = 'PopupDebugDialog'

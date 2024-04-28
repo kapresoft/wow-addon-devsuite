@@ -1,6 +1,6 @@
-## Interface: 11502
+## Interface: 40400
 ## Version: @project-version@
-## Title: DevSuite |cff1784d1Classic|r
+## Title: DevSuite |cff1784d1Cataclysm|r
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
@@ -8,7 +8,7 @@
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
 ## LoadManagers: AddonLoader
 
-## X-Min-Interface: 90207
+## X-Min-Interface: 30400
 ## X-LoadOn-Always: delayed
 ## X-Credits: kapresoft@gmail.com
 ## X-Category: Development Tools
@@ -26,5 +26,5 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Core\Vanilla.lua
+Core\Cata.lua
 Core\_Core.xml

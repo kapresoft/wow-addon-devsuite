@@ -6,10 +6,11 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local ns = devsuite_ns(...)
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+--- @type Namespace
+local ns = select(2, ...)
+local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.O.LibStub
 
-local ACE, API = O.AceLibrary, O.API
+local ACE, API = ns:AceLibrary(), O.API
 local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions
 local DebugSettings, IsAddonSuiteEnabled = O.DebuggingSettingsGroup, O.API.IsAddonSuiteEnabled
 local AceEvent = ns:AceEvent()
@@ -40,7 +41,7 @@ local function CreateProfileSelect()
         for _, profileName in ipairs(GetProfiles()) do
             profiles[profileName] = profileName
         end
-        return O.Table.getSortedKeys(profiles)
+        return ns:Table().getSortedKeys(profiles)
     end
     --- Get the Profile names to be used for the select values
     --- This table has to match the order of the original profile
@@ -96,6 +97,18 @@ local function MethodsAndProps(o)
     --- @return OptionsMixin
     function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
 
+    ---@param opt AceConfigOption
+    local function ConfigureDebugging(opt)
+        --@do-not-package@
+        if ns.debug:IsDeveloper() then
+            opt.args.debugging = DebugSettings:CreateDebuggingGroup()
+            p:a(function() return 'Debugging tab in Settings UI is enabled with LogLevel=%s', ADDON_SUITE_LOG_LEVEL end)
+            return
+        end
+        --@end-do-not-package@
+        DEVS_LOG_LEVEL = 0
+    end
+
     function o:CreateOptions()
         local order = ns:K():CreateIncrementer(1, 1)
 
@@ -132,9 +145,9 @@ local function MethodsAndProps(o)
                     },
                 },
                 autoload_addons = self:CreateAutoLoadAddOnsGroup(order),
-                debugging = DebugSettings:CreateDebuggingGroup(),
             }
-        }
+        }; ConfigureDebugging(options)
+
         return options
     end
 
