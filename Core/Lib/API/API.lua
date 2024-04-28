@@ -8,10 +8,10 @@ local C_AddOns_GetAddOnEnableState = C_AddOns.GetAddOnEnableState
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type Namespace | CoreNamespace
 local ns = select(2, ...)
 local O, M, LibStub = ns.O, ns.M, ns.LibStub
-local IsAnyOf = O.String.IsAnyOf
+local IsAnyOf = ns:String().IsAnyOf
 
 --[[-----------------------------------------------------------------------------
 New Instance

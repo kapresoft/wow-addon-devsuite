@@ -14,12 +14,13 @@ local RegisterFrameForEvents = FrameUtil.RegisterFrameForEvents
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local ns = devsuite_ns(...)
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
-local Ace = ns.O.AceLibrary
-local AceConfigDialog = Ace.AceConfigDialog
+--- @type Namespace
+local ns = select(2, ...)
 
-local Table, String = O.Table, O.String
+local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+local AceConfigDialog = ns:AceConfigDialog()
+
+local Table, String = ns:Table(), ns:String()
 local ToTable = String.ToTable
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
@@ -28,6 +29,7 @@ local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.isEmpty
 --- @type DebugDialog
 local DebugDialog = LibStub(M.DebugDialog)
 
+local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 
 --[[-----------------------------------------------------------------------------
 NewAddOn
@@ -44,7 +46,7 @@ local debugDialog
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o DevSuite | AceHook
+--- @param o DevSuite | AceHook | AceConsole
 local function PropsAndMethods(o)
     O.MainController:Init(o)
 
@@ -147,6 +149,7 @@ local function PropsAndMethods(o)
     function o:RegisterSlashCommands()
         self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, "SlashCommands")
         self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, "SlashCommands")
+        self:RegisterChatCommand('dmp', function(...) ns.O.Developer:dump(...)  end)
     end
 
     function o:SlashCommand_Config_Handler()
@@ -156,24 +159,25 @@ local function PropsAndMethods(o)
         debugDialog:Show()
     end
     function o:SlashCommand_Info_Handler()
-        p:vv(GC:GetAddonInfoFormatted())
+        p:a(GC:GetAddonInfoFormatted())
     end
     function o:SlashCommand_Help_Handler()
-        p:vv('')
+        p:a('')
         local COMMAND_DIALOG_TEXT = 'Shows debug dialog UI'
         local COMMAND_CONFIG_TEXT = 'Shows the config UI'
         local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
         local COMMAND_HELP_TEXT = 'Shows this help'
         local OPTIONS_LABEL = 'options'
         local USAGE_LABEL = sformat("usage: %s [%s]", GC.C.CONSOLE_PLAIN, OPTIONS_LABEL)
-        p:vv(USAGE_LABEL)
-        p:vv(OPTIONS_LABEL .. ":")
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
-        p:vv(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
-        p:vv('Other commands:')
-        p:vv(function() return '/devsuite-options or /ds-options for the Ace3 AceConfig command line options.' end)
+        p:a(USAGE_LABEL)
+        p:a(OPTIONS_LABEL .. ":")
+        p:a(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
+        p:a(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
+        p:a(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
+        p:a(function() return GC.C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
+        p:a('Other commands:')
+        p:a(function() return c1('/devsuite-options')
+                .. ' or /ds-options for the Ace3 AceConfig command line options.' end)
     end
 
     --- @param spaceSeparatedArgs string

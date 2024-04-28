@@ -1,7 +1,7 @@
 ## Interface: 30403
 ## Version: @project-version@
-## Title: Dev|cff1784d1Suite|r Wrath
-## Notes: DevSuite Addon for World of Warcraft
+## Title: DevSuite |cff1784d1WOTLK|r
+## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: kapresoft@gmail.com
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
@@ -26,9 +26,5 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Wrath\Wrath.lua
+Core\Wrath.lua
 Core\_Core.xml
-#@do-not-package@
-Core\Lib\Developer\_Developer.xml
-#@end-do-not-package@
-Wrath\_DevSuite.xml

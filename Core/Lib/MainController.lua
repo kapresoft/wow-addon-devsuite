@@ -55,7 +55,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
 
     if not isLogin then return end
 
-    pp:vv(GC:GetMessageLoadedText())
+    pp:a(GC:GetMessageLoadedText())
 end
 
 --[[-----------------------------------------------------------------------------
@@ -194,14 +194,14 @@ local function PropsAndMethods(o)
         end)
 
         API:ForEachAddOnThatCanBeDisabled(function(info)
-            p:vv(function() return 'Addon should be disabled: %s', info.name end)
+            p:d(function() return 'Addon should be disabled: %s', info.name end)
             table.insert(addonsToDisable, info.name)
         end)
 
         if true == ns:db().global.prompt_for_reload_to_enable_addons
                 and (#addonsToEnable > 0 or #addonsToDisable > 0) then
             local prompt = ns:db().global.prompt_for_reload_to_enable_addons
-            p:vv(function() return 'prompt-for-reload=%s addons to enable=%s disable=%s',
+            p:d(function() return 'prompt-for-reload=%s addons to enable=%s disable=%s',
             tostring(prompt), pformat(addonsToEnable), pformat(addonsToDisable) end)
 
             local msg = ''

@@ -1,7 +1,8 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local ns = devsuite_ns(...)
+--- @type Namespace
+local ns = select(2, ...)
 local O, GC, M, LLibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
 local sformat = string.format
 
@@ -56,10 +57,68 @@ local function PropsAndMethods(o)
                     set = function(_, v) ns:SetLogLevel(v) end,
                 },
                 spacer1b = { type="description", name=sp, width="full", order = dbgSeq:next() },
-                desc_cat = { name = "Categories", type = "header", order = dbgSeq:next() },
-                spacer1c = { type="description", name=sp, width="full", order = dbgSeq:next() },
             },
         }
+
+        local a = debugConf.args
+        a.off = {
+            name = 'off',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Turn Off Logging",
+            func = function()
+                a.log_level.set({}, 0)
+            end,
+        }
+        a.info = {
+            name = 'info',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Info Log Level (15)",
+            func = function()
+                a.log_level.set({}, 15)
+            end,
+        }
+        a.debugBtn = {
+            name = 'debug',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Debug Log Level (20)",
+            func = function()
+                a.log_level.set({}, 20)
+            end,
+        }
+        a.fineBtn = {
+            name = 'fine',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Fine Log Level (25)",
+            func = function()
+                a.log_level.set({}, 25)
+            end,
+        }
+        a.finerBtn = {
+            name = 'finer',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Finer Log Level (30)",
+            func = function()
+                a.log_level.set({}, 30)
+            end,
+        }
+        a.finestBtn = {
+            name = 'finest',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Finest Log Level (35)",
+            func = function()
+                a.log_level.set({}, 35)
+            end,
+        }
+        a.traceBtn = {
+            name = 'trace',
+            type = "execute", order = dbgSeq:next(), width = 'half',
+            desc = "Trace Log Level (50)",
+            func = function()
+                a.log_level.set({}, 50)
+            end,
+        }
+        a.desc_cat = { name = "Categories", type = "header", order = dbgSeq:next() }
+        a.spacer1c = { type="description", name=sp, width="full", order = dbgSeq:next() }
 
         self:AddCategories(debugConf)
         return debugConf;

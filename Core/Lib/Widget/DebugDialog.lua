@@ -6,9 +6,9 @@ local tinsert = table.insert
 
 --- @type Namespace
 local _, ns = ...
-local O, M, LibStub, Ace, pformat = ns.O, ns.M, ns.O.LibStub, ns.O.AceLibrary, ns.pformat
+local O, M, LibStub, Ace, pformat = ns.O, ns.M, ns.O.LibStub, ns:AceLibrary(), ns.pformat
 
-local Table, String = O.Table, O.String
+local Table, String = ns:Table(), ns:String()
 local AceGUI = Ace.AceGUI
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
@@ -19,7 +19,7 @@ New Library
 -------------------------------------------------------------------------------]]
 ---@class DebugDialog : DialogWidgetMixin
 local D = LibStub:NewLibrary(M.DebugDialog)
-O.Mixin:Mixin(D, O.DialogWidgetMixin)
+ns:K():Mixin(D, O.DialogWidgetMixin)
 D.mt.__call = function (_, ...) return D:Constructor(...) end
 local p = ns:CreateDefaultLogger(M.DebugDialog)
 
@@ -91,7 +91,7 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
             return
         end
 
-        local replace = O.String.replace
+        local replace = ns:String().replace
 
         if 'table' == type(val) and val.__tostring then
             local text = ''

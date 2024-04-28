@@ -19,7 +19,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type string
 local addon
---- @class GenericNamespace : Kapresoft_Base_Namespace
+--- @type CoreNamespace
 local ns
 addon, ns = ...
 local kch = ns.Kapresoft_LibUtil.CH
@@ -83,7 +83,7 @@ local commandShort = kch:FormatColor(consoleColors.primary, '/' .. consoleComman
 GlobalConstants
 -------------------------------------------------------------------------------]]
 --- @class GlobalConstants
-local L = LibStub:NewLibrary(LibName('GlobalConstants'), 1); if not L then return end
+local L = {}
 
 --- @param o GlobalConstants
 local function GlobalConstantProperties(o)
@@ -217,4 +217,8 @@ end
 
 GlobalConstantProperties(L)
 Methods(L)
+ns.GC = L
 
+--- deprecated
+ns.O = ns.O or {}
+ns.O.GlobalConstants = ns.GC
