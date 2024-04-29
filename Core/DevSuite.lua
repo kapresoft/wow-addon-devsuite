@@ -1,33 +1,17 @@
 --[[-----------------------------------------------------------------------------
-Lua Vars
--------------------------------------------------------------------------------]]
-local setglobal = setglobal
-
---[[-----------------------------------------------------------------------------
-Blizzard Vars
--------------------------------------------------------------------------------]]
-local UISpecialFrames = UISpecialFrames
-local ReloadUI, IsShiftKeyDown = ReloadUI, IsShiftKeyDown
-local CreateFrame = CreateFrame
-local RegisterFrameForEvents = FrameUtil.RegisterFrameForEvents
-
---[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
 
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
+local O, GC, LibStub = ns.O, ns.GC, ns.O.LibStub
 local AceConfigDialog = ns:AceConfigDialog()
 
 local Table, String = ns:Table(), ns:String()
-local ToTable = String.ToTable
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
 local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.isEmpty
-
---- @type DebugDialog
-local DebugDialog = LibStub(M.DebugDialog)
+local DebugDialog = O.DebugDialog
 
 local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 
@@ -35,8 +19,8 @@ local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 NewAddOn
 -------------------------------------------------------------------------------]]
 --- @class DevSuite
-local A = LibStub:NewAddon(ns.name); if not A then return end
-local p = ns:CreateDefaultLogger(ns.name)
+local A = LibStub:NewAddon(ns.addon); if not A then return end
+local p = ns:CreateDefaultLogger(ns.addon)
 
 --- @type PopupDebugDialog
 A.PopupDialog = nil
@@ -93,12 +77,12 @@ local function PropsAndMethods(o)
     end
 
     function o:OpenConfig()
-        if AceConfigDialog.OpenFrames[ns.name] then return end
-        AceConfigDialog:SelectGroup(ns.name)
+        if AceConfigDialog.OpenFrames[ns.addon] then return end
+        AceConfigDialog:SelectGroup(ns.addon)
         self:DialogGlitchHack();
         self.onHideHooked = self.onHideHooked or false
         PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
-        self.configDialogWidget = AceConfigDialog.OpenFrames[ns.name]
+        self.configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
         if not self.onHideHooked then
             self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
             self.onHideHooked = true
@@ -106,17 +90,17 @@ local function PropsAndMethods(o)
     end
     --- This hacks solves the range UI notch not positioning properly
     function o:DialogGlitchHack()
-        AceConfigDialog:SelectGroup(ns.name, "debugging")
-        AceConfigDialog:Open(ns.name)
+        AceConfigDialog:SelectGroup(ns.addon, "debugging")
+        AceConfigDialog:Open(ns.addon)
         C_Timer.After(0.01, function()
-            AceConfigDialog:ConfigTableChanged('anyEvent', ns.name)
-            AceConfigDialog:SelectGroup(ns.name, "autoload_addons")
+            AceConfigDialog:ConfigTableChanged('anyEvent', ns.addon)
+            AceConfigDialog:SelectGroup(ns.addon, "autoload_addons")
         end)
     end
 
-    function o:OpenConfigGeneral() AceConfigDialog:Open(ns.name) end
-    function o:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'autoload_addons')) end
-    function o:DebugSettings() AceConfigDialog:Open(ns.name, AceConfigDialog:SelectGroup(ns.name, 'debugging')) end
+    function o:OpenConfigGeneral() AceConfigDialog:Open(ns.addon) end
+    function o:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'autoload_addons')) end
+    function o:DebugSettings() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'debugging')) end
 
     function o:OnHide_Config_WithSound() self:OnHide_Config(true) end
     function o:OnHide_Config_WithoutSound()
@@ -127,7 +111,6 @@ local function PropsAndMethods(o)
         local enable = enableSound == true
         p:d(function() return 'OnHide_Config called with enableSound=%s', tostring(enable) end)
         if true == enable then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
-        O.MainController:RefreshAutoLoadedAddons()
     end
 
     function o:RegisterHooks()
@@ -138,7 +121,7 @@ local function PropsAndMethods(o)
     --- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
     function o:OnEnable()
         self:RegisterHooks()
-        debugDialog = DebugDialog(ns:profile())
+        debugDialog = DebugDialog:New()
     end
 
     -- ## -------------------------------------------------------------------------
@@ -198,6 +181,16 @@ local function PropsAndMethods(o)
         self:SlashCommand_Help_Handler(); return
     end
 
+    local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetCVarBool, RestartGx
+    function o:ToggleWindowed()
+        local isMaximized = GetCVarBool(GX_MAXIMIZE)
+        SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
+        RaidNotice_AddMessage(RaidWarningFrame, "Toggling Window Mode!", ChatTypeInfo["RAID_WARNING"])
+        C_Timer.After(1, function()
+            RestartGx()
+        end)
+    end
+
     -- ## -------------------------------------------------------------------------
     -- ## -------------------------------------------------------------------------
     -- ## -------------------------------------------------------------------------
@@ -206,4 +199,5 @@ local function PropsAndMethods(o)
 
     function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
     function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
+    function o.BINDING_DEVS_TOGGLE_WINDOWED() o:ToggleWindowed() end
 end; PropsAndMethods(A); DEV_SUITE = A

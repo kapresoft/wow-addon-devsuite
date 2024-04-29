@@ -42,70 +42,62 @@ local LogCategories = {
 }
 
 --[[-----------------------------------------------------------------------------
-GlobalObjects
+Type: Module
 -------------------------------------------------------------------------------]]
---- @class GlobalObjects
---- @field Developer Developer
---- @field LibStubAce LibStub
---- @field LibStub LocalLibStub
---- @field Table Kapresoft_LibUtil_Table
---- @field String Kapresoft_LibUtil_String
---- @field Assert Kapresoft_LibUtil_Assert
---- @field Mixin Kapresoft_LibUtil_Mixin
---- @field AceLibrary Kapresoft_LibUtil_AceLibraryObjects
---- @field AceDbInitializerMixin AceDbInitializerMixin
---- @field API API
---- @field OptionsMixin OptionsMixin
---- @field DebuggingSettingsGroup DebuggingSettingsGroup
---- @field ConfigDialogController ConfigDialogController
---- @field MainController MainController
---- @field DialogWidgetMixin DialogWidgetMixin
---- @field PopupDebugDialog PopupDebugDialog
---- @field GlobalConstants GlobalConstants
---- @field OptionsUtil OptionsUtil
+--- @class Module
+--- @field name Name
 
 --[[-----------------------------------------------------------------------------
-Modules
+Type: Modules
 -------------------------------------------------------------------------------]]
 --- @class Modules
 local M = {
-    LibStubAce = '',
-    LU = '',
-    AceLibrary = '',
+    --- @type AceDbInitializerMixin
+    AceDbInitializerMixin = {},
+    --- @type API
+    API = {},
+    --- @type DebugDialog
+    DebugDialog = {},
+    --- @type DebuggingSettingsGroup
+    DebuggingSettingsGroup = {},
+    --- @type ConfigDialogController
+    ConfigDialogController = {},
+    --- @type Developer
+    Developer = {},
+    --- @type MainController
+    MainController = {},
+    --- @type DialogWidgetMixin
+    DialogWidgetMixin = {},
+    --- @type OptionsMixin
+    OptionsMixin = {},
+    --- @type OptionsUtil
+    OptionsUtil = {},
+    --- @type PopupDebugDialog
+    PopupDebugDialog = {},
+    --- @type Localization
+    Localization = {},
+};
 
-    GlobalConstants = '',
-    Logger = '',
-    AceLibFactory = '',
-
-    Table = '',
-    String = '',
-    Assert = '',
-    Mixin = '',
-    -- Local Types
-    AceDbInitializerMixin = '',
-    API = '',
-    Config = '',
-    DebugDialog = '',
-    DebuggingSettingsGroup = '',
-    ConfigDialogController = '',
-    Developer = '',
-    MainController = '',
-    DialogWidgetMixin = '',
-    OptionsMixin = '',
-    OptionsUtil = '',
-    PopupDebugDialog = '',
-}; for moduleName in pairs(M) do M[moduleName] = moduleName end
-
+--- @param name Name
+--- @param module Module
+for name, module in pairs(M) do
+    module.name = name
+    module.mt = {
+        __tostring = function() return "Module:" .. name  end,
+        __call = function() return name  end
+    }
+    setmetatable(module, module.mt)
+end
 
 --- @class __NamespaceLoggerMixin
---- @field O GlobalObjects
+--- @field O Modules
 local NamespaceLoggerMixin = {}
 ---@param o __NamespaceLoggerMixin
 local function NamespaceLoggerMethods(o)
     DEVS_DEBUG_ENABLED_CATEGORIES = DEVS_DEBUG_ENABLED_CATEGORIES or {}
 
     local CategoryLogger = KO.CategoryMixin:New()
-    CategoryLogger:Configure(addonName, LogCategories, {
+    CategoryLogger:Configure(kns.addonLogName, LogCategories, {
         consoleColors = GC.C.CONSOLE_COLORS,
         levelSupplierFn = function() return DEVS_LOG_LEVEL  end,
         enabledCategoriesSupplierFn = function() return DEVS_DEBUG_ENABLED_CATEGORIES end,
@@ -135,7 +127,10 @@ local function NamespaceLoggerMethods(o)
     end
     function o:LC() return LogCategories end
     --- @return Kapresoft_CategoryLogger
-    function o:CreateDefaultLogger(moduleName) return LogCategories.DEFAULT:NewLogger(moduleName) end
+    function o:CreateDefaultLogger(moduleName)
+        local p = self:LC().DEFAULT:NewLogger('Namespace.CDL')
+        p:f3(function() return 'Creating Default Logger for: %s', moduleName end)
+        return LogCategories.DEFAULT:NewLogger(moduleName) end
 
 end; NamespaceLoggerMethods(NamespaceLoggerMixin)
 
@@ -154,22 +149,7 @@ end
 ---@param o __Namespace | Namespace
 local function NameSpacePropertiesAndMethods(o)
 
-    --- @type string
-    o.nameShort = GC:GetLogName()
-
-    if 'table' ~= type(o.O) then o.O = {} end
-
-    o.M = M
-    o.requiresReload = false
-    o.event = o:AceEvent()
-
     if not _G['pformat'] then _G['pformat'] = o.pformat end
-
-    function o:RequiresReload() return self.requiresReload == true end
-    function o:NotifyIfRequiresReload()
-        if not self:RequiresReload() then return end
-        self:db().callbacks:Fire('OnProfileChanged')
-    end
 
     --- @param moduleName string The module name, i.e. Logger
     --- @param optionalMajorVersion number|string
@@ -190,9 +170,15 @@ local function NameSpacePropertiesAndMethods(o)
         local newLib = {}
         local len = select("#", ...)
         if len > 0 then newLib = self:K():Mixin({}, ...) end
-        newLib.mt = { __tostring = GC.ToStringFunction(libName)}
+        newLib.mt = { __tostring = function() return 'Lib:' .. libName end}
         setmetatable(newLib, newLib.mt)
         self.O[libName] = newLib
+        --@do-not-package@
+        if kns.debug:IsDeveloper() then
+            local p  = self:LC().DEFAULT:NewLogger('Ns')
+            p:vv(function() return "Lib: %s", kns.f.val(libName) end)
+        end
+        --@end-do-not-package@
         return newLib
     end
     function o:NewLibWithEvent(libName, ...)
@@ -203,6 +189,13 @@ local function NameSpacePropertiesAndMethods(o)
         newLib.mt = { __tostring = GC.ToStringFunction(libName)}
         setmetatable(newLib, newLib.mt)
         self.O[libName] = newLib
+        --@do-not-package@
+        if kns.debug:IsDeveloper() then
+            local p  = self:LC().DEFAULT:NewLogger('Ns')
+            local n =  kns.f.val(kns.sformat('%s (with AceEvent)', libName))
+            p:vv(function() return "Lib: %s", n end)
+        end
+        --@end-do-not-package@
         return newLib
     end
 
@@ -223,37 +216,30 @@ end
 --- @return Namespace
 local function CreateNameSpace(...)
 
-    --- @type string
-    local addon
     --- @class __Namespace : CoreNamespace
     --- @field gameVersion GameVersion
-    --- @field O GlobalObjects
+    --- @field O Modules
     --- @field LibStubAce LibStub
     --- @field LibStub LocalLibStub
-    local ns
+    local ns = select(2, ...)
 
-    addon, ns = ...
-
-    --- @type GlobalObjects
+    --- @type Modules
     ns.O = ns.O or {}
+
+    --- @type Modules
+    --- TODO: O or M needs to be deprecated. Which one?
+    ns.M = M
+
     --- @type string
-    --- @deprecated Deprecated. Use ns.addon instead of ns.name due to Module .name field conflict
-    ns.name = addon
-    --- @type string
-    ns.nameShort = GC:GetLogName()
-    ns.GC = GC
+    --- @deprecated Deprecated. Use ns.addonShortName
+    ns.nameShort = ns.addonShortName
 
     --- @see BlizzardInterfaceCode:Interface/SharedXML/Mixin.lua
     ns:K():Mixin(ns, NamespaceLoggerMixin)
     NameSpacePropertiesAndMethods(ns)
 
-    --- Global Function
-    pformat = pformat or ns.pformat
-
-    ns.mt = { __tostring = function() return addon .. '::Namespace'  end }
+    ns.mt = { __tostring = function() return ns.addon .. '::Namespace'  end }
     setmetatable(ns, ns.mt)
-
-
 
     return ns
 end;

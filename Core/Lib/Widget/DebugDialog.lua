@@ -5,23 +5,20 @@ local loadstring = loadstring
 local tinsert = table.insert
 
 --- @type Namespace
-local _, ns = ...
-local O, M, LibStub, Ace, pformat = ns.O, ns.M, ns.O.LibStub, ns:AceLibrary(), ns.pformat
+local ns = select(2, ...)
+local O, M = ns.O, ns.M
 
-local Table, String = ns:Table(), ns:String()
-local AceGUI = Ace.AceGUI
+local String, AceGUI = ns:String(), ns:AceLibrary().AceGUI
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
-local FUNCTION_TEMPLATE = 'function()\n\n  return \"hello\"\n\nend'
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 local EqualsIgnoreCase = String.EqualsIgnoreCase
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
----@class DebugDialog : DialogWidgetMixin
-local D = LibStub:NewLibrary(M.DebugDialog)
-ns:K():Mixin(D, O.DialogWidgetMixin)
-D.mt.__call = function (_, ...) return D:Constructor(...) end
-local p = ns:CreateDefaultLogger(M.DebugDialog)
+local libName = M.DebugDialog()
+--- @class DebugDialog : DialogWidgetMixin
+local D = ns:NewLib(libName); ns:K():Mixin(D, O.DialogWidgetMixin)
+local p = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -185,11 +182,12 @@ end
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
----@return DebugDialogWidget
----@param profile Profile_Config
-function D:Constructor(profile)
+--- @return DebugDialogWidget
+function D:New()
     ---@class DebugDialogAceFrameWidget
     local frame = AceGUI:Create("Frame")
+
+    local profile = ns:profile()
 
     -- The following makes the "Escape" close the window
     --_G[DEBUG_DIALOG_GLOBAL_FRAME_NAME] = frame.frame

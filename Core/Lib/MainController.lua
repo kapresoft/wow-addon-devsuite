@@ -1,34 +1,25 @@
 --[[-----------------------------------------------------------------------------
-Lua Vars
--------------------------------------------------------------------------------]]
-local sformat = string.format
-
---[[-----------------------------------------------------------------------------
 Blizzard Vars
 -------------------------------------------------------------------------------]]
-local CreateFrame, FrameUtil = CreateFrame, FrameUtil
-local RegisterFrameForEvents, RegisterFrameForUnitEvents = FrameUtil.RegisterFrameForEvents, FrameUtil.RegisterFrameForUnitEvents
-local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
+local CreateFrame = CreateFrame
 
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local O, GC, M, LibStub, KO = ns.O, ns.GC, ns.M, ns.LibStub, ns:KO()
-local E, MSG, LL, AceEvent = GC.E, GC.M, ns:AceLocale(), ns:AceEvent()
-local API, Ace, IsAddonSuiteEnabled = O.API, KO.AceLibrary.O, O.API.IsAddonSuiteEnabled
-local libName = M.MainController
+local O, GC = ns.O, ns.GC
+local E, MSG, AceEvent = GC.E, GC.M, ns:AceEvent()
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class MainController : BaseLibraryObject_WithAceEvent
-local L = LibStub:NewLibrary(libName); if not L then return end
-Ace.AceEvent:Embed(L)
+local libName = ns.M.MainController()
+--- @class MainController
+local L = ns:NewLibWithEvent(libName)
 local p = ns:CreateDefaultLogger(libName)
-local pp = ns:CreateDefaultLogger(ns.name)
-local pm = ns:LC().MESSAGE:NewLogger(L.name)
+local pm = ns:LC().MESSAGE:NewLogger(libName)
+local pp = ns:CreateDefaultLogger(ns.addon)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -49,9 +40,15 @@ local function OnPlayerEnteringWorld(frame, event, ...)
         addon.PopupDialog = O.PopupDebugDialog()
     end
 
-    --@debug@
-    isLogin = true
-    --@end-debug@
+    --@do-not-package@
+    if ns.debug:IsDeveloper() then
+        isLogin = true
+        p:vv(function()
+            return "IsLogin=%s IsReload=%s LogLevel=%s",
+                    ns.f.val(isLogin), ns.f.val(isReload), ns.f.val(DEVS_LOG_LEVEL)
+        end)
+    end
+    --@end-do-not-package@
 
     if not isLogin then return end
 
@@ -61,27 +58,18 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
----@param addons table<number, AddOnName>
----@param action string
-local function AddOnsToString(action, addons)
-    if #addons <=0 then return '' end
-    local str = ''
-    for _, n in ipairs(addons) do
-        str = sformat('%s%s (%s)\n', str, n, action)
-    end
-    return str
-end
----@param o MainController
+--- @param o MainController | AceEvent
 local function PropsAndMethods(o)
-    local DEV_RELOAD_CONFIRM = 'DEV_RELOAD_CONFIRM'
 
-    ---Init Method: Called by DevSuite.lua
+    --- Init Method: Called by DevSuite.lua
+    --- @private
     --- @param addon DevSuite
     function o:Init(addon)
         self.addon = addon
         self:RegisterMessage(MSG.OnAfterInitialize, function(evt, ...) self:OnAfterInitialize() end)
     end
 
+    --- @private
     function o:OnAfterInitialize() self:RegisterEvents() end
 
     --- @private
@@ -97,10 +85,8 @@ local function PropsAndMethods(o)
         self:InitializeState()
     end
 
+    --- @private
     function o:InitializeState()
-        self:InitStaticDialog()
-        self:RefreshAutoLoadedAddons()
-
         -- AddonUsage is the "Addon Usage" global var
         C_Timer.After(3, function()
             self:OnToggleFrameRate()
@@ -114,106 +100,7 @@ local function PropsAndMethods(o)
     function o:RegisterOnPlayerEnteringWorld()
         local f = self:CreateEventFrame()
         f:SetScript(E.OnEvent, OnPlayerEnteringWorld)
-        RegisterFrameForEvents(f, { E.PLAYER_ENTERING_WORLD })
-    end
-
-    --- #### See Also:
-    --- - [Creating_simple_pop-up_dialog_boxes](https://wowpedia.fandom.com/wiki/Creating_simple_pop-up_dialog_boxes)
-    function o:InitStaticDialog()
-        if StaticPopupDialogs[DEV_RELOAD_CONFIRM] then return end
-        StaticPopupDialogs[DEV_RELOAD_CONFIRM] = {
-            text =  sformat(':: %s ::\n\n', ns.name) .. LL['REQUIRES_RELOAD'] .. '\n%s\n',
-            button1 = YES,
-            button2 = NO,
-            OnAccept = function() L:OnApplyAndRestart() end,
-            timeout = 0,
-            whileDead = true,
-            hideOnEscape = true,
-            showAlert = true,
-        }
-    end
-
-    --- @param callbackFn fun(info:AddOnInfo) | "function(info) end"
-    function o:ForEachCheckedAndLoadableAddon(callbackFn)
-        local addons = ns:profile().auto_loaded_addons
-        if not addons then return end
-        for name, checked in pairs(addons) do
-            if checked == true then
-                local info = API:GetAddOnInfo(name)
-                if info:CanBeEnabled() then callbackFn(info) end
-            end
-        end
-    end
-
-    function o:OnSyncAddOnEnabledState()
-        if IsAddonSuiteEnabled() then return end
-
-        local charName = UnitName("player")
-        p:d(function() return "CharName=%s", tostring(charName) end)
-        --- @table<string,boolean>
-        local addons = ns:db().profile.auto_loaded_addons
-
-        local enabled = {}
-        local disabled = {}
-        API:ForEachAddOn(function(addOn)
-            local shouldLoad = addons[addOn.name]
-            local name = addOn.name
-            if name ~= ns.name then
-                if shouldLoad and shouldLoad == true then
-                    EnableAddOn(name, charName)
-                    table.insert(enabled, name)
-                else
-                    DisableAddOn(name, charName)
-                    table.insert(disabled, name)
-                end
-            end
-        end)
-
-        EnableAddOn(ns.name, charName)
-        p:f1(function() return "Updating Add-On States:" end)
-        p:f1(function() return "%s (this): enabled=true", ns.name end)
-        p:f1(function() return "Enabled: %s", pformat(enabled) end)
-        p:f1(function() return "Disabled: %s", pformat(disabled) end)
-
-    end
-    function o:OnApplyAndRestart()
-        self:OnSyncAddOnEnabledState()
-        ReloadUI()
-    end
-
-    function o:RefreshAutoLoadedAddons()
-        if IsAddonSuiteEnabled() then return end
-
-        local addons = ns:profile().auto_loaded_addons
-        if not addons then return end
-
-        local addonsToEnable = {}
-        local addonsToDisable = {}
-        self:ForEachCheckedAndLoadableAddon(function(info)
-            table.insert(addonsToEnable, info.name)
-        end)
-
-        API:ForEachAddOnThatCanBeDisabled(function(info)
-            p:d(function() return 'Addon should be disabled: %s', info.name end)
-            table.insert(addonsToDisable, info.name)
-        end)
-
-        if true == ns:db().global.prompt_for_reload_to_enable_addons
-                and (#addonsToEnable > 0 or #addonsToDisable > 0) then
-            local prompt = ns:db().global.prompt_for_reload_to_enable_addons
-            p:d(function() return 'prompt-for-reload=%s addons to enable=%s disable=%s',
-            tostring(prompt), pformat(addonsToEnable), pformat(addonsToDisable) end)
-
-            local msg = ''
-            if #addonsToEnable > 0 then
-                msg = AddOnsToString('Enable', addonsToEnable)
-            end
-            if #addonsToDisable > 0 then
-                msg = msg .. AddOnsToString('Disable', addonsToDisable)
-            end
-
-            StaticPopup_Show(DEV_RELOAD_CONFIRM, msg)
-        end
+        f:RegisterEvent(E.PLAYER_ENTERING_WORLD)
     end
 
     ---@param val boolean The config value
@@ -265,23 +152,16 @@ local function PropsAndMethods(o)
 
     --- @return MainControllerFrame
     function o:CreateEventFrame()
-        --- @class MainControllerFrame : _Frame
+        --- @class _MainControllerFrame
         --- @field ctx MainEventContext
         local f = CreateFrame("Frame", nil, self.addon.frame)
         f.ctx = self:CreateEventContext(f)
+        --- @alias MainControllerFrame _MainControllerFrame | Frame
         return f
     end
 
 end; PropsAndMethods(L)
 
-AceEvent:RegisterMessage(GC.M.OnApplyAndRestart, function(msg, source, ...)
-    pm:d(function() return '%s: source=%s', GC.M.OnApplyAndRestart, source end)
-    L:OnApplyAndRestart()
-end)
-AceEvent:RegisterMessage(GC.M.OnSyncAddOnEnabledState, function(msg, source, ...)
-    pm:d(function() return '%s: source=%s', GC.M.OnSyncAddOnEnabledState, source end)
-    L:OnSyncAddOnEnabledState()
-end)
 AceEvent:RegisterMessage(GC.M.OnToggleFrameRate, function(msg, source, ...)
     pm:f1(function() return '%s: source=%s', GC.M.OnToggleFrameRate, source end)
     L:OnToggleFrameRate()

@@ -13,16 +13,15 @@ local UISpecialFrames = UISpecialFrames
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
-local _, ns = ...
-local O, GC, M, LibStub = ns.O, ns.O.GlobalConstants, ns.M, ns.LibStub
+local ns = select(2, ...)
 
 --[[-----------------------------------------------------------------------------
 New Library
 -------------------------------------------------------------------------------]]
---- @class DialogWidgetMixin : BaseLibraryObject
-local L = {}
-ns:Register(M.DialogWidgetMixin, L)
-local p = ns:CreateDefaultLogger(M.DialogWidgetMixin)
+local libName = ns.M.DialogWidgetMixin()
+--- @class DialogWidgetMixin
+local L = ns:NewLib(libName)
+local p = ns:CreateDefaultLogger(libName)
 
 ---@param frameName string
 ---@param frameInstance table The frame object

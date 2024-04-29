@@ -3,23 +3,16 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local O, GC, M, LLibStub, LC = ns.O, ns.O.GlobalConstants, ns.M, ns.O.LibStub
-local sformat = string.format
+local M, sformat = ns.M, ns.sformat
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
 
---- @return DebuggingSettingsGroup, Kapresoft_CategoryLogger
-local function CreateLib()
-    local libName = M.DebuggingSettingsGroup
-    --- @class DebuggingSettingsGroup : BaseLibraryObject
-    local newLib = LLibStub:NewLibrary(libName); if not newLib then return nil end
-    local logger = ns:CreateDefaultLogger(libName)
-    return newLib, logger
-end; local LIB, p = CreateLib(); if not LIB then return end
-
-local dbgSeq = ns:CreateSequence()
+local libName = M.DebuggingSettingsGroup()
+--- @class DebuggingSettingsGroup
+local LIB = ns.O.LibStub:NewLibrary(libName);
+local p = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -32,7 +25,8 @@ local function PropsAndMethods(o)
 
     --- @return AceConfigOption
     function o:CreateDebuggingGroup()
-
+        local seq = ns:CreateSequence(3)
+        local enableDebugConsolePosition = 2
         --- @type AceConfigOption
         local debugConf = {
             type = 'group',
@@ -42,11 +36,11 @@ local function PropsAndMethods(o)
             order = 101,
 
             args = {
-                desc = { name = sformat(" %s ", L['Debugging Configuration']), type = "header", order = dbgSeq:next() },
-                spacer1a = { type="description", name=sp, width="full", order = dbgSeq:next() },
+                desc = { name = sformat(" %s ", L['Debugging Configuration']), type = "header", order = seq:next() },
+                spacer1a = { type="description", name=sp, width="full", order = 1 },
                 log_level = {
                     type = 'range',
-                    order = dbgSeq:next(),
+                    order = seq:next(),
                     step = 5,
                     min = 0,
                     max = 50,
@@ -56,79 +50,95 @@ local function PropsAndMethods(o)
                     get = function(_) return ns:GetLogLevel() end,
                     set = function(_, v) ns:SetLogLevel(v) end,
                 },
-                spacer1b = { type="description", name=sp, width="full", order = dbgSeq:next() },
+                spacer1b = { type="description", name=sp, width="full", order = seq:next() },
             },
         }
 
         local a = debugConf.args
-        a.off = {
+        a.off           = {
             name = 'off',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Turn Off Logging",
             func = function()
                 a.log_level.set({}, 0)
             end,
         }
-        a.info = {
+        a.info          = {
             name = 'info',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Info Log Level (15)",
             func = function()
                 a.log_level.set({}, 15)
             end,
         }
-        a.debugBtn = {
+        a.debugBtn      = {
             name = 'debug',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Debug Log Level (20)",
             func = function()
                 a.log_level.set({}, 20)
             end,
         }
-        a.fineBtn = {
+        a.fineBtn       = {
             name = 'fine',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Fine Log Level (25)",
             func = function()
                 a.log_level.set({}, 25)
             end,
         }
-        a.finerBtn = {
+        a.finerBtn      = {
             name = 'finer',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Finer Log Level (30)",
             func = function()
                 a.log_level.set({}, 30)
             end,
         }
-        a.finestBtn = {
+        a.finestBtn     = {
             name = 'finest',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Finest Log Level (35)",
             func = function()
                 a.log_level.set({}, 35)
             end,
         }
-        a.traceBtn = {
+        a.traceBtn      = {
             name = 'trace',
-            type = "execute", order = dbgSeq:next(), width = 'half',
+            type = "execute", order = seq:next(), width = 'half',
             desc = "Trace Log Level (50)",
             func = function()
                 a.log_level.set({}, 50)
             end,
         }
-        a.desc_cat = { name = "Categories", type = "header", order = dbgSeq:next() }
-        a.spacer1c = { type="description", name=sp, width="full", order = dbgSeq:next() }
+        a.desc_cat      = { name = "Categories", type = "header", order = seq:next() }
+        a.spacer1c      = { type="description", name=sp, width="full", order = seq:next() }
 
-        self:AddCategories(debugConf)
+        self:AddCategories(debugConf, seq)
+
+
+        --@do-not-package@
+        if ns.debug:IsDeveloper() and not ns.debug:IsEnableLogConsole() then
+            a.enableDebugConsole = {
+                name  = 'Enable Debug Console', type = 'execute',
+                order = enableDebugConsolePosition,
+                func  = function()
+                    ns.DeveloperSetup:EnableDebugChatFrame()
+                    ns.chatFrame:SelectInDock()
+                end
+            }
+        end
+        --@end-do-not-package@
+
         return debugConf;
     end
 
     ---@param conf AceConfigOption
-    function o:AddCategories(conf)
+    ---@param seq Kapresoft_LibUtil_SequenceMixin
+    function o:AddCategories(conf, seq)
         conf.args.enable_all = {
             name = L['Debugging::Category::Enable All::Button'], desc = L['Debugging::Category::Enable All::Button::Desc'],
-            type = "execute", order = dbgSeq:next(), width = 'normal',
+            type = "execute", order = seq:next(), width = 'normal',
             func = function()
                 for _, option in pairs(conf.args) do
                     if option.type == 'toggle' then option.set({}, true) end
@@ -136,19 +146,19 @@ local function PropsAndMethods(o)
             end }
         conf.args.disable_all = {
             name = L['Debugging::Category::Disable All::Button'], desc = L['Debugging::Category::Disable All::Button::Desc'],
-            type="execute", order=dbgSeq:next(), width = 'normal',
+            type ="execute", order = seq:next(), width = 'normal',
             func = function()
                 for _, option in pairs(conf.args) do
                     if option.type == 'toggle' then option.set({}, false) end
                 end
             end }
-        conf.args.spacer2 = { type="description", name=sp, width="full", order = dbgSeq:next() },
+        conf.args.spacer2 = { type="description", name=sp, width="full", order = seq:next() },
 
         ns.LogCategory:ForEachCategory(function(cat)
             local elem = {
-                type = 'toggle', name=cat.labelFn(), order=dbgSeq:next(), width=1.2,
-                get = function() return ns:IsLogCategoryEnabled(cat.name) end,
-                set = function(_, val) ns:SetLogCategory(cat.name, val) end
+                type = 'toggle', name =cat.labelFn(), order = seq:next(), width =1.2,
+                get  = function() return ns:IsLogCategoryEnabled(cat.name) end,
+                set  = function(_, val) ns:SetLogCategory(cat.name, val) end
             }
             conf.args[cat.name] = elem
         end)

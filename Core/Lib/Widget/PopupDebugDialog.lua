@@ -1,4 +1,8 @@
 --[[-----------------------------------------------------------------------------
+PopupDebugDialog: A dialog used to show text and code
+-------------------------------------------------------------------------------]]
+
+--[[-----------------------------------------------------------------------------
 Lua Vars
 -------------------------------------------------------------------------------]]
 local sformat = string.format
@@ -7,18 +11,19 @@ local sformat = string.format
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
-local _, ns = ...
+local ns = select(2, ...)
+
 local pformat = ns.pformat
-local O, LibStub = ns.O, ns.LibStub
 local AceGUI = ns:AceLibrary().AceGUI
 local LuaEvaluator = ns:KO().LuaEvaluator
 
-local libName = 'PopupDebugDialog'
-local L = LibStub:NewLibrary(libName)
+local libName = ns.M.PopupDebugDialog()
+--- @class PopupDebugDialog : PopupDebugDialogFrame
+local L = ns:NewLib(libName)
 local p = ns:CreateDefaultLogger(libName)
 
-local FRAME_NAME = ns.name .. 'DebugDialog'
-local FRAME_TITLE = ns.name .. ' Dialog'
+local FRAME_NAME = ns.addon .. 'DebugDialog'
+local FRAME_TITLE = ns.addon .. ' Dialog'
 
 local function ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
     local frame = frameInstance
@@ -116,11 +121,10 @@ function L:Constructor()
     --- @see "AceGUIContainer-Frame.lua"
     local frameWidget = CreateDialog()
 
-    --- @class PopupDebugDialog : PopupDebugDialogFrame
+    --- @type PopupDebugDialog
     local dialog = ns:K():CreateFromMixins(L, frameWidget)
 
     return dialog
 end
 
 L.mt.__call = L.Constructor
-PD = L

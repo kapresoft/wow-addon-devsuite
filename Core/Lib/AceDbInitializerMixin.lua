@@ -5,35 +5,18 @@ Local Vars
 local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 local LibUtil, AceEvent = ns:K(), ns:AceEvent()
-local sformat = ns.sformat
-local AceDB, IsAddonSuiteEnabled = ns:AceDB(), O.API.IsAddonSuiteEnabled
+local AceDB = ns:AceDB()
 
-local CONFIRM_RELOAD_UI_WITH_MSG = ns.name .. 'CONFIRM_RELOAD_UI_WITH_MSG'
-
-local fn1 = [[-- evaluate a variable
-{ GetBuildInfo() }]]
-local fn2 = [[-- return a function
-function()
-  local version, build, date, tocversion = GetBuildInfo()
-  local ret = {
-    version=version, build=build, date=date, tocversion=tocversion
-  }
-  return ret
-end]]
-local fnN = [[
-function()
-  local ret = {
-  }
-  return ret
-end]]
+local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
+local libName = M.AceDbInitializerMixin()
 --- @alias AceDbInitializer AceDbInitializerMixin
---- @class AceDbInitializerMixin : BaseLibraryObject
-local L = LibStub:NewLibrary(M.AceDbInitializerMixin)
-local p = ns:LC().DB:NewLogger(M.AceDbInitializerMixin)
+--- @class AceDbInitializerMixin : Module
+local L = LibStub:NewLibrary(libName)
+local p = ns:LC().DB:NewLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 ConfirmAndReload UI
@@ -60,13 +43,9 @@ end
 
 ---@param a DevSuite
 local function AddonCallbackMethods(a)
-    local function DoConfirmAndReload()
-        if IsAddonSuiteEnabled() then return end
-        ConfirmAndReload().data = GC.M.OnSyncAddOnEnabledState
-    end
-    function a:OnProfileChanged() DoConfirmAndReload() end
-    function a:OnProfileCopied() DoConfirmAndReload() end
-    function a:OnProfileReset() DoConfirmAndReload() end
+    function a:OnProfileChanged() p:f1('OnProfileChanged() called..') end
+    function a:OnProfileCopied() p:f1('OnProfileCopied() called...') end
+    function a:OnProfileReset() p:f1('OnProfileReset() called...') end
 end
 
 ---@param o AceDbInitializerMixin
@@ -100,58 +79,10 @@ local function Methods(o)
         self:InitDbDefaults()
     end
 
-    --- @return AddOn_DB
-    function o:GetDefaultDB()
-
-        --- @type AutoLoadedAddons
-        local autoLoadedAddons = {
-            ['!BugGrabber'] = true,
-            ['BugSack'] = true,
-            ['AddonUsage'] = true,
-            ['Ace3'] = true,
-            ['Boxer'] = false,
-            ['M6'] = false,
-        }
-
-        --- @type Profile_Config
-        local defaultProfile = {
-            enable = true,
-            auto_loaded_addons = autoLoadedAddons,
-            debugDialog = {
-                maxHistory = 15,
-                items = {
-                    { name='Saved #1', value=fn1, sortIndex=1 },
-                    { name='Saved #2', value=fn2, sortIndex=2 },
-                }
-            },
-        }
-        for i = 3, defaultProfile.debugDialog.maxHistory do
-            local name = sformat('Saved #%s', i)
-            --- @type Profile_Config_Item
-            local t = { name=name, value = fnN, sortIndex = i, }
-            table.insert(defaultProfile.debugDialog.items, t)
-        end
-        ---@param a Profile_Config_Item
-        ---@param b Profile_Config_Item
-        local function sortFn(a,b) return a.sortIndex <= b.sortIndex end
-        table.sort(defaultProfile.debugDialog.items, sortFn)
-
-        --- @type AddOn_DB
-        local defaultDb = {
-            global = {
-                show_fps = true,
-                prompt_for_reload_to_enable_addons = true,
-                addon_addonUsage_auto_show_ui = true
-            },
-            profile = defaultProfile
-        }
-        return defaultDb
-    end
-
     function o:InitDbDefaults()
         local profileName = ns:db():GetCurrentProfile()
         p:d(function() return 'profile: %s', profileName end)
-        ns:db():RegisterDefaults(self:GetDefaultDB())
+        ns:db():RegisterDefaults(ns.DefaultAddOnDatabase)
     end
 end
 

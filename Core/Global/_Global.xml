@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 
     <Script file="GlobalConstants.lua"/>
+    <Script file="DefaultAddOnDatabase.lua"/>
     <Script file="Namespace.lua"/>
 
 </Ui>

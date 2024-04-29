@@ -8,4 +8,7 @@
     <Binding name="DEVS_GET_DETAILS_ON_MOUSEOVER" category="AddOns/DevSuite">
         DEV_SUITE.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER();
     </Binding>
+    <Binding name="DEVS_TOGGLE_WINDOWED" category="AddOns/DevSuite">
+        DEV_SUITE.BINDING_DEVS_TOGGLE_WINDOWED();
+    </Binding>
 </Bindings>

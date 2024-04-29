@@ -12,11 +12,34 @@ local addon
 --- @type CoreNamespace | Kapresoft_LibUtil_NamespaceAceLibraryMixin | Kapresoft_LibUtil_NamespaceAceLibraryMixin
 local ns
 addon, ns = ...;
-ns.addon     = addon
-ns.shortName = 'devst'
+ns.addon          = addon
+--- @deprecated Deprecated. Use ns.addon
+ns.name = addon
+ns.addonShortName = 'devst'
+ns.addonLogName   = string.upper(ns.addonShortName)
+
 local K = ns.Kapresoft_LibUtil
 
+--- Global Function
+pformat = pformat or K.pformat
+
+--- @type Kapresoft_LibUtil_ColorDefinition
+ns.consoleColors = {
+    primary   = 'FF780A',
+    secondary = 'fbeb2d',
+    tertiary = 'ffffff',
+}
+
+--- Color Formatters
+ns.f = {
+    --- Use this for values
+    val = K:cf(LIGHTGRAY_FONT_COLOR)
+}
+
 K:Mixin(ns, K.Objects.CoreNamespaceMixin, K.Objects.NamespaceAceLibraryMixin)
+--- The "name" field conflicts with K.Objects. We need to restore it here
+--- ns.name is deprecated
+ns.name = ns.addon
 
 --[[-----------------------------------------------------------------------------
 Type: DebugSettingsFlag

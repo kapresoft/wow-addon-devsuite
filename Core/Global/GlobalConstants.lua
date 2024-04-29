@@ -17,11 +17,9 @@ local date = date
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type string
-local addon
 --- @type CoreNamespace
-local ns
-addon, ns = ...
+local ns = select(2, ...)
+
 local kch = ns.Kapresoft_LibUtil.CH
 
 local addonShortName = 'DS'
@@ -31,7 +29,7 @@ local consoleCommandOptions = consoleCommand .. '-options'
 local consoleCommandOptionsShort = consoleCommandShort .. '-options'
 local useShortName = true
 
-local CONFIRM_RELOAD_UI_NAME = addon .. '_CONFIRM_RELOAD_UI'
+local CONFIRM_RELOAD_UI_NAME = ns.addon .. '_CONFIRM_RELOAD_UI'
 
 --- The original Ace LibStub
 local LibStub = LibStub
@@ -45,12 +43,12 @@ local TOSTRING_SUBMODULE_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe::|r|cfdfb
 local function LibName(moduleName, optionalMajorVersion)
     assert(moduleName, "Module name is required for LibName(moduleName)")
     local majorVersion = optionalMajorVersion or '1.0'
-    local v = sformat("%s-%s-%s", addon, moduleName, majorVersion)
+    local v = sformat("%s-%s-%s", ns.addon, moduleName, majorVersion)
     return v
 end
 --- @param moduleName string
 local function ToStringFunction(moduleName)
-    local name = addon
+    local name = ns.addon
     if useShortName then name = addonShortName end
     if moduleName then return function() return string.format(TOSTRING_SUBMODULE_FMT, name, moduleName) end end
     return function() return string.format(TOSTRING_ADDON_FMT, name) end
@@ -70,12 +68,7 @@ StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
 --[[-----------------------------------------------------------------------------
 Console Colors
 -------------------------------------------------------------------------------]]
---- @type Kapresoft_LibUtil_ColorDefinition
-local consoleColors = {
-    primary   = 'FF780A',
-    secondary = 'fbeb2d',
-    tertiary = 'ffffff',
-}
+local consoleColors = ns.consoleColors
 local command = kch:FormatColor(consoleColors.primary, '/' .. consoleCommand)
 local commandShort = kch:FormatColor(consoleColors.primary, '/' .. consoleCommandShort)
 
@@ -140,7 +133,7 @@ local function GlobalConstantProperties(o)
     };
     local function InitMessageNames()
         local function uniqueName(name)
-            local prefix = (useShortName and addonShortName) or addon
+            local prefix = (useShortName and ns.addonShortName) or ns.addon
             return sformat('%s::%s', prefix, name)
         end
         for n,_ in pairs(MessageNames) do
@@ -159,8 +152,8 @@ end
 local function Methods(o)
 
     function o:GetLogName()
-        local logName = addon
-        if useShortName then logName = addonShortName end
+        local logName = ns.addon
+        if useShortName then logName = ns.addonShortName end
         return logName
     end
 
@@ -170,27 +163,27 @@ local function Methods(o)
     ---```
     --- @return string, string, string, string, string, string
     function o:GetAddonInfo()
+        print('xxx addon:', ns.addon)
         local versionText, lastUpdate
-        --@non-debug@
-        versionText = GetAddOnMetadata(ns.name, 'Version')
-        lastUpdate = GetAddOnMetadata(ns.name, 'X-Github-Project-Last-Changed-Date')
-        --@end-non-debug@
-        --@debug@
-        versionText = '1.0.x.dev'
-        lastUpdate = date("%m/%d/%y %H:%M:%S")
-        --@end-debug@
+        versionText = GetAddOnMetadata(ns.addon, 'Version')
+        lastUpdate = GetAddOnMetadata(ns.addon, 'X-Github-Project-Last-Changed-Date')
+
+        --@do-not-package@
+        if ns.debug:IsDeveloper() then
+            versionText = '1.0.x.dev'
+            lastUpdate  = date("%m/%d/%y %H:%M:%S")
+        end
+        --@end-do-not-package@
         local wowInterfaceVersion = select(4, GetBuildInfo())
 
-        return versionText, GetAddOnMetadata(ns.name, 'X-CurseForge'),
-        GetAddOnMetadata(ns.name, 'X-Github-Issues'),
-        GetAddOnMetadata(ns.name, 'X-Github-Repo'),
-        lastUpdate, wowInterfaceVersion
+        return versionText, GetAddOnMetadata(ns.addon, 'X-CurseForge'),
+            GetAddOnMetadata(ns.addon, 'X-Github-Issues'),
+            GetAddOnMetadata(ns.addon, 'X-Github-Repo'),
+            lastUpdate, wowInterfaceVersion
     end
 
     function o:GetAddonInfoFormatted()
         local version, curseForge, issues, repo, lastUpdate, wowInterfaceVersion = self:GetAddonInfo()
-        --p:log("Addon Info:\n  Version: %s\n  Curse-Forge: %s\n  File-Bugs-At: %s\n  Last-Changed-Date: %s\n  WoW-Interface-Version: %s\n",
-        --        version, curseForge, issues, lastChanged, wowInterfaceVersion)
         return sformat("Addon Info:\n%s\n%s\n%s\n%s\n%s\n%s",
                 sformat(ADDON_INFO_FMT, 'Version', version),
                 sformat(ADDON_INFO_FMT, 'Curse-Forge', curseForge),
@@ -205,7 +198,7 @@ local function Methods(o)
         local consoleCommandMessageFormat = sformat('Type %s or %s for available commands.',
                 command, commandShort)
         return sformat("%s version %s by %s is loaded. %s",
-                kch:P(addon) , self:GetAddonInfo(), kch:FormatColor(consoleColors.primary, 'kapresoft'),
+                kch:P(ns.addon) , self:GetAddonInfo(), kch:FormatColor(consoleColors.primary, 'kapresoft'),
                 consoleCommandMessageFormat)
     end
 
@@ -218,7 +211,3 @@ end
 GlobalConstantProperties(L)
 Methods(L)
 ns.GC = L
-
---- deprecated
-ns.O = ns.O or {}
-ns.O.GlobalConstants = ns.GC

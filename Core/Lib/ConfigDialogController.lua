@@ -5,18 +5,19 @@ Local Vars
 local ns = select(2, ...)
 local O, MS = ns.O, ns.GC.M
 local AceConfigDialog = ns:AceConfigDialog()
-local libName = ns.M.ConfigDialogController
+
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class ConfigDialogController : BaseLibraryObject_WithAceEvent
+local libName = ns.M.ConfigDialogController()
+--- @class ConfigDialogController
 local L = ns:NewLibWithEvent(libName)
 local p = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o ConfigDialogController
+--- @param o ConfigDialogController | AceEvent
 local function PropsAndMethods(o)
 
     function o:OnAddonReady()
@@ -25,19 +26,19 @@ local function PropsAndMethods(o)
     end
 
     function o:CreateDialogEventFrame()
-        local frameName = ns.sformat("%s_%sEventFrame", ns.name, libName)
+        local frameName = ns.sformat("%s_%sEventFrame", ns.addon, libName)
         --- @type _Frame
         local f = CreateFrame("Frame", frameName, UIParent, "SecureHandlerStateTemplate")
         f:Hide()
         f:SetScript("OnHide", function(self)
-            if not AceConfigDialog.OpenFrames[ns.name] then return end
-            AceConfigDialog:Close(ns.name)
+            if not AceConfigDialog.OpenFrames[ns.addon] then return end
+            AceConfigDialog:Close(ns.addon)
         end)
         self.dialogEventFrame = f
         RegisterStateDriver(self.dialogEventFrame, "visibility", "[combat]hide;show")
     end
 
-    L:RegisterMessage(MS.OnAddonReady, function() o:OnAddonReady()  end)
+    o:RegisterMessage(MS.OnAddonReady, function() o:OnAddonReady()  end)
 end; PropsAndMethods(L)
 
 

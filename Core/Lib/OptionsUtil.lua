@@ -3,11 +3,12 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local libName = ns.M.OptionsUtil
+
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class OptionsUtil : BaseLibraryObject_WithAceEvent
+local libName = ns.M.OptionsUtil()
+--- @class OptionsUtil
 --- @field optionsMixin OptionsMixin
 local L = ns:NewLibWithEvent(libName)
 local p = ns:CreateDefaultLogger(libName)
@@ -15,7 +16,7 @@ local p = ns:CreateDefaultLogger(libName)
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o OptionsUtil
+--- @param o OptionsUtil | AceEvent
 local function PropsAndMethods(o)
 
     --- @public
