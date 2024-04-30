@@ -43,7 +43,6 @@ Available Fonts:
 -------------------------------------------------------------------------------]]
 function L:EnableDebugChatFrame()
     local pre = sformat('{{%s::%s}}', c1(ns.addon), libName)
-    print('pre:', pre)
     local function LoadDebugChatFrame()
         local addonName = 'DebugChatFrame'
         local U = ns:KO().AddonUtil
