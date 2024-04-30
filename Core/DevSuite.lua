@@ -4,7 +4,7 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 
-local O, GC, LibStub = ns.O, ns.GC, ns.O.LibStub
+local O, GC, LibStub = ns.O, ns.GC, ns.LibStub
 local AceConfigDialog = ns:AceConfigDialog()
 
 local Table, String = ns:Table(), ns:String()

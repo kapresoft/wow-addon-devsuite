@@ -16,7 +16,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.O.LibStub
+local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 
 local ACE, API = ns:AceLibrary(), O.API
 local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions

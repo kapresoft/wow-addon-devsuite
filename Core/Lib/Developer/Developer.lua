@@ -19,7 +19,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local M, LibStub = ns.M, ns.O.LibStub
+local M, LibStub = ns.M, ns.LibStub
 
 local libName = M.Developer()
 --- @class Developer : BaseLibraryObject
@@ -119,6 +119,5 @@ local function Methods(o)
 
     --- Usage: /run d:c('hello', 'world')
     function o:c(...) ns.logp(libNamePretty, ...) end
-
 
 end; Methods(L); d = L

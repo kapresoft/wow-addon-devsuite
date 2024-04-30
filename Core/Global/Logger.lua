@@ -10,7 +10,7 @@ Local Vars
 local addonName, ns = ...
 
 ---The original LibStub
-local LibStub = ns.LibStub.LibStubAce
+local LibStub = ns.LibStubAce
 local C = LibStub('AceConsole-3.0')
 
 local K = ns.Kapresoft_LibUtil

@@ -137,13 +137,12 @@ end; NamespaceLoggerMethods(NamespaceLoggerMixin)
 ---@param n Namespace
 local function InitLocalLibStub(n)
     --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
-    local LocalLibStub = n:K().Objects.LibStubMixin:New(n.name, 1.0,
+    local LocalLibStub = n:K().Objects.LibStubMixin:New(n.addon, 1.0,
             function(name, newLibInstance)
                 n:Register(name, newLibInstance)
             end)
     n.LibStubAce = LibStub
     n.LibStub = LocalLibStub
-    n.O.LibStub = LocalLibStub
 end
 
 ---@param o __Namespace | Namespace
@@ -227,7 +226,6 @@ local function CreateNameSpace(...)
     ns.O = ns.O or {}
 
     --- @type Modules
-    --- TODO: O or M needs to be deprecated. Which one?
     ns.M = M
 
     --- @type string

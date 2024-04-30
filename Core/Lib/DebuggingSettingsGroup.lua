@@ -11,8 +11,8 @@ New Instance
 
 local libName = M.DebuggingSettingsGroup()
 --- @class DebuggingSettingsGroup
-local LIB = ns.O.LibStub:NewLibrary(libName);
-local p = ns:CreateDefaultLogger(libName)
+local S       = ns.LibStub:NewLibrary(libName);
+local p       = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods
@@ -164,5 +164,5 @@ local function PropsAndMethods(o)
         end)
     end
 
-end; PropsAndMethods(LIB)
+end; PropsAndMethods(S)
 

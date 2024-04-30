@@ -163,11 +163,8 @@ local function Methods(o)
     ---```
     --- @return string, string, string, string, string, string
     function o:GetAddonInfo()
-        print('xxx addon:', ns.addon)
-        local versionText, lastUpdate
-        versionText = GetAddOnMetadata(ns.addon, 'Version')
-        lastUpdate = GetAddOnMetadata(ns.addon, 'X-Github-Project-Last-Changed-Date')
-
+        local versionText = GetAddOnMetadata(ns.addon, 'Version')
+        local lastUpdate = GetAddOnMetadata(ns.addon, 'X-Github-Project-Last-Changed-Date')
         --@do-not-package@
         if ns.debug:IsDeveloper() then
             versionText = '1.0.x.dev'
