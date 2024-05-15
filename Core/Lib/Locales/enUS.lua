@@ -10,7 +10,7 @@ local c1 = ns:K():cf(HEIRLOOM_BLUE_COLOR)
 
 local silent = true
 --@do-not-package@
-if ns.debug:IsDeveloper() then silent = false end
+if ns:IsDev() then silent = false end
 --@end-do-not-package@
 local L = LibStub('AceLocale-3.0'):NewLocale(ns.addon, 'enUS', true, silent);
 

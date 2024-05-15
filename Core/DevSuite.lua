@@ -162,7 +162,7 @@ function o:SlashCommand_Help_Handler()
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
     --@do-not-package@
-    if ns.debug:IsDeveloper() then
+    if ns:IsDev() then
         local vn = ns.addonGlobalNamespaceVarName
         local nsDump = sformat('dump %s or %s.ns()', vn, vn)
         p:a(c1('options (debug):'))

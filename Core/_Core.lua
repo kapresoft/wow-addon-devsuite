@@ -44,14 +44,6 @@ ns.f = {
 }
 
 --[[-----------------------------------------------------------------------------
-Namespace Methods
--------------------------------------------------------------------------------]]
---- @return boolean
-function ns:IsDev()
-    return ns.debug:IsDeveloper()
-end
-
---[[-----------------------------------------------------------------------------
 Type: DebugSettingsFlag
 -------------------------------------------------------------------------------]]
 --- @class DebugSettingsFlag
@@ -59,21 +51,17 @@ Type: DebugSettingsFlag
 local flag = {
     --- Enable developer mode: logging and debug tab settings
     developer = false,
-    --- Enables the DebugChatFrame log console
-    enableLogConsole = false,
-    --- Enable selection of chat frame tab
-    selectLogConsoleTab = false,
 }
 
---- @return DebugSettings
-local function debug()
-    --- @class DebugSettings
-    local o = {
-        flag = flag,
-    }
-    --- @return boolean
-    function o:IsDeveloper() return self.flag.developer == true  end
-    return o;
-end
+--[[-----------------------------------------------------------------------------
+Type: DebugSettings
+--- Make sure to match this structure in GlobalDeveloper (which is not packaged in releases)
+-------------------------------------------------------------------------------]]
+--- @class DebugSettings
+ns.debug = { flag = flag }
 
-ns.debug = debug()
+--[[-----------------------------------------------------------------------------
+Namespace Methods
+-------------------------------------------------------------------------------]]
+--- @return boolean
+function ns:IsDev() return ns.debug.flag.developer == true end

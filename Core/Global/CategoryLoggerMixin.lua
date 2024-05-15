@@ -54,7 +54,7 @@ local o = L; do
             levelSupplierFn = function() return __GetLogLevel() end,
             enabledCategoriesSupplierFn = function() return __GetCategories() end,
             printerFn = ns.print,
-            enabled = namesp.debug:IsDeveloper(),
+            enabled = namesp:IsDev(),
         })
         namesp.CategoryLogger = function() return CategoryLogger end
         namesp:K():Mixin(namesp, o)

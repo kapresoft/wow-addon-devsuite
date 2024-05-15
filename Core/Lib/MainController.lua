@@ -41,7 +41,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     end
 
     --@do-not-package@
-    if ns.debug:IsDeveloper() then
+    if ns:IsDev() then
         isLogin = true
         p:vv(function()
             return "IsLogin=%s IsReload=%s LogLevel=%s",

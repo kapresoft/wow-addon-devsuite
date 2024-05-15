@@ -60,7 +60,7 @@ local o = S; do
     ---@param opt AceConfigOption
     local function ConfigureDebugging(opt)
         --@do-not-package@
-        if not ns.debug:IsDeveloper() then return end
+        if not ns:IsDev() then return end
         opt.args.debugging = O.DebuggingSettingsGroup:CreateDebuggingGroup()
         p:a(function() return 'Debugging tab in Settings UI is enabled.' end)
         --@end-do-not-package@
