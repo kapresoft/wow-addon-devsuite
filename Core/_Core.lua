@@ -46,8 +46,6 @@ ns.f = {
 --[[-----------------------------------------------------------------------------
 Namespace Methods
 -------------------------------------------------------------------------------]]
---- This method will stay true during development regardless of ns.debug:IsDeveloperValue().
---- There are cases where we need this to be true during development like the Addon Version Text.
 --- @return boolean
 function ns:IsDev()
     return ns.debug:IsDeveloper()

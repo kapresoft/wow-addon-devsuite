@@ -42,7 +42,7 @@ jobs:
       ## ------------------------------------------------ ##
       ## See: https://github.com/actions/github-script
       - name: "Set Env Variable: GITHUB_SHA_SHORT"
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             const sha = context.sha.substring(0, 7)
@@ -109,7 +109,7 @@ jobs:
           echo "$(env|sort)"
       ## ------------------------------------------------ ##
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       ## ------------------------------------------------ ##
       ## see: https://github.com/marketplace/actions/wow-packager
       - uses: BigWigsMods/packager@v2
@@ -117,13 +117,13 @@ jobs:
           args: -r ${releaseDir} ${bigWigsUploads} ${packagerOptions}
       ## ------------------------------------------------ ##
       - name: "Verify Build Artifact Exists: ${{ env.buildArtifact }}"
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "${{ env.buildArtifact }}"
           fail: true
       ## ------------------------------------------------ ##
       - name: "Verify: Supporting Scripts Exists"
-        uses: andstor/file-existence-action@v2
+        uses: andstor/file-existence-action@v3
         with:
           files: "./dev/md5sum.sh"
           fail: true
@@ -160,7 +160,7 @@ jobs:
       - name: Create a draft release
         id: create_draft_release
         if: ${{ env.createDraftRelease != 'false' }}
-        uses: release-drafter/release-drafter@v5
+        uses: release-drafter/release-drafter@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
