@@ -7,6 +7,11 @@ Type: GeneralConfigOptionArgs
 --- @field specialNoticeText AceConfigOption
 
 --[[-----------------------------------------------------------------------------
+Type: DebugConsoleOptionArgs
+-------------------------------------------------------------------------------]]
+--- @class DebugConsoleOptionArgs
+
+--[[-----------------------------------------------------------------------------
 Lua Vars
 -------------------------------------------------------------------------------]]
 local sformat = string.format
@@ -20,7 +25,8 @@ local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 
 local ACE, API = ns:AceLibrary(), O.API
 local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions
-local DebugSettings = O.DebuggingSettingsGroup
+local ACU = ns:KO().AceConfigUtil:New(ns.addon)
+
 local c1 = ns:K():cf(RED_FONT_COLOR)
 local c2 = ns:K():cf(YELLOW_FONT_COLOR)
 
@@ -29,14 +35,14 @@ New Instance
 -------------------------------------------------------------------------------]]
 --- @class OptionsMixin
 local libName = M.OptionsMixin()
-local S       = LibStub:NewLibrary(libName)
+local S       = ns:NewLibWithEvent(libName)
 local p       = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Types: ProfileSelectValues
 -------------------------------------------------------------------------------]]
----@param o OptionsMixin
-local function MethodsAndProps(o)
+--- @type OptionsMixin | AceEventInterface
+local o = S; do
     local L = ns:AceLocale()
 
     --- Automatically called by CreateAndInitFromMixin(..)
@@ -44,7 +50,6 @@ local function MethodsAndProps(o)
     function o:Init(addon)
         self.addon = addon
         self.util = O.OptionsUtil:New(o)
-        self.loc = O.Localization
     end
 
     --- Usage:  local instance = OptionsMixin:New(addon)
@@ -55,11 +60,9 @@ local function MethodsAndProps(o)
     ---@param opt AceConfigOption
     local function ConfigureDebugging(opt)
         --@do-not-package@
-        if ns.debug:IsDeveloper() then
-            opt.args.debugging = DebugSettings:CreateDebuggingGroup()
-            p:a(function() return 'Debugging tab in Settings UI is enabled.' end)
-            return
-        end
+        if not ns.debug:IsDeveloper() then return end
+        opt.args.debugging = O.DebuggingSettingsGroup:CreateDebuggingGroup()
+        p:a(function() return 'Debugging tab in Settings UI is enabled.' end)
         --@end-do-not-package@
         DEVS_LOG_LEVEL = 0
     end
@@ -72,7 +75,8 @@ local function MethodsAndProps(o)
             handler = self,
             type = "group",
             args = {
-                general = self:CreateGeneralOptions()
+                general = self:CreateGeneralOptions(),
+                --debugConsole = self:CreateDebugConsoleGroup(),
             }
         }; ConfigureDebugging(options)
 
@@ -93,31 +97,54 @@ local function MethodsAndProps(o)
             type  = "group",
             name  = L['General'],
             desc  = L['General::Desc'],
-            order = order:next(),
-            args  = {
-                --desc = { name = " General Configuration ", type = "header", order = order:next() },
-                showFPS = {
-                    type      = 'toggle',
-                    width     = 'full',
-                    name      = c2(L['Show Frames-Per-Second (FPS)']),
-                    desc      = self.loc:G('Show Frames-Per-Second (FPS)::Desc'),
-                    descStyle = 'inline',
-                    order     = order:next(),
-                    get       = self.util:GlobalGet('show_fps', false),
-                    set       = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
-                },
-                addonUsage_AutomaticallyShow = {
-                    disabled  = not O.API:IsAddonUsageAvailable(),
-                    order     = order:next(),
-                    width     = 'full',
-                    name      = aULabel,
-                    desc      = self.loc:G('Addon Usage: Automatically Show UI::Desc'),
-                    descStyle = 'inline',
-                    type      = 'toggle',
-                    get       = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
-                    set       = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
-                },
-            },
+            order = order:get(),
+            args  = {},
+        }
+        local a = general.args
+
+        local function DebugConsoleGetFn() return ns:dbg().enableLogConsole == true end
+        local function DebugConsoleSetFn(_, v)
+            local val = (v == true)
+            ns:dbg().enableLogConsole = val
+            if val then return ns:DevConsoleModule():Enable() end
+            ns:DevConsoleModule():Disable()
+        end
+
+        a.enableDebugConsole = ACU:CreateGlobalOption('Enable Debug Console', {
+            type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
+            get  = DebugConsoleGetFn,
+            set  = DebugConsoleSetFn,
+        })
+        local edc = a.enableDebugConsole
+        if not DebugChatFrame then
+            --a.enableDebugConsole.name = a.enableDebugConsole.name .. '( Requires DebugChatFrame AddOn Library)'
+            --a.enableDebugConsole.descStyle = 'inline'
+            ns:dbg().enableLogConsole = false
+            edc.desc = "Requires " .. c1('DebugChatFrame') .. ' AddOn'
+            edc.disabled = true
+        end
+
+        --desc = { name = " General Configuration ", type = "header", order = order:next() },
+        a.showFPS = {
+            type      = 'toggle',
+            width     = 'full',
+            name      = c2(L['Show Frames-Per-Second (FPS)']),
+            desc      = ns.LocaleUtil.G('Show Frames-Per-Second (FPS)::Desc'),
+            descStyle = 'inline',
+            order     = order:next(),
+            get       = self.util:GlobalGet('show_fps', false),
+            set       = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
+        }
+        a.addonUsage_AutomaticallyShow = {
+            disabled  = not O.API:IsAddonUsageAvailable(),
+            order     = order:next(),
+            width     = 'full',
+            name      = aULabel,
+            desc      = ns.LocaleUtil.G('Addon Usage: Automatically Show UI::Desc'),
+            descStyle = 'inline',
+            type      = 'toggle',
+            get       = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
+            set       = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
         }
 
         local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
@@ -137,6 +164,8 @@ local function MethodsAndProps(o)
 
     function o:InitOptions()
         local options = self:CreateOptions()
+        self.options = options
+
         -- This creates the Profiles Tab/Section in Settings UI
         options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
 
@@ -149,5 +178,3 @@ local function MethodsAndProps(o)
     end
 
 end
-
-MethodsAndProps(S)

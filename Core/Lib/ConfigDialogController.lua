@@ -17,7 +17,7 @@ local p = ns:CreateDefaultLogger(libName)
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o ConfigDialogController | AceEvent
+--- @param o ConfigDialogController | AceEventInterface
 local function PropsAndMethods(o)
 
     function o:OnAddonReady()
@@ -38,7 +38,7 @@ local function PropsAndMethods(o)
         RegisterStateDriver(self.dialogEventFrame, "visibility", "[combat]hide;show")
     end
 
-    o:RegisterMessage(MS.OnAddonReady, function() o:OnAddonReady()  end)
+    o:RegisterMessage(MS.OnAddOnReady, function() o:OnAddonReady()  end)
 end; PropsAndMethods(L)
 
 

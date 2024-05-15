@@ -3,6 +3,19 @@ package-as: DevSuite
 license-output: LICENSE.txt
 enable-nolib-creation: no
 
+required-dependencies:
+  - DebugChatFrame
+
+embedded-libraries:
+  - LibStub
+  - Ace3
+
+tools-used:
+  - DevSuite
+  - Addon-Usage
+  - Bugsack
+  - Bug-Grabber
+
 externals:
   Core/ExtLib/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util

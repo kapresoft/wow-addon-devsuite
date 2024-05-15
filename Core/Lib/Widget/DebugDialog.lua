@@ -19,6 +19,7 @@ local libName = M.DebugDialog()
 --- @class DebugDialog : DialogWidgetMixin
 local D = ns:NewLib(libName); ns:K():Mixin(D, O.DialogWidgetMixin)
 local p = ns:CreateDefaultLogger(libName)
+local pformat = ns.pformat
 
 --[[-----------------------------------------------------------------------------
 Support Functions

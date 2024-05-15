@@ -25,6 +25,16 @@ Type: Profile_DB_ProfileKeys
 --- ``` ["Azwang - Smolderweb"] = "Azwang - Smolderweb" ```
 --- @class Profile_DB_ProfileKeys : table<string, string>
 
+--- @class DebugSettingsFlag_Config
+local DebugSettingsFlag = {
+    enableLogConsole = false,
+    selectLogConsoleTab = true,
+    makeDefaultChatFrame = true,
+    maxLogConsoleLines = 1000,
+    DEVTOOLS_DEPTH_CUTOFF = 5,
+    DEVTOOLS_MAX_ENTRY_CUTOFF = 50,
+}
+
 --[[-----------------------------------------------------------------------------
 Type: Profile_Global_Config
 -------------------------------------------------------------------------------]]
@@ -38,6 +48,15 @@ local DefaultGlobal = {
     prompt_for_reload_to_enable_addons = true,
     addon_addonUsage_auto_show_ui = true,
     show_AddonManagerHasMovedNotice = true,
+    debug = DebugSettingsFlag,
+}
+
+--[[-----------------------------------------------------------------------------
+Type: Profile_Character_Config
+-------------------------------------------------------------------------------]]
+--- @class Profile_Character_Config
+local DefaultCharacterSettings = {
+    nickName = 'Uber Player'
 }
 
 local fn1 = [[-- evaluate a variable
@@ -59,19 +78,6 @@ end]]
 
 --- @param defaultProfile Profile_Config
 local function InitDefaultProfile(defaultProfile)
-
-    --[[--- @type Profile_Config
-    local defaultProfile = {
-        enable = true,
-        auto_loaded_addons = autoLoadedAddons,
-        debugDialog = {
-            maxHistory = 15,
-            items = {
-                { name='Saved #1', value=fn1, sortIndex=1 },
-                { name='Saved #2', value=fn2, sortIndex=2 },
-            }
-        },
-    }]]
     for i = 3, defaultProfile.debugDialog.maxHistory do
         local name = ns.sformat('Saved #%s', i)
         --- @type Profile_Config_Item
@@ -85,17 +91,6 @@ local function InitDefaultProfile(defaultProfile)
 
     return defaultProfile
 end
-
---- @type AutoLoadedAddons
---- TODO: Remove, no longer needed
-local autoLoadedAddons = {
-    ['!BugGrabber'] = true,
-    ['BugSack'] = true,
-    ['AddonUsage'] = true,
-    ['Ace3'] = true,
-    ['Boxer'] = false,
-    ['M6'] = false,
-}
 
 --[[-----------------------------------------------------------------------------
 Type: Profile_Config

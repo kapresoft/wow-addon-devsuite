@@ -16,7 +16,7 @@ local p = ns:CreateDefaultLogger(libName)
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o OptionsUtil | AceEvent
+--- @param o OptionsUtil | AceEventInterface
 local function PropsAndMethods(o)
 
     --- @public
