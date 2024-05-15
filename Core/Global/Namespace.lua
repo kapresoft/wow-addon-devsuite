@@ -1,25 +1,29 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type string
-local addonName
---- @type CoreNamespace
-local kns
-addonName, kns = ...
-
 --- @type LibStub
 local LibStub = LibStub
+
+--- @type CoreNamespace
+local kns = select(2, ...)
+
+--- @type string
+local addonName = kns.addon
 --- @type GlobalConstants
 local GC = kns.GC
-
 --- @type Kapresoft_LibUtil
-local LibUtil = kns.Kapresoft_LibUtil
-local KO = LibUtil.Objects
-local pformat = LibUtil.pformat
+local K = kns:K()
+--- @type Kapresoft_LibUtil_Modules
+local KO = kns:KO()
+
+local c2  = K:cf(YELLOW_FONT_COLOR)
+local pre_dev = kns.sformat('{{%s::%s}}:', kns.f.debug(kns.addonLogName), c2('Ns'))
+local logpd   = kns.LogFunctions.logp(pre_dev)
 
 --[[-----------------------------------------------------------------------------
 Log Categories
 -------------------------------------------------------------------------------]]
+--- @class LogCategories
 local LogCategories = {
     --- @type Kapresoft_LogCategory
     DEFAULT = 'DEFAULT',
@@ -60,6 +64,8 @@ local M = {
     DebugDialog = {},
     --- @type DebuggingSettingsGroup
     DebuggingSettingsGroup = {},
+    --- @type CategoryLoggerMixin
+    CategoryLoggerMixin = {},
     --- @type ConfigDialogController
     ConfigDialogController = {},
     --- @type Developer
@@ -68,87 +74,29 @@ local M = {
     MainController = {},
     --- @type DialogWidgetMixin
     DialogWidgetMixin = {},
+    --- @type DevConsoleModuleMixin
+    DevConsoleModuleMixin = {},
     --- @type OptionsMixin
     OptionsMixin = {},
+    --- @type OptionsDebugConsole
+    OptionsDebugConsole = {},
     --- @type OptionsUtil
     OptionsUtil = {},
     --- @type PopupDebugDialog
     PopupDebugDialog = {},
-    --- @type Localization
-    Localization = {},
-};
+}; KO.LibModule.EnrichModules(M)
 
---- @param name Name
---- @param module Module
-for name, module in pairs(M) do
-    module.name = name
-    module.mt = {
-        __tostring = function() return "Module:" .. name  end,
-        __call = function() return name  end
-    }
-    setmetatable(module, module.mt)
-end
-
---- @class __NamespaceLoggerMixin
---- @field O Modules
-local NamespaceLoggerMixin = {}
----@param o __NamespaceLoggerMixin
-local function NamespaceLoggerMethods(o)
-    DEVS_DEBUG_ENABLED_CATEGORIES = DEVS_DEBUG_ENABLED_CATEGORIES or {}
-
-    local CategoryLogger = KO.CategoryMixin:New()
-    CategoryLogger:Configure(kns.addonLogName, LogCategories, {
-        consoleColors = GC.C.CONSOLE_COLORS,
-        levelSupplierFn = function() return DEVS_LOG_LEVEL  end,
-        enabledCategoriesSupplierFn = function() return DEVS_DEBUG_ENABLED_CATEGORIES end,
-        printerFn = kns.print,
-        enabled = kns.debug:IsDeveloper(),
-    })
-    o.LogCategory = CategoryLogger
-
-    --- @return number
-    function o:GetLogLevel() return DEVS_LOG_LEVEL end
-    --- @param level number
-    function o:SetLogLevel(level) DEVS_LOG_LEVEL = level or 1 end
-
-    --- @param name string | "'ADDON'" | "'BAG'" | "'BUTTON'" | "'DRAG_AND_DROP'" | "'EVENT'" | "'FRAME'" | "'ITEM'" | "'MESSAGE'" | "'MOUNT'" | "'PET'" | "'PROFILE'" | "'SPELL'"
-    --- @param v boolean|number | "1" | "0" | "true" | "false"
-    function o:SetLogCategory(name, val)
-        assert(name, 'Debug category name is missing.')
-        ---@param v boolean|nil
-        local function normalizeVal(v) if v == 1 or v == true then return 1 end; return 0 end
-        DEVS_DEBUG_ENABLED_CATEGORIES[name] = normalizeVal(val)
-    end
-    --- @return boolean
-    function o:IsLogCategoryEnabled(name)
-        assert(name, 'Debug category name is missing.')
-        local val = DEVS_DEBUG_ENABLED_CATEGORIES[name]
-        return val == 1 or val == true
-    end
-    function o:LC() return LogCategories end
-    --- @return Kapresoft_CategoryLogger
-    function o:CreateDefaultLogger(moduleName)
-        local p = self:LC().DEFAULT:NewLogger('Namespace.CDL')
-        p:f3(function() return 'Creating Default Logger for: %s', moduleName end)
-        return LogCategories.DEFAULT:NewLogger(moduleName) end
-
-end; NamespaceLoggerMethods(NamespaceLoggerMixin)
-
----@param n Namespace
-local function InitLocalLibStub(n)
-    --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
-    local LocalLibStub = n:K().Objects.LibStubMixin:New(n.addon, 1.0,
-            function(name, newLibInstance)
-                n:Register(name, newLibInstance)
-            end)
-    n.LibStubAce = LibStub
-    n.LibStub = LocalLibStub
-end
-
----@param o __Namespace | Namespace
+--- @param o __Namespace | Namespace
 local function NameSpacePropertiesAndMethods(o)
 
-    if not _G['pformat'] then _G['pformat'] = o.pformat end
+    local function InitLocalLibStub()
+        --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
+        local LocalLibStub = o:K().Objects.LibStubMixin:New(
+                o.addon, 1.0,
+                function(name, newLibInstance) o:Register(name, newLibInstance) end)
+        o.LibStubAce       = LibStub
+        o.LibStub          = LocalLibStub
+    end
 
     --- @param moduleName string The module name, i.e. Logger
     --- @param optionalMajorVersion number|string
@@ -173,9 +121,8 @@ local function NameSpacePropertiesAndMethods(o)
         setmetatable(newLib, newLib.mt)
         self.O[libName] = newLib
         --@do-not-package@
-        if kns.debug:IsDeveloper() then
-            local p  = self:LC().DEFAULT:NewLogger('Ns')
-            p:vv(function() return "Lib: %s", kns.f.val(libName) end)
+        if kns:IsDev() then
+            logpd("Lib:", kns.f.val(libName))
         end
         --@end-do-not-package@
         return newLib
@@ -189,10 +136,9 @@ local function NameSpacePropertiesAndMethods(o)
         setmetatable(newLib, newLib.mt)
         self.O[libName] = newLib
         --@do-not-package@
-        if kns.debug:IsDeveloper() then
-            local p  = self:LC().DEFAULT:NewLogger('Ns')
+        if kns:IsDev() then
             local n =  kns.f.val(kns.sformat('%s (with AceEvent)', libName))
-            p:vv(function() return "Lib: %s", n end)
+            logpd("Lib:", n)
         end
         --@end-do-not-package@
         return newLib
@@ -204,42 +150,41 @@ local function NameSpacePropertiesAndMethods(o)
     --- @return AddOn_DB
     function o:db() return self.addonDbFn() end
 
+    --- @return DebugSettingsFlag_Config
+    function o:dbg() return self:db().global.debug end
+
     --- @return Profile_Config
     function o:profile() local db = self.addonDbFn(); return db and db.profile end
+    --- @return Profile_Character_Config
+    function o:char() return self:db().char end
 
-    InitLocalLibStub(o)
+    --- @return DevSuite
+    function o:a() return DEV_SUITE end
+
+    --- @return DevConsoleModuleInterface
+    function o:DevConsoleModule() return self:a():DevConsole() end
+
+    InitLocalLibStub()
 end
 
---- @alias Namespace __Namespace | __NamespaceLoggerMixin
+--- @alias Namespace __Namespace | CategoryLoggerMixin | Kapresoft_LibUtil_NamespaceAceLibraryMixin
 
---- @return Namespace
-local function CreateNameSpace(...)
+--[[-----------------------------------------------------------------------------
+Enrich Namespace
+-------------------------------------------------------------------------------]]
+--- @class __Namespace : CoreNamespace
+--- @field gameVersion GameVersion
+--- @field LocaleUtil LocaleUtil
+local ns = kns
 
-    --- @class __Namespace : CoreNamespace
-    --- @field gameVersion GameVersion
-    --- @field O Modules
-    --- @field LibStubAce LibStub
-    --- @field LibStub LocalLibStub
-    local ns = select(2, ...)
+--- @type Modules
+ns.M = M
 
-    --- @type Modules
-    ns.O = ns.O or {}
+ns.O.CategoryLoggerMixin:Configure(ns, LogCategories)
+NameSpacePropertiesAndMethods(ns)
 
-    --- @type Modules
-    ns.M = M
+ns.mt = { __tostring = function() return addonName .. '::Namespace'  end }
+setmetatable(ns, ns.mt)
 
-    --- @type string
-    --- @deprecated Deprecated. Use ns.addonShortName
-    ns.nameShort = ns.addonShortName
-
-    --- @see BlizzardInterfaceCode:Interface/SharedXML/Mixin.lua
-    ns:K():Mixin(ns, NamespaceLoggerMixin)
-    NameSpacePropertiesAndMethods(ns)
-
-    ns.mt = { __tostring = function() return ns.addon .. '::Namespace'  end }
-    setmetatable(ns, ns.mt)
-
-    return ns
-end;
 --- @type Namespace
-DEVS_NS = CreateNameSpace(...)
+DEV_SUITE_NS = ns

@@ -7,10 +7,12 @@
     <Script file="ConfigDialogController.lua" />
     <Script file="MainController.lua" />
     <Script file="AceDbInitializerMixin.lua"/>
-    <Script file="DebuggingSettingsGroup.lua" />
     <Script file="OptionsUtil.lua" />
     <Script file="OptionsMixin.lua" />
+    <Script file="OptionsDebugConsole.lua" />
+    <Script file="EventToMessageRelay.lua" />
 
     <Include file="Widget\_Widget.xml"/>
+    <Include file="Module\_Module.xml"/>
 
 </Ui>

@@ -12,6 +12,6 @@
     <!--@do-not-package@-->
     <Include file="Lib\Developer\_Developer.xml"/>
     <!--@end-do-not-package@-->
-    <Script file="Core\DevSuite.lua"/>
+    <Script file="DevSuite.lua"/>
 
 </Ui>

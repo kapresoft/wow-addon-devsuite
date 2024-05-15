@@ -35,7 +35,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     local isLogin, isReload = ...
 
     local addon = frame.ctx.addon
-    addon:SendMessage(MSG.OnAddonReady)
+    addon:SendMessage(MSG.OnAddOnReady)
     if not addon.PopupDialog then
         addon.PopupDialog = O.PopupDebugDialog()
     end
@@ -58,7 +58,7 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o MainController | AceEvent
+--- @param o MainController | AceEventInterface
 local function PropsAndMethods(o)
 
     --- Init Method: Called by DevSuite.lua
@@ -70,13 +70,15 @@ local function PropsAndMethods(o)
     end
 
     --- @private
-    function o:OnAfterInitialize() self:RegisterEvents() end
+    function o:OnAfterInitialize()
+        self:RegisterEvents()
+    end
 
     --- @private
     function o:RegisterEvents()
         p:f1("RegisterEvents called...")
         self:RegisterOnPlayerEnteringWorld()
-        self:RegisterMessage(MSG.OnAddonReady, function(msg) self:OnAddonReady(msg)  end)
+        self:RegisterMessage(MSG.OnAddOnReady, function(msg) self:OnAddonReady(msg)  end)
     end
 
     --- @private
@@ -92,6 +94,7 @@ local function PropsAndMethods(o)
             self:OnToggleFrameRate()
             self:InitAddonUsage()
         end)
+
     end
 
     function o:OnToggleFrameRate() L:ShowFPS(ns:db().global.show_fps) end
