@@ -43,22 +43,22 @@ Methods
 -------------------------------------------------------------------------------]]
 local o = L; do
 
-    --- @param namesp __Namespace
+    --- @param nSpace __Namespace
     --- @param logCategories LogCategories
-    function o:Configure(namesp, logCategories)
+    function o:Configure(nSpace, logCategories)
         assert(logCategories, 'CategoryLoggerMixin:Mixin(): LogCategories is required.')
-        namesp.LogCategories = function() return logCategories end
-        local CategoryLogger = namesp:KO().CategoryMixin:New()
-        CategoryLogger:Configure(namesp.addonLogName, logCategories, {
-            consoleColors = namesp.GC.C.CONSOLE_COLORS,
-            levelSupplierFn = function() return __GetLogLevel() end,
+        nSpace.LogCategories = function() return logCategories end
+        local CategoryLogger = nSpace:KO().CategoryMixin:New()
+        CategoryLogger:Configure(nSpace.addonLogName, logCategories, {
             enabledCategoriesSupplierFn = function() return __GetCategories() end,
-            printerFn = ns.print,
-            enabled = namesp:IsDev(),
+            consoleColors   = nSpace.GC.C.CONSOLE_COLORS,
+            levelSupplierFn = function() return __GetLogLevel() end,
+            printerFn       = ns.print,
+            enabled         = nSpace:IsDev(),
         })
-        namesp.CategoryLogger = function() return CategoryLogger end
-        namesp:K():Mixin(namesp, o)
-        namesp.Mixin = nil
+        nSpace.CategoryLogger = function() return CategoryLogger end
+        nSpace:K():Mixin(nSpace, o)
+        nSpace.Mixin = nil
     end
 
     --- @return number

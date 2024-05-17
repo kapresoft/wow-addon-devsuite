@@ -10,18 +10,18 @@ Type: CoreNamespace
 --- @type CoreNamespace
 local ns = select(2, ...)
 local K = ns.Kapresoft_LibUtil
-K:Mixin(ns, K.Objects.CoreNamespaceMixin, K.Objects.NamespaceAceLibraryMixin)
+K:MixinWithDefExc(ns, K.Objects.CoreNamespaceMixin, K.Objects.NamespaceAceLibraryMixin)
 
 --- The "name" field conflicts with K.Objects. We need to restore it here
 --- @deprecated Deprecated. Use ns.addon
-ns.name           = ns.addon
-ns.addonFriendlyName = 'Dev Suite'
-ns.addonGlobalVarName = 'DEV_SUITE'
+ns.name                        = ns.addon
+ns.addonFriendlyName           = 'Dev Suite'
+ns.addonGlobalVarName          = 'DEV_SUITE'
 ns.addonGlobalNamespaceVarName = 'DEV_SUITE_NS'
-ns.addonShortName = 'ds'
-ns.addonLogName   = string.upper(ns.addonShortName)
-ns.debugConsoleTabName = ns.addonFriendlyName
-ns.useShortName   = true
+ns.addonShortName              = 'ds'
+ns.addonLogName                = string.upper(ns.addonShortName)
+ns.debugConsoleTabName         = ns.addonFriendlyName
+ns.useShortName                = true
 
 function ns:preferredName() return (ns.useShortName == true and ns.addonShortName) or ns.addon end
 
