@@ -53,7 +53,7 @@ local o = L; do
             enabledCategoriesSupplierFn = function() return __GetCategories() end,
             consoleColors   = nSpace.GC.C.CONSOLE_COLORS,
             levelSupplierFn = function() return __GetLogLevel() end,
-            printerFn       = ns.print,
+            printerFn       = nSpace.print,
             enabled         = nSpace:IsDev(),
         })
         nSpace.CategoryLogger = function() return CategoryLogger end

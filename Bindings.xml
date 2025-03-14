@@ -14,4 +14,7 @@
     <Binding name="DEVS_TOGGLE_FRAMESTACK" category="DEVS_CATEGORY">
         DEV_SUITE.BINDING_DEVS_TOGGLE_FRAMESTACK();
     </Binding>
+    <Binding name="DEVS_CLEAR_DEBUG_CONSOLE" category="DEVS_CATEGORY">
+        DEV_SUITE.BINDING_DEVS_CLEAR_DEBUG_CONSOLE();
+    </Binding>
 </Bindings>

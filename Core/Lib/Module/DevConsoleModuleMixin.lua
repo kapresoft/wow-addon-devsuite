@@ -191,7 +191,7 @@ function d:EnableDebugChatFrame()
         maxLines = ns:dbg().maxLogConsoleLines,
     }
 
-    --- @type ChatLogFrameInterface
+    --- @param chatFrame ChatLogFrameInterface|ChatFrame
     local cf  = dcf:New(opt, function(chatFrame)
         chatFrame:SetAlpha(1.0)
         local windowColor = ns:ColorUtil():NewColorFromHex('343434fc')

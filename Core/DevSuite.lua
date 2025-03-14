@@ -152,14 +152,16 @@ function o:SlashCommand_Help_Handler()
     local COMMAND_DIALOG_TEXT = 'Shows debug dialog UI'
     local COMMAND_CONFIG_TEXT = 'Shows the config UI'
     local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
-    local COMMAND_HELP_TEXT = 'Shows this help'
-    local OPTIONS_LABEL = 'options'
-    local USAGE_LABEL = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
+    local COMMAND_CLEAR_TEXT  = 'Clears the debug console (Alias: cls, clr)'
+    local COMMAND_HELP_TEXT   = 'Shows this help'
+    local OPTIONS_LABEL       = 'options'
+    local USAGE_LABEL         = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
     p:a(USAGE_LABEL)
     p:a(OPTIONS_LABEL .. ":")
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
+    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'clear', COMMAND_CLEAR_TEXT end)
     p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
     --@do-not-package@
     if ns:IsDev() then
@@ -186,6 +188,11 @@ function o:SlashCommands(spaceSeparatedArgs)
     end
     if IsAnyOf('dialog', unpack(args)) then
         return self:SlashCommand_Dialog_Handler()
+    end
+    if IsAnyOf('cls', unpack(args))
+            or IsAnyOf('clr', unpack(args))
+            or IsAnyOf('clear', unpack(args)) then
+        return self.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     end
     if IsAnyOf('info', unpack(args)) then
         return self:SlashCommand_Info_Handler()
@@ -228,6 +235,9 @@ function o.BINDING_DEVS_TOGGLE_FRAMESTACK()
     --- arg3 showAnchors
     --- Example showing all:  "111" or "true true true"
     SlashCmdList["FRAMESTACK"]("false true true")
+end
+function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
+    if ns:HasChatFrame() then ns.chatFrame:Clear() end
 end
 
 function o:log(...) ns.print(...)  end
