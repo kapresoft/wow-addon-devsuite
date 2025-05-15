@@ -124,8 +124,6 @@ local o = S; do
             edc.disabled = true
         end
 
-        --desc = { name = " General Configuration ", type = "header", order = order:next() },
-
         a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
             type      = 'toggle',
             width     = 'full',
@@ -150,13 +148,14 @@ local o = S; do
             name    = c2(L['Console Font Size']),
             desc    = ns.LocaleUtil.G('Choose a Console Font Size'),
             order   = order:next(),
-            confirm = function(info, value) return sformat(L['Console Font Size::ConfirmFmt'], value) end,
             type    = 'range',
-            min     = 12,
+            min     = 10,
             max     = 18,
             step    = 2,
             get     = self.util:GlobalGet('console_fontSize'),
-            set     = self.util:GlobalSet('console_fontSize', nil, true)
+            set     = self.util:GlobalSet('console_fontSize', nil, function(_, val)
+                ns:SetChatFrameFontSize(val)
+            end)
         }
 
         local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
