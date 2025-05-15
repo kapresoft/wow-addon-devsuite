@@ -114,7 +114,7 @@ local o = S; do
             type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
             get  = DebugConsoleGetFn,
             set  = DebugConsoleSetFn,
-        })
+        }); a.enableDebugConsole.name = c2(a.enableDebugConsole.name)
         local edc = a.enableDebugConsole
         if not DebugChatFrame then
             --a.enableDebugConsole.name = a.enableDebugConsole.name .. '( Requires DebugChatFrame AddOn Library)'
@@ -125,16 +125,16 @@ local o = S; do
         end
 
         --desc = { name = " General Configuration ", type = "header", order = order:next() },
-        a.showFPS = {
+
+        a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
             type      = 'toggle',
             width     = 'full',
-            name      = c2(L['Show Frames-Per-Second (FPS)']),
-            desc      = ns.LocaleUtil.G('Show Frames-Per-Second (FPS)::Desc'),
             descStyle = 'inline',
             order     = order:next(),
             get       = self.util:GlobalGet('show_fps', false),
             set       = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
-        }
+        }); a.showFPS.name = c2(a.showFPS.name)
+
         a.addonUsage_AutomaticallyShow = {
             disabled  = not O.API:IsAddonUsageAvailable(),
             order     = order:next(),
@@ -146,11 +146,23 @@ local o = S; do
             get       = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
             set       = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
         }
+        a.fontSize = {
+            name    = c2(L['Console Font Size']),
+            desc    = ns.LocaleUtil.G('Choose a Console Font Size'),
+            order   = order:next(),
+            confirm = function(info, value) return sformat(L['Console Font Size::ConfirmFmt'], value) end,
+            type    = 'range',
+            min     = 12,
+            max     = 18,
+            step    = 2,
+            get     = self.util:GlobalGet('console_fontSize'),
+            set     = self.util:GlobalSet('console_fontSize', nil, true)
+        }
 
         local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
         if showSpecialNotice then
-            local a = general.args
-            a.spacer1           = { type = "description", name = '  ', width = "full", order = order:next() }
+            local a             = general.args
+            a.spacer1           = { type = "description", name = '\n\n  ', width = "full", order = order:next() }
             a.specialNoticeText = {
                 name     = c1(L['Addon Manager Special Notice']),
                 type     = "description",

@@ -49,7 +49,8 @@ end
 
 function o:GetMouseFocus()
     --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
-    local mf = GetMouseFocus()
+    local focusFn = GetMouseFoci or GetMouseFocus
+    local mf = focusFn()
     DEVS_MF = mf
     if not mf then return end
     local name = 'Mouse Focused Object'

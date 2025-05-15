@@ -43,11 +43,13 @@ Type: Profile_Global_Config
 --- @field addon_addonUsage_auto_show_ui boolean
 --- @field prompt_for_reload_to_enable_addons boolean
 --- @field auto_loaded_addons AutoLoadedAddons
+--- @field console_fontSize
 local DefaultGlobal = {
     show_fps = true,
     prompt_for_reload_to_enable_addons = true,
     addon_addonUsage_auto_show_ui = true,
     show_AddonManagerHasMovedNotice = true,
+    console_fontSize = 14,
     debug = DebugSettingsFlag,
 }
 
