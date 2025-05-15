@@ -54,6 +54,10 @@ L['Show Frames-Per-Second (FPS)::Desc']       = 'Shows the Blizzard Frames-per-s
 L['Prompt to Reload and Enable Addons']       = true
 L['Prompt to Reload and Enable Addons::Desc'] = 'Prompts player to Reload UI if addons need to be enabled after closing the Settings Dialog. (Global Setting)'
 
+L['Console Font Size']             = true
+L['Console Font Size::Desc']       = 'Choose a Console Font Size'
+L['Console Font Size::ConfirmFmt'] = 'You selected console font size %d.\nReload UI to apply this change?'
+
 L['Add-On Specific Options']    = true
 L['Available Add-Ons']          = true
 L['Available Add-Ons::Desc']    = 'To activate or deactivate an Add-On, check or uncheck its corresponding box. After making your selections, click on "Apply and ReloadUI" to implement the changes to your configuration.'

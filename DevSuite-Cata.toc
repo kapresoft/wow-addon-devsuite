@@ -1,4 +1,4 @@
-## Interface: 40400
+## Interface: 40402
 ## Version: @project-version@
 ## Title: DevSuite |cff1784d1Cataclysm|r
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.

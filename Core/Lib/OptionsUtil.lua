@@ -94,13 +94,17 @@ local function PropsAndMethods(o)
     end
     --- `set=this:GlobalSet('configName')`
     --- @param key string The key value
+    --- @param eventMessageToFire string The event message to fire (Optional)
+    --- @param reloadUI boolean Reloads the UI if true (Optional, No confirmation)
     --- @return function The Global Profile Set Function
-    function o:GlobalSet(key, eventMessageToFire)
+    function o:GlobalSet(key, eventMessageToFire, reloadUI)
+        reloadUI = reloadUI == true or false
         return function(_, v)
             self:SetGlobalValue(key, v)
             if 'string' == type(eventMessageToFire) then
                 self:SendEventMessage(eventMessageToFire, v)
             end
+            if reloadUI then ReloadUI() end
         end
     end
 
