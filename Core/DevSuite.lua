@@ -240,11 +240,21 @@ end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     if ns:HasChatFrame() then ns.chatFrame:Clear() end
 end
+function o.BINDING_DEVS_TOGGLE_DEBUG_CONSOLE()
+    if not ns:HasChatFrame() then return end
+    local module = ns:DevConsoleModule()
+    local val = ns:dbg().enableLogConsole
+    ns:dbg().enableLogConsole = not val
+    if ns:dbg().enableLogConsole == true then
+        return module:Enable()
+    end
+    module:Disable()
+end
 
 function o:log(...) ns.print(...)  end
 
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
 function o.ns() return DEV_SUITE_NS  end
 
-DEV_SUITE = o; dx = o
+DEV_SUITE = o;
 
