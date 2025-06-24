@@ -1,6 +1,6 @@
-## Interface: 30403
+## Interface: 50500
 ## Version: @project-version@
-## Title: DevSuite |cff1784d1Classic|r
+## Title: Dev|cff4DBEFFSuite|r MoP
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## DefaultState: enabled
@@ -26,5 +26,5 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Core\Wrath.lua
+Core\Mists.lua
 Core\_Core.xml

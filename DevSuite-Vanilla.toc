@@ -6,6 +6,7 @@
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
+## Category-enUS: Development Tools
 
 ## OptionalDeps: Ace3, AddonUsage, DebugChatFrame
 

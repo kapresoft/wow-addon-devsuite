@@ -91,7 +91,6 @@ function d:RegisterMessages()
 end
 
 function d:OnEnable()
-    p:vv(function() return 'OnEnable called. IsEnabled=%s', self:IsEnabled() end)
     if not DefaultChatFrame then self:EnableDebugChatFrame() end
     O.OptionsDebugConsole:EnableGroup()
     self:RegisterMessages()
@@ -99,7 +98,6 @@ function d:OnEnable()
 end
 
 function d:OnDisable()
-    p:vv(function() return 'OnDisable called. IsDisabled=%s', not self:IsEnabled() end)
     if ns:HasChatFrame() then ns:ChatFrame():CloseTab() end
     O.OptionsDebugConsole:DisableGroup()
     return p:vv('Debug console DISABLED')
