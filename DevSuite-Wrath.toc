@@ -1,6 +1,6 @@
 ## Interface: 30403
 ## Version: @project-version@
-## Title: DevSuite |cff1784d1Classic|r
+## Title: Dev|cff4DBEFFSuite|r WOTLK
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## DefaultState: enabled

@@ -1,6 +1,6 @@
 ## Interface: 40402
 ## Version: @project-version@
-## Title: DevSuite |cff1784d1Cataclysm|r
+## Title: Dev|cff4DBEFFSuite|r Cataclysm
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## DefaultState: enabled
