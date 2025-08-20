@@ -1,6 +1,6 @@
-## Interface: 110107
+## Interface: 110200
 ## Version: @project-version@
-## Title: DevSuite |cff1784d1Retail|r
+## Title: Dev|cff4DBEFFSuite|r Retail
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## DefaultState: enabled
