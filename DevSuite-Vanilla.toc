@@ -1,4 +1,4 @@
-## Interface: 11507
+## Interface: 11508
 ## Version: @project-version@
 ## Title: Dev|cff4DBEFFSuite|r Classic
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
