@@ -39,5 +39,5 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Core\Retail.lua
+Core\TBC.lua
 Core\_Core.xml
