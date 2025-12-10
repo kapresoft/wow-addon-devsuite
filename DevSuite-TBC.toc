@@ -1,6 +1,6 @@
-## Interface: 40402
+## Interface: 20505
 ## Version: @project-version@
-## Title: Dev|cff4DBEFFSuite|r Cataclysm
+## Title: Dev|cff4DBEFFSuite|r TBC
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
 
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
@@ -20,6 +20,7 @@
 ## Category-zhCN: 开发工具
 ## Category-zhTW: 開發工具
 
+
 ## OptionalDeps: Ace3, AddonUsage, DebugChatFrame
 
 ## X-Credits: Antonio W. Lagnada (kapresoft@gmail.com)
@@ -38,5 +39,5 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
-Core\Cata.lua
+Core\Retail.lua
 Core\_Core.xml

@@ -1,12 +1,24 @@
 ## Interface: 11508
 ## Version: @project-version@
 ## Title: Dev|cff4DBEFFSuite|r Classic
-## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers.
+## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
+
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
+
 ## Category-enUS: Development Tools
+## Category-deDE: Entwicklungstools
+## Category-esES: Herramientas de Desarrollo
+## Category-esMX: Herramientas de Desarrollo
+## Category-frFR: Outils de Développement
+## Category-itIT: Strumenti di Sviluppo
+## Category-koKR: 개발 도구
+## Category-ptBR: Ferramentas de Desenvolvimento
+## Category-ruRU: Инструменты разработки
+## Category-zhCN: 开发工具
+## Category-zhTW: 開發工具
 
 ## OptionalDeps: Ace3, AddonUsage, DebugChatFrame
 
