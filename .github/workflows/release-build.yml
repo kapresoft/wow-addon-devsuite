@@ -37,7 +37,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-
+    permissions:
+      # write permission is required to create a github release
+      contents: write
+      # write permission is required for autolabeler
+      # otherwise, read permission is required at least
+      pull-requests: write
     steps:
       ## ------------------------------------------------ ##
       ## See: https://github.com/actions/github-script
