@@ -40,7 +40,45 @@ local function findItem(name, items)
     end
 end
 
----@param w DebugDialogWidget
+--- This method handles resizing of the dialog
+--- so that larger UI screens doesn't make the dialog
+--- too big for the screen.
+--- @param w DebugDialogWidget
+local function ResizeIfNeeded(w)
+    local f            = w.f.frame
+    local currentScale = UIParent:GetScale()
+    local height
+    local scale
+    local ofsy = 50
+    if currentScale >= 1.1 then
+        scale = currentScale - 0.4
+        height = f:GetHeight() - 160
+    elseif currentScale >= 0.99 then
+        scale = currentScale - 0.2
+        height = f:GetHeight() - 100
+    elseif currentScale >= 0.85 then
+        --scale = currentScale
+        height = f:GetHeight() - 130
+        --height = 600
+    elseif currentScale >= 0.75 then
+        height = f:GetHeight() - 50
+        ofsy = 40
+    elseif currentScale >= 0.69 then
+        height = f:GetHeight() - 10
+        ofsy = 40
+    elseif currentScale <= 0.65 then
+        height = f:GetHeight()
+        ofsy = 50
+    end
+    if scale then f:SetScale(scale) end
+    if not height then return end
+
+    w.f:SetHeight(height)
+    w.f:ClearAllPoints()
+    w.f:SetPoint('CENTER', nil, 'CENTER', 0, ofsy)
+end
+
+--- @param w DebugDialogWidget
 local function OnShow(w)
     w:EnableAcceptButtonDelayed()
     --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
@@ -185,7 +223,8 @@ Constructor
 -------------------------------------------------------------------------------]]
 --- @return DebugDialogWidget
 function D:New()
-    ---@class DebugDialogAceFrameWidget
+    --- @class DebugDialogAceFrameWidget
+    --- @field frame Frame
     local frame = AceGUI:Create("Frame")
 
     local profile = ns:profile()
@@ -199,7 +238,7 @@ function D:New()
     frame:SetStatusText('')
     frame:SetLayout("Flow")
     frame:SetHeight(800)
-    --frame:SetWidth(800)
+    frame.frame:SetClampedToScreen(true)
 
     local label = AceGUI:Create("Label")
     label:SetFullWidth(true)
@@ -258,7 +297,7 @@ function D:New()
 
     frame:Hide()
 
-    ---@class DebugDialogWidget
+    --- @class DebugDialogWidget
     local widget = {
         profile = profile,
         f = frame,
@@ -273,6 +312,8 @@ function D:New()
     widgetMethods(widget)
 
     RegisterCallbacks(widget)
+
+    ResizeIfNeeded(widget)
 
     return widget;
 end

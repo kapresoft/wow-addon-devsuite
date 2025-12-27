@@ -7,6 +7,7 @@
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
+## OptionalDeps: Ace3, AddonUsage, DebugChatFrame
 
 ## Category-enUS: Development Tools
 ## Category-deDE: Entwicklungstools
@@ -19,8 +20,6 @@
 ## Category-ruRU: Инструменты разработки
 ## Category-zhCN: 开发工具
 ## Category-zhTW: 開發工具
-
-## OptionalDeps: Ace3, AddonUsage, DebugChatFrame
 
 ## X-Credits: Antonio W. Lagnada (kapresoft@gmail.com)
 ## X-Category: Development Tools
