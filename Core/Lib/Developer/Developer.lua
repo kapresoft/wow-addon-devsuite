@@ -22,7 +22,7 @@ local ns = select(2, ...)
 local M = ns.M
 
 -- Settings
-local SHOW_ADDON_LIST_ON_LOGIN = true
+local SHOW_ADDON_LIST_ON_LOGIN = false
 
 --[[-----------------------------------------------------------------------------
 Developer
