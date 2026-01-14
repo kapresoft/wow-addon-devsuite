@@ -1,9 +1,11 @@
 ## Interface: 20505
 ## Version: @project-version@
-## Title: Dev|cff4DBEFFSuite|r TBC
-## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
+## Title: Dev|cff4DBEFFSuite|r
+## IconTexture: Interface/AddOns/DevSuite/Core/Assets/DebugChatFrame-Logo-1-50px
 
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
+## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
+
 ## DefaultState: enabled
 ## SavedVariables: DEVS_DB, DEVS_LOG_LEVEL, DEVS_DEBUG_MODE, DEVS_DEBUG_ENABLED_CATEGORIES
 ## SavedVariablesPerCharacter: DEVS_CHARACTER_DB
@@ -24,7 +26,6 @@
 ## X-Credits: Antonio W. Lagnada (kapresoft@gmail.com)
 ## X-Category: Development Tools
 ## X-License: All Rights Reserved. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
-
 ## X-Github-Repo: https://github.com/kapresoft/wowaddon-devsuite
 ## X-Github-Issues: https://github.com/kapresoft/wowaddon-devsuite/issues
 ## X-CurseForge: https://www.curseforge.com/wow/addons/devsuite

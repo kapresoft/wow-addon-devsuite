@@ -21,6 +21,12 @@ Local Vars
 local ns = select(2, ...)
 local M = ns.M
 
+-- Settings
+local SHOW_ADDON_LIST_ON_LOGIN = true
+
+--[[-----------------------------------------------------------------------------
+Developer
+-------------------------------------------------------------------------------]]
 local libName = M.Developer()
 --- @class Developer
 local L = ns:NewLibWithEvent(libName); d = L
@@ -108,3 +114,17 @@ end
 
 --- Usage: /run d:c('hello', 'world')
 function L:c(...) ns.logp(libNamePretty, ...) end
+
+
+-- TODO: Add this as a feature; a textbox that takes a code to execute on login
+
+if SHOW_ADDON_LIST_ON_LOGIN then
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_LOGIN")
+    f:SetScript("OnEvent", function(self, event, ...)
+        if event ~= "PLAYER_LOGIN" then return end
+        C_Timer.After(1, function()
+            if AddonList then AddonList:Show() end
+        end)
+    end)
+end
