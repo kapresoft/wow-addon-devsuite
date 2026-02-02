@@ -70,12 +70,11 @@ jobs:
         run: |
           echo buildBasePath="${releaseDir}/${addonName}" >> $GITHUB_ENV
           echo buildArtifactFilename="${addonName}-${refName}.zip"  >> $GITHUB_ENV
-          echo buildArtifactChecksumFilename="${addonName}-${refName}.zip.md5sum"  >> $GITHUB_ENV
       ## ------------------------------------------------ ##
       - name: "Set ENV Variable: buildArtifact"
         run: |
           echo buildArtifact="${releaseDir}/${buildArtifactFilename}" >> $GITHUB_ENV
-          echo buildArtifactChecksumFile="${releaseDir}/${buildArtifactChecksumFilename}" >> $GITHUB_ENV
+          echo sha256Script="./dev/sha256.sh" >> $GITHUB_ENV
       - name: "Set ENV Variable: Upload to CurseForge"
         if: ${{ env.uploadCurseForge != 'false' }}
         run: |
@@ -109,6 +108,7 @@ jobs:
           echo buildArtifactFilename=${buildArtifactFilename}
           echo buildArtifactChecksumFilename=${buildArtifactChecksumFilename}
           echo artifact_retentionDays=${artifact_retentionDays}
+          echo sha256Script=${sha256Script}
           echo -------------------------------
           echo "All ENV Vars:"
           echo "$(env|sort)"
@@ -130,12 +130,12 @@ jobs:
       - name: "Verify: Supporting Scripts Exists"
         uses: andstor/file-existence-action@v3
         with:
-          files: "./dev/md5sum.sh"
+          files: "${{ env.sha256Script }}"
           fail: true
       ## ------------------------------------------------ ##
       - name: "Setup Build Scripts"
         run: |
-          chmod a+x ./dev/md5sum.sh
+          chmod a+x $sha256Script
       ## ------------------------------------------------ ##
       ## Show Directory contents
       - name: "Setup Build Scripts"
@@ -150,17 +150,15 @@ jobs:
       ## ------------------------------------------------ ##
       - name: Check Vars
         run: |
-          echo buildArtifactChecksum="$(./dev/md5sum.sh $buildArtifact)" >> $GITHUB_ENV
+          echo buildArtifactChecksum="$($sha256Script $buildArtifact)" >> $GITHUB_ENV
           echo "buildArtifact is $buildArtifact"
           echo "buildArtifactChecksum is $buildArtifactChecksum"
-      - name: Create checksum file
-        run: |
-          echo "$buildArtifactChecksum" >> $buildArtifactChecksumFile
       ## ------------------------------------------------ ##
       - name: Notices
         run: |
+          echo -e "::notice::HOME=${HOME}\n::notice::buildArtifact=${buildArtifact}"
           echo ::notice::Uploads CurseForge=${uploadCurseForge}, WoWInterface=${uploadWowInterface}, BigWigs-UploadOptions=${bigWigsUploads}
-          echo ::notice::Build Artifact=${buildArtifactFilename}, Checksum=${buildArtifactChecksum}
+          echo "::notice::Sha256=${buildArtifactSha256}"
 
       - name: Create a draft release
         id: create_draft_release
@@ -174,10 +172,10 @@ jobs:
           version: ${{ env.refName }}
           prerelease: false
           footer: |
-            
+            <br><br>
             #### ${{ env.buildArtifactFilename }}
             ```text
-            MD5 ${{ env.buildArtifactChecksum }}
+            sha256:${{ env.buildArtifactChecksum }}
             ```
       ## ------------------------------------------------ ##
       ## https://github.com/actions/upload-artifact
@@ -187,14 +185,6 @@ jobs:
         with:
           name: ${{ env.buildArtifactFilename }}
           path: ${{ env.buildArtifact }}
-          retention-days: ${{ env.artifact_retentionDays }}
-      ## ------------------------------------------------ ##
-      - name: Upload Build Artifact Checksum File
-        if: ${{ env.uploadBuildArtifacts == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env. buildArtifactChecksumFilename }}
-          path: ${{ env.buildArtifactChecksumFile }}
           retention-days: ${{ env.artifact_retentionDays }}
       ## ------------------------------------------------ ##
       - name: Upload Release Artifact
@@ -207,14 +197,3 @@ jobs:
           asset_path: ${{ env.buildArtifact }}
           asset_name: ${{ env.buildArtifactFilename }}
           asset_content_type: application/zip
-      ## ------------------------------------------------ ##
-      - name: Upload Release Artifact Checksum File
-        if: ${{ env.createDraftRelease == 'true' }}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_draft_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ env.buildArtifactChecksumFile }}
-          asset_name: ${{ env.buildArtifactChecksumFilename }}
-          asset_content_type: plain/text
