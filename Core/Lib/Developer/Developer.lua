@@ -21,19 +21,34 @@ Local Vars
 local ns = select(2, ...)
 local M = ns.M
 
+local libName = M.Developer()
+local p = ns:LC().DEV:NewLogger(libName)
+
 -- Settings
-local SHOW_ADDON_LIST_ON_LOGIN = false
+-- /run DEVS_SHOW_ADDON_LIST_ON_LOGIN = true
+--- @boolean
+local SHOW_ADDON_LIST_ON_LOGIN
 
 --[[-----------------------------------------------------------------------------
 Developer
 -------------------------------------------------------------------------------]]
-local libName = M.Developer()
 --- @class Developer
 local L = ns:NewLibWithEvent(libName); d = L
-local p = ns:LC().DEV:NewLogger(libName)
 
 local c1 = ns:K():cf(RED_THREAT_COLOR)
 local libNamePretty = c1(libName)
+
+--[[-----------------------------------------------------------------------------
+Event::OnAddOnReady
+-------------------------------------------------------------------------------]]
+
+local function OnAddOnReady()
+    if not ShadowUF then L:FrameFormation2() end
+
+    SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
+    p:vv(function() return "DEVS_SHOW_ADDON_LIST_ON_LOGIN: %s", SHOW_ADDON_LIST_ON_LOGIN end)
+    if SHOW_ADDON_LIST_ON_LOGIN and AddonList then AddonList:Show() end
+end
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -112,19 +127,59 @@ function L:GetColors()
     return ret
 end
 
+-- /run d:Formation1()
+function L:FrameFormation1()
+    if ShadowUF then return end
+
+    local scale = 0.85
+    local ofsy = -200
+    if ns:IsMoP() then ofsy = -120 end
+
+    --- @type Frame
+    local pf = PlayerFrame
+    pf:SetScale(scale)
+    pf:ClearAllPoints()
+    pf:SetPoint("TOPRIGHT", UIParent, "CENTER", -100, ofsy)
+
+    local tf = TargetFrame
+    tf:ClearAllPoints()
+    tf:SetScale(scale)
+    tf:SetPoint("TOPLEFT", UIParent, "CENTER", 100, ofsy)
+end
+
+-- /run d:Formation2()
+function L:FrameFormation2()
+    if ShadowUF then return end
+
+    local scale = 0.85
+    local ofsy = -110
+    if ns:IsMoP() then ofsy = -120 end
+
+    --- @type Frame
+    local pf = PlayerFrame
+    pf:SetScale(scale)
+    pf:ClearAllPoints()
+    pf:SetPoint("TOPRIGHT", UIParent, "TOP", -100, ofsy)
+
+    local tf = TargetFrame
+    tf:ClearAllPoints()
+    tf:SetScale(scale)
+    tf:SetPoint("TOPLEFT", UIParent, "TOP", 100, ofsy)
+end
+
+
+
 --- Usage: /run d:c('hello', 'world')
 function L:c(...) ns.logp(libNamePretty, ...) end
 
 
 -- TODO: Add this as a feature; a textbox that takes a code to execute on login
-
-if SHOW_ADDON_LIST_ON_LOGIN then
-    local f = CreateFrame("Frame")
-    f:RegisterEvent("PLAYER_LOGIN")
-    f:SetScript("OnEvent", function(self, event, ...)
-        if event ~= "PLAYER_LOGIN" then return end
-        C_Timer.After(1, function()
-            if AddonList then AddonList:Show() end
-        end)
+--- @type Frame
+local f = CreateFrame('Frame')
+FrameUtil.RegisterFrameForEvents(f, {'PLAYER_LOGIN'})
+f:SetScript('OnEvent', function(self, event, ...)
+    if event ~= 'PLAYER_LOGIN' then return end
+    C_Timer.After(0.01, function()
+        return OnAddOnReady()
     end)
-end
+end)

@@ -26,40 +26,24 @@ Type: Profile_DB_ProfileKeys
 --- @class Profile_DB_ProfileKeys : table<string, string>
 
 --- @class DebugSettingsFlag_Config
-local DebugSettingsFlag = {
-    enableLogConsole = false,
-    selectLogConsoleTab = true,
-    makeDefaultChatFrame = true,
-    maxLogConsoleLines = 1000,
-    DEVTOOLS_DEPTH_CUTOFF = 5,
-    DEVTOOLS_MAX_ENTRY_CUTOFF = 50,
-}
+--- @field enableLogConsole boolean @defaults is false
+--- @field selectLogConsoleTab boolean @defaults is true
+--- @field makeDefaultChatFrame boolean @defaults is true
+--- @field maxLogConsoleLines number @defaults is 1000
+--- @field DEVTOOLS_DEPTH_CUTOFF number @defaults is 5
+--- @field DEVTOOLS_MAX_ENTRY_CUTOFF number @defaults is 50
 
 --[[-----------------------------------------------------------------------------
 Type: Profile_Global_Config
 -------------------------------------------------------------------------------]]
---- @class Profile_Global_Config : AceDB_Global
+--- @class DevSuite_Global_Config : AceDB_Global
+--- @field debug DebugSettingsFlag_Config
+--- @field debug_dialog DebugDialog_Config
 --- @field show_fps boolean
 --- @field addon_addonUsage_auto_show_ui boolean
 --- @field prompt_for_reload_to_enable_addons boolean
 --- @field auto_loaded_addons AutoLoadedAddons
 --- @field console_fontSize
-local DefaultGlobal = {
-    show_fps = true,
-    prompt_for_reload_to_enable_addons = true,
-    addon_addonUsage_auto_show_ui = true,
-    show_AddonManagerHasMovedNotice = true,
-    console_fontSize = 14,
-    debug = DebugSettingsFlag,
-}
-
---[[-----------------------------------------------------------------------------
-Type: Profile_Character_Config
--------------------------------------------------------------------------------]]
---- @class Profile_Character_Config
-local DefaultCharacterSettings = {
-    nickName = 'Uber Player'
-}
 
 local fn1 = [[-- evaluate a variable
 { GetBuildInfo() }]]
@@ -115,24 +99,55 @@ local DefaultProfileSettings = {
 --[[-----------------------------------------------------------------------------
 Type: Character_Config
 -------------------------------------------------------------------------------]]
---- @class Character_Config
-local DefaultCharacterSettings = {
-
-}
+--- @class Character_Config : AceDB_Character
 
 --[[-----------------------------------------------------------------------------
 Type: AddOn_DB
 -------------------------------------------------------------------------------]]
 --- @class AddOn_DB : AceDB
---- @field global Profile_Global_Config
+--- @field global DevSuite_Global_Config
+--- @field char Character_Config
 --- @field profile Profile_Config
 --- @field profileKeys Profile_DB_ProfileKeys
 --- @field profiles table<string, Profile_Config>
 local DefaultAddOnDatabase = {
-    global = DefaultGlobal,
+    global = {
+      show_fps = true,
+      prompt_for_reload_to_enable_addons = true,
+      addon_addonUsage_auto_show_ui = true,
+      show_AddonManagerHasMovedNotice = true,
+      console_fontSize = 14,
+      debug = {
+        enableLogConsole = false,
+        selectLogConsoleTab = true,
+        makeDefaultChatFrame = true,
+        maxLogConsoleLines = 1000,
+        DEVTOOLS_DEPTH_CUTOFF = 5,
+        DEVTOOLS_MAX_ENTRY_CUTOFF = 50,
+      },
+      debug_dialog = {
+        width=500,
+        height=600,
+        anchor= {
+          point = "CENTER"
+        }
+      }
+    },
     profile = DefaultProfileSettings,
-    char = DefaultCharacterSettings,
+    char = {},
 }
+
+--- @class DevSuite_Anchor_Config
+--- @field point string | "CENTER" | "TOPLEFT"
+--- @field relativeTo any
+--- @field relativePoint string | "CENTER" | "TOPLEFT"
+--- @field x number
+--- @field y number
+
+--- @class DebugDialog_Config
+--- @field width number @default 400
+--- @field height number @default 500
+--- @field anchor DevSuite_Anchor_Config
 
 --[[-----------------------------------------------------------------------------
 Namespace Var
