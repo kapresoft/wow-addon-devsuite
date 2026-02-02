@@ -214,78 +214,81 @@ Methods
 -------------------------------------------------------------------------------]]
 --- @param w DebugDialogWidget
 local function widgetMethods(w)
-  local aceW = w.a
-    function w:Show() aceW:Show() end
-    function w:GetTitle() return aceW.titletext:GetText() end
-    function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton()  end) end
-    function w:EnableAcceptButton() aceW.codeEditBox.button:Enable() end
-    function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
-
-    function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
-    function w:SetStatusText(text) aceW:SetStatusText(text) end
-    function w:ClearContent() self.contentEditBox:SetText('') end
-    function w:SetContent(content)
-        local text
-        if type(content) == 'string' then text = '' end
-        if #tostring(content) > 0 then
-            if self:IsShowFunctions() then
-                text = pformat:A():pformat(content)
-            else
-                text = pformat(content)
-            end
-        end
-        self.contentEditBox:SetText(text)
-        w:SaveHistory()
+  function w:Show() w.a:Show() end
+  function w:GetTitle() return w.a.titletext:GetText() end
+  function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
+  function w:EnableAcceptButton() w.a.codeEditBox.button:Enable() end
+  function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
+  function w:IsShown() return self.f:IsShown() end
+  
+  function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
+  function w:SetStatusText(text) w.a:SetStatusText(text) end
+  function w:ClearContent() self.contentEditBox:SetText('') end
+  function w:SetContent(content)
+    local text
+    if type(content) == 'string' then text = '' end
+    if #tostring(content) > 0 then
+      if self:IsShowFunctions() then
+        text = pformat:A():pformat(content)
+      else
+        text = pformat(content)
+      end
     end
-
-    --- Splits a string at the first ':' character (nil-safe)
-    --- @param s string|nil
-    --- @return string|nil string|nil
-    function w:SplitFirstColon(s)
-        if type(s) ~= "string" then
-            return nil, nil
-        end
-
-        local left, right = s:match("^(.-):(.*)$")
-        return left, right
+    self.contentEditBox:SetText(text)
+    w:SaveHistory()
+  end
+  
+  --- Splits a string at the first ':' character (nil-safe)
+  --- @param s string|nil
+  --- @return string|nil string|nil
+  function w:SplitFirstColon(s)
+    if type(s) ~= "string" then
+      return nil, nil
     end
-
-    --- @param text string
-    function w:SetErrorContent(text)
-        self:SetStatusText(ERROR_STATUS)
-        local argType = type(text)
-        assert(argType == 'string', ('Expected type[string] but got [%s] instead.'):format(argType))
-        --if not text then self:ClearContent(); return end
-        if #text <= 0 then return end
-
-        local source, msg = self:SplitFirstColon(text)
-        if source and msg then
-            local msgp = ("%s%s|r|n%s"):format(ERROR_COLOR, source, msg)
-            self.contentEditBox:SetText(msgp)
-        else
-            self.contentEditBox:SetText(("%s%s|r"):format(ERROR_COLOR, text))
-        end
+    
+    local left, right = s:match("^(.-):(.*)$")
+    return left, right
+  end
+  
+  --- @param text string
+  function w:SetErrorContent(text)
+    self:SetStatusText(ERROR_STATUS)
+    local argType = type(text)
+    assert(argType == 'string', ('Expected type[string] but got [%s] instead.'):format(argType))
+    --if not text then self:ClearContent(); return end
+    if #text <= 0 then return end
+    
+    local source, msg = self:SplitFirstColon(text)
+    if source and msg then
+      local msgp = ("%s%s|r|n%s"):format(ERROR_COLOR, source, msg)
+      self.contentEditBox:SetText(msgp)
+    else
+      self.contentEditBox:SetText(("%s%s|r"):format(ERROR_COLOR, text))
     end
-
-    function w:Submit() self.codeEditBox.button:Click() end
-    function w:HasCodeContent()
-        local codeValue = self.codeEditBox:GetText()
-        return IsNotBlank(codeValue)
+  end
+  
+  function w:Submit() self.codeEditBox.button:Click() end
+  function w:HasCodeContent()
+    local codeValue = self.codeEditBox:GetText()
+    return IsNotBlank(codeValue)
+  end
+  
+  -- /run DEVS.profile.debugDialog.items = nil
+  -- /dump DEVS.profile.debugDialog.items
+  function w:SaveHistory()
+    local codeText = w.codeEditBox:GetText()
+    if IsBlank(codeText) then return end
+    local selectedKey = w.histDropdown:GetValue()
+    if IsBlank(selectedKey) then return end
+    
+    local items = ns:profile().debugDialog.items
+    local item  = findItem(selectedKey, items)
+    if item then
+      item.value = codeText;
+      return
     end
-
-    -- /run DEVS.profile.debugDialog.items = nil
-    -- /dump DEVS.profile.debugDialog.items
-    function w:SaveHistory()
-        local codeText = w.codeEditBox:GetText()
-        if IsBlank(codeText) then return end
-        local selectedKey = w.histDropdown:GetValue()
-        if IsBlank(selectedKey) then return end
-
-        local items = ns:profile().debugDialog.items
-        local item = findItem(selectedKey, items)
-        if item then item.value = codeText; return end
-        p:log('SaveHistory::Error: failed to save history.')
-    end
+    --p:log('SaveHistory::Error: failed to save history.')
+  end
 end
 
 --[[-----------------------------------------------------------------------------
@@ -297,6 +300,7 @@ function D:New()
   --- @class DebugDialogAceFrameWidget : AceGUIWidget
   --- @field frame FrameObj
   --- @field sizer_se FrameObj
+  --- @field titletext FontStringObj
   local dialog  = AceGUI:Create("Frame")
   
   -- so we don't resize to larger than the screen
