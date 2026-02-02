@@ -134,47 +134,49 @@ end
 -- ## -------------------------------------------------------------------------
 
 function o:RegisterSlashCommands()
-    self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, 'SlashCommands')
-    self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, 'SlashCommands')
+  self:RegisterChatCommand(GC.C.CONSOLE_COMMAND, 'SlashCommands')
+  self:RegisterChatCommand(GC.C.CONSOLE_COMMAND_SHORT, 'SlashCommands')
 end
 
 function o:SlashCommand_Config_Handler()
-    self:OpenConfig()
+  self:OpenConfig()
 end
 function o:SlashCommand_Dialog_Handler()
-    debugDialog:Show()
+  if debugDialog:IsShown() then debugDialog.a:Hide()
+  else debugDialog:Show()
+  end
 end
 function o:SlashCommand_Info_Handler()
     p:a(GC:GetAddonInfoFormatted())
 end
 function o:SlashCommand_Help_Handler()
-    local C = GC.C
-    p:a('')
-    local COMMAND_DIALOG_TEXT = 'Shows debug dialog UI'
-    local COMMAND_CONFIG_TEXT = 'Shows the config UI'
-    local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
-    local COMMAND_CLEAR_TEXT  = 'Clears the debug console (Alias: cls, clr)'
-    local COMMAND_HELP_TEXT   = 'Shows this help'
-    local OPTIONS_LABEL       = 'options'
-    local USAGE_LABEL         = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
-    p:a(USAGE_LABEL)
-    p:a(OPTIONS_LABEL .. ":")
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'clear', COMMAND_CLEAR_TEXT end)
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
-    --@do-not-package@
-    if ns:IsDev() then
-        local vn = ns.addonGlobalNamespaceVarName
-        local nsDump = sformat('dump %s or %s.ns()', vn, vn)
-        p:a(c1('options (debug):'))
-        p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dump <ns>', nsDump end)
-    end
-    --@end-do-not-package@
-    p:a('Other commands:')
-    p:a(function() return c1('/devsuite-options')
-            .. ' or /ds-options for the Ace3 AceConfig command line options.' end)
+  local C = GC.C
+  p:a('')
+  local COMMAND_DIALOG_TEXT = 'Toggles the debug dialog UI'
+  local COMMAND_CONFIG_TEXT = 'Shows the config UI'
+  local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
+  local COMMAND_CLEAR_TEXT  = 'Clears the debug console (Alias: cls, clr)'
+  local COMMAND_HELP_TEXT   = 'Shows this help'
+  local OPTIONS_LABEL       = 'options'
+  local USAGE_LABEL         = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
+  p:a(USAGE_LABEL)
+  p:a(OPTIONS_LABEL .. ":")
+  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
+  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
+  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
+  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'clear', COMMAND_CLEAR_TEXT end)
+  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
+  --@do-not-package@
+  if ns:IsDev() then
+    local vn     = ns.addonGlobalNamespaceVarName
+    local nsDump = sformat('dump %s or %s.ns()', vn, vn)
+    p:a(c1('options (debug):'))
+    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dump <ns>', nsDump end)
+  end
+  --@end-do-not-package@
+  p:a('Other commands:')
+  p:a(function() return c1('/devsuite-options')
+          .. ' or /ds-options for the Ace3 AceConfig command line options.' end)
 end
 
 --- @param spaceSeparatedArgs string
