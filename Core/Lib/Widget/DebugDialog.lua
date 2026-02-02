@@ -43,50 +43,43 @@ local function findItem(name, items)
     end
 end
 
---- This method handles resizing of the dialog
---- so that larger UI screens doesn't make the dialog
---- too big for the screen.
---- @param w DebugDialogWidget
-local function ResizeIfNeeded(w)
-  local f, aceW      = w.f, w.aceWidget
-  local currentScale = UIParent:GetScale()
-  local height
-  local scale
-  local ofsy         = 50
-  if currentScale >= 1.1 then
-    scale  = currentScale - 0.4
-    height = f:GetHeight() - 160
-  elseif currentScale >= 0.99 then
-    scale  = currentScale - 0.2
-    height = f:GetHeight() - 100
-  elseif currentScale >= 0.85 then
-    --scale = currentScale
-    height = f:GetHeight() - 130
-    --height = 600
-  elseif currentScale >= 0.75 then
-    height = f:GetHeight() - 50
-    ofsy   = 40
-  elseif currentScale >= 0.69 then
-    height = f:GetHeight() - 10
-    ofsy   = 40
-  elseif currentScale <= 0.65 then
-    height = f:GetHeight()
-    ofsy   = 50
+local function ClampDialogSize(desiredW, desiredH)
+  local uiW, uiH = UIParent:GetWidth(), UIParent:GetHeight()
+  if not uiW or not uiH then
+    return desiredW, desiredH
   end
-  if scale then f:SetScale(scale) end
-  if not height then return end
   
-  aceW:SetHeight(height)
-  aceW:ClearAllPoints()
-  aceW:SetPoint('CENTER', nil, 'CENTER', 0, ofsy)
+  local marginW = 100
+  local marginH = 50
+  
+  local maxW = uiW - marginW
+  local maxH = uiH - marginH
+  
+  -- only shrink if exceeding available space
+  if desiredW > maxW then desiredW = maxW end
+  if desiredH > maxH then desiredH = maxH end
+  
+  return desiredW, desiredH
+end
+
+---@param w DebugDialogWidget
+local function DebugDialogWidget_AdjustSize(w)
+  if w.__sizeAdjusted then return end
+  w.__sizeAdjusted = true
+  
+  local settings = ns:g().debug_dialog
+  
+  local desiredW = settings.width or w.f:GetWidth()
+  local desiredH = settings.height or w.f:GetHeight()
+  local width, height = ClampDialogSize(desiredW, desiredH)
+  print('width/height:', width, '/', height)
+  w.a:SetWidth(width)
+  w.a:SetHeight(height)
 end
 
 --- @param w DebugDialogWidget
 local function OnShow(w)
-  local settings = ns:g().debug_dialog
-  local aceW = w.aceWidget
-  aceW:SetWidth(settings.width)
-  aceW:SetHeight(settings.height)
+  DebugDialogWidget_AdjustSize(w)
   
   w:EnableAcceptButtonDelayed()
   --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
@@ -116,6 +109,7 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
     -- ns:a().BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
 
     if IsBlank(literalVarName) then return end
+  
     local scriptToEval = ns.sformat([[ return %s ]], literalVarName)
     local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
     if errorMessage then
@@ -130,10 +124,7 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
     setmetatable(env, env.mt)
     setfenv(func, env)
 
-    --w.contentEditBox:SetText('')
-    w.f:SetStatusText(errorMessage)
-    --w:SetStatusText("ERROR")
-    --w:SetErrorContent(errorMessage)
+    w.a:SetStatusText(errorMessage)
 
     local val = func()
 
@@ -174,15 +165,34 @@ local function HistDropDown_OnValueChanged(w, selectedValue)
     w:EnableAcceptButtonDelayed()
 end
 
----@param w DebugDialogWidget
+--- @param w DebugDialogWidget
 local function ShowFnEditBox_OnValueChanged(w, checkedState) w.codeEditBox.button:Enable() end
 
+--- @param frame FrameObj
+local function Frame_OnSizeChanged(frame)
+  local resizeTimer
+  --- @param self FrameObj
+  frame:HookScript("OnSizeChanged", function(self)
+    if resizeTimer then resizeTimer:Cancel() end
+    resizeTimer = C_Timer.NewTimer(0.1, function()
+      local curW, curH = self:GetSize()
+      local newW, newH = ClampDialogSize(curW, curH)
+      -- Only correct if overflowed
+      if newW ~= curW or newH ~= curH then
+        self:StopMovingOrSizing()
+        self:SetSize(newW, newH)
+        local s = ns:g().debug_dialog
+        s.width  = newW
+        s.height = newH
+      end
+    end)
+  end)
+end
 
 --- @param w DebugDialogWidget
 local function RegisterCallbacks(w)
-  local aceW = w.aceWidget
-  aceW:SetCallback("OnClose", function() OnClose(w) end)
-  aceW:SetCallback("OnShow", function() OnShow(w) end)
+  w.a:SetCallback("OnClose", function() OnClose(w) end)
+  w.a:SetCallback("OnShow", function() OnShow(w) end)
   w.codeEditBox:SetCallback("OnEditFocusGained", function()
     CodeEditBox_OnEditFocusGained(w)
   end)
@@ -195,6 +205,8 @@ local function RegisterCallbacks(w)
   w.showFnEditBox:SetCallback("OnValueChanged", function(fw, event, checkedState)
     ShowFnEditBox_OnValueChanged(w, checkedState)
   end)
+  Frame_OnSizeChanged(w.f)
+  
 end
 
 --[[-----------------------------------------------------------------------------
@@ -202,7 +214,7 @@ Methods
 -------------------------------------------------------------------------------]]
 --- @param w DebugDialogWidget
 local function widgetMethods(w)
-  local aceW = w.aceWidget
+  local aceW = w.a
     function w:Show() aceW:Show() end
     function w:GetTitle() return aceW.titletext:GetText() end
     function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton()  end) end
@@ -284,7 +296,13 @@ function D:New()
   
   --- @class DebugDialogAceFrameWidget : AceGUIWidget
   --- @field frame FrameObj
+  --- @field sizer_se FrameObj
   local dialog  = AceGUI:Create("Frame")
+  
+  -- so we don't resize to larger than the screen
+  dialog.frame:SetClampedToScreen(true)
+  dialog.sizer_se:SetClampedToScreen(true)
+  
   local profile = ns:profile()
   
   -- The following makes the "Escape" close the window
@@ -298,10 +316,14 @@ function D:New()
   dialog:SetHeight(800)
   
   local settings = ns:g().debug_dialog
-  
+  local f        = dialog.frame
+  if f.SetResizeBounds then -- WoW 10.0
+    f:SetResizeBounds(400, 550)
+  else
+    f:SetMinResize(400, 550)
+  end
   dialog:SetWidth(settings.width)
   dialog:SetHeight(settings.height)
-  dialog.frame:SetClampedToScreen(true)
   
   local label = AceGUI:Create("Label")
   label:SetFullWidth(true)
@@ -362,9 +384,11 @@ function D:New()
   
   --- @class DebugDialogWidget
   --- @field f FrameObj
+  --- @field a DebugDialogAceFrameWidget
+  --- @field private __sizeAdjusted boolean
   local widget  = {
     profile        = profile,
-    aceWidget      = dialog,
+    a              = dialog,
     f              = dialog.frame,
     codeEditBox    = codeEditBox,
     contentEditBox = contentEditBox,
@@ -373,13 +397,8 @@ function D:New()
   }
   dialog.widget = widget
   widgetMethods(widget)
-  
   RegisterCallbacks(widget)
   
-  --ResizeIfNeeded(widget)
-  
-  
-  print(('xx widget: width=%s height=%s'):format(widget.f:GetWidth(), widget.f:GetHeight()))
   return widget;
 end
 
