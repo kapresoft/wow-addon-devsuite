@@ -49,8 +49,8 @@ local function ClampDialogSize(desiredW, desiredH)
     return desiredW, desiredH
   end
   
-  local marginW = 100
-  local marginH = 50
+  local marginW = 20
+  local marginH = 20
   
   local maxW = uiW - marginW
   local maxH = uiH - marginH
@@ -174,6 +174,8 @@ local function Frame_OnSizeChanged(frame)
   --- @param self FrameObj
   frame:HookScript("OnSizeChanged", function(self)
     if resizeTimer then resizeTimer:Cancel() end
+    local s = ns:g().debug_dialog
+
     resizeTimer = C_Timer.NewTimer(0.1, function()
       local curW, curH = self:GetSize()
       local newW, newH = ClampDialogSize(curW, curH)
@@ -181,10 +183,8 @@ local function Frame_OnSizeChanged(frame)
       if newW ~= curW or newH ~= curH then
         self:StopMovingOrSizing()
         self:SetSize(newW, newH)
-        local s = ns:g().debug_dialog
-        s.width  = newW
-        s.height = newH
       end
+      s.width, s.height  = newW, newH
     end)
   end)
 end
