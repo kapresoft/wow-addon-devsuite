@@ -72,7 +72,6 @@ local function DebugDialogWidget_AdjustSize(w)
   local desiredW = settings.width or w.f:GetWidth()
   local desiredH = settings.height or w.f:GetHeight()
   local width, height = ClampDialogSize(desiredW, desiredH)
-  print('width/height:', width, '/', height)
   w.a:SetWidth(width)
   w.a:SetHeight(height)
 end
