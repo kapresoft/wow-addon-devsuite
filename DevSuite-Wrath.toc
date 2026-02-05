@@ -34,8 +34,6 @@
 ## X-Github-Project-Last-Changed-Date: @project-date-iso@
 ## X-Github-Project-Version: @project-version@
 
-# To get the Interface/Build Info
-# /run print(select(4, GetBuildInfo()))
-
+ThirdParty\ThirdParty.xml
 Core\Wrath.lua
 Core\_Core.xml

@@ -18,8 +18,11 @@ local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 --[[-----------------------------------------------------------------------------
 NewAddOn
 -------------------------------------------------------------------------------]]
---- @alias DevSuiteInterface DevSuite | AddonInterface
+--- @alias DevSuiteInterface DevSuite|AceConsole|AceEvent|AceHook
+--
+--
 --- @class DevSuite
+--- @field private configDialogWidget AceConfigDialog
 local A = LibStub:NewAddon(ns.addon); if not A then return end
 local p = ns:CreateDefaultLogger(ns.addon)
 
