@@ -96,6 +96,10 @@ local function OnShow(w)
     if item then text = item.value end
   end
   w:SetCodeText(text)
+  
+  local s_anchor = ns:g().debug_dialog.anchor
+  local anchor = CreateAnchor(s_anchor.point, s_anchor.relativeTo, s_anchor.relativePoint, s_anchor.x, s_anchor.y)
+  anchor:SetPoint(w.f, true)
 end
 
 ---@type DebugDialogWidget
@@ -188,6 +192,32 @@ local function Frame_OnSizeChanged(frame)
   end)
 end
 
+--- Resizes dialog if overflowed size of wow window
+--- @param self FrameObj
+local function Frame_UpdateSize(self)
+  local s = ns:g().debug_dialog
+  local curW, curH = self:GetSize()
+  local newW, newH = ClampDialogSize(curW, curH)
+  -- Only correct if overflowed
+  if newW ~= curW or newH ~= curH then self:SetSize(newW, newH) end
+  s.width, s.height  = newW, newH
+end
+
+--- Save Frame anchor and size
+--- @param self FrameObj
+local function Frame_SaveDialogAnchorHook(self)
+  Frame_UpdateSize(self)
+  
+  --- @type AnchorMixin
+  local anchor = AnchorUtil.CreateAnchorFromPoint(self, 1)
+  if not anchor then return end
+  
+  local point, relativeTo, relativePoint, x, y = anchor:Get()
+  local s = ns:g().debug_dialog
+  s.anchor = { point = point, relativeTo = relativeTo,
+    relativePoint = relativePoint, x = x, y = y }
+end
+
 --- @param w DebugDialogWidget
 local function RegisterCallbacks(w)
   w.a:SetCallback("OnClose", function() OnClose(w) end)
@@ -204,8 +234,7 @@ local function RegisterCallbacks(w)
   w.showFnEditBox:SetCallback("OnValueChanged", function(fw, event, checkedState)
     ShowFnEditBox_OnValueChanged(w, checkedState)
   end)
-  Frame_OnSizeChanged(w.f)
-  
+  hooksecurefunc(w.f, "StopMovingOrSizing", Frame_SaveDialogAnchorHook)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -300,6 +329,7 @@ function D:New()
   --- @field frame FrameObj
   --- @field sizer_se FrameObj
   --- @field titletext FontStringObj
+  --- @field titlebg TextureObj
   local dialog  = AceGUI:Create("Frame")
   
   -- so we don't resize to larger than the screen

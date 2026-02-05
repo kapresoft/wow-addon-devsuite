@@ -1,6 +1,6 @@
 ## Interface: 11508
 ## Version: @project-version@
-## Title: Dev|cff4DBEFFSuite|r
+## Title: |TInterface/AddOns/DevSuite/Core/Assets/DebugChatFrame-Logo-1-50px:18:18|t Dev|cff4DBEFFSuite|r
 
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r
@@ -37,5 +37,6 @@
 # To get the Interface/Build Info
 # /run print(select(4, GetBuildInfo()))
 
+ThirdParty\ThirdParty.xml
 Core\Vanilla.lua
 Core\_Core.xml

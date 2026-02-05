@@ -2,13 +2,13 @@
 ..\FrameXML\UI.xsd">
 
     <!-- LibStub needs to be at the top -->
-    <Script file="ExtLib\WowAce\Ace3\LibStub\LibStub.lua"/>
+    <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
+    <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 
     <!-- Exclude during development for perf -->
     <!--@non-debug@
-    <Include file="_ExtLib_WowAce_Ace3.xml"/>
+    <Include file="Ace3.xml"/>
     @end-non-debug@-->
-
-    <Include file='ExtLib\Kapresoft-LibUtil\_Lib.xml'/>
+    <Include file='Libs\Kapresoft-LibUtil\_Lib.xml'/>
 
 </Ui>

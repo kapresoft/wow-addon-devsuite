@@ -5,7 +5,7 @@
 # Note: This will build in ./.release/_setup directory
 package-as: _setup
 # --------------------------
-manual-changelog: CHANGELOG.md
+no-changelog: true
 
 # Use GitHub because svn repos are slower
 # basepath is ${package-as}
@@ -14,11 +14,9 @@ manual-changelog: CHANGELOG.md
 #  - But this is the official: https://repos.wowace.com/wow/ace3/trunk
 # LibIconPicker: We just need the interface files
 externals:
-  ThirdParty-Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
-  ThirdParty-Libs/LibPrettyPrint: https://github.com/kapresoft/wow-addon-LibPrettyPrint
-  ThirdParty-Libs/LibIconPicker: https://github.com/kapresoft/wow-addon-LibIconPicker
   ThirdParty-Libs/Ace3: https://github.com/WoWUIDev/Ace3
-  ThirdParty-Libs/LibSharedMedia/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+  ThirdParty-Libs/LibPrettyPrint: https://github.com/kapresoft/wow-addon-LibPrettyPrint
+  ThirdParty-Libs/Kapresoft-LibUtil: https://github.com/kapresoft/wow-lib-util
 
 ignore:
   - "*.sh"
@@ -26,33 +24,21 @@ ignore:
   - "*.yaml"
   - "*.yml"
   - "*.toc"
+  - ThirdParty/Ace3.xml
+  - ThirdParty/ThirdParty.xml
   - dev
   - doc
-  - Gears
-  - Gears-OptionsUI
-  - ThirdParty-Libs/LibStub/tests
-  - ThirdParty-Libs/Ace3/Ace3.lua
+  - LICENSE
+  - CHANGELOG.md
+  - Core
+  - Bindings.xml
   - ThirdParty-Libs/Ace3/Bindings.xml
-  - ThirdParty-Libs/Ace3/changelog.txt
-  - ThirdParty-Libs/Ace3/LICENSE.txt
-  - ThirdParty-Libs/Ace3/LibStub
-  - ThirdParty-Libs/LibPrettyPrint/dev
-  - ThirdParty-Libs/LibPrettyPrint/doc
-  - ThirdParty-Libs/LibPrettyPrint/*.toc
-  - ThirdParty-Libs/LibIconPicker/Libs/Assets
-  - ThirdParty-Libs/LibIconPicker/Libs/Developer
-  - ThirdParty-Libs/LibIconPicker/Libs/Locales
-  - ThirdParty-Libs/LibIconPicker/Libs/Util
-  - ThirdParty-Libs/LibIconPicker/Libs/Icon*.lua
-  - ThirdParty-Libs/LibIconPicker/Libs/LibIconPicker.lua
-  - ThirdParty-Libs/LibIconPicker/Libs/Namespace.lua
-  - ThirdParty-Libs/LibIconPicker/ThirdParty
-  - ThirdParty-Libs/LibIconPicker/*.txt
-  - ThirdParty-Libs/LibIconPicker/*.xml
-  - ThirdParty-Libs/LibIconPicker/*.toc
-  - ThirdParty-Libs/LibIconPicker/dev
-  - ThirdParty-Libs/LibIconPicker/doc
+  - ThirdParty-Libs/Kapresoft-LibUtil/External
+  - ThirdParty-Libs/Kapresoft-LibUtil/Kapresoft-LibUtil.toc
+  - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
+  - ThirdParty-Libs/Kapresoft-LibUtil/dev
+  - ThirdParty-Libs/Kapresoft-LibUtil/doc
 
 # Base path is .release/
 move-folders:
-  _setup/ThirdParty-Libs: ../Gears/ThirdParty/Libs
+  _setup/ThirdParty-Libs: ../ThirdParty/Libs
