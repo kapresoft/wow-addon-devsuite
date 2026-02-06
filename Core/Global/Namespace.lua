@@ -68,8 +68,6 @@ local M = {
     CategoryLoggerMixin = {},
     --- @type ConfigDialogController
     ConfigDialogController = {},
-    --- @type Developer
-    Developer = {},
     --- @type MainController
     MainController = {},
     --- @type DialogWidgetMixin
