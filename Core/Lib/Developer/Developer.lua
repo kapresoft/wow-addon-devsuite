@@ -47,7 +47,7 @@ Event::OnAddOnReady
 
 local function OnAddOnReady()
   
-  local MINIMAL_UI_MODE = true
+  local MINIMAL_UI_MODE = false
   local MINIMAL_UI_FRAMES = {
     MinimapCluster,
     UIWidgetTopCenterContainerFrame, -- hellfire
@@ -73,6 +73,7 @@ local function OnAddOnReady()
   end)
   
   if SHOW_ADDON_LIST_ON_LOGIN and AddonList then AddonList:Show() end
+  -- todo next: add keybind on this feature, add to Options frame
   if MINIMAL_UI_MODE then L:HideFrames(MINIMAL_UI_FRAMES) end
   
   if not ShadowUF then
