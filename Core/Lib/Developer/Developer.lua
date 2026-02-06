@@ -32,14 +32,16 @@ local SHOW_ADDON_LIST_ON_LOGIN
 Developer
 -------------------------------------------------------------------------------]]
 --- @class DevSuite_Developer
-local L = ns:NewLibWithEvent(libName);
-d = L
+local L = ns:NewLibWithEvent(libName); if ns:IsDev() then d = L end
 
 local c1 = ns:K():cf(RED_THREAT_COLOR)
 local libNamePretty = c1(libName)
 
 --- This method show's the caller
 --p("SetIcon called from:", debugstack(2, 5, 5))
+
+--- @type DevSuite_Developer
+local o = L
 
 --[[-----------------------------------------------------------------------------
 Event::OnAddOnReady
@@ -53,7 +55,7 @@ local function OnAddOnReady()
     UIWidgetTopCenterContainerFrame, -- hellfire
     BuffFrame,
   }
-  local FRAME_FORMATION = 0
+  local FRAME_FORMATION = 2
   local SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
   
   --C_Timer.After(0.2, function()
@@ -74,14 +76,14 @@ local function OnAddOnReady()
   
   if SHOW_ADDON_LIST_ON_LOGIN and AddonList then AddonList:Show() end
   -- todo next: add keybind on this feature, add to Options frame
-  if MINIMAL_UI_MODE then L:HideFrames(MINIMAL_UI_FRAMES) end
+  if MINIMAL_UI_MODE then o:HideFrames(MINIMAL_UI_FRAMES) end
   
   if not ShadowUF then
     C_Timer.After(1, function()
-      if FRAME_FORMATION == 1 then L:FrameFormation1()
-      elseif FRAME_FORMATION == 2 then L:FrameFormation2()
+      if FRAME_FORMATION == 1 then o:FrameFormation1()
+      elseif FRAME_FORMATION == 2 then o:FrameFormation2()
       else
-        L:FrameFormation0()
+        o:FrameFormation0()
         --UIParent_ManageFramePositions()
       end
     end)
@@ -119,7 +121,7 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function L:HideFrames(frames)
+function o:HideFrames(frames)
   for i, f in ipairs(frames) do
     if f and f.Hide then
       f:Hide()
@@ -127,7 +129,7 @@ function L:HideFrames(frames)
   end
 end
 
-function L:OpenLibIconPicker()
+function o:OpenLibIconPicker()
   local lip = getLIP();
   if not lip then return end
   --- @type LibIconPicker_Options
@@ -140,25 +142,25 @@ function L:OpenLibIconPicker()
   end, opt)
 end
 
-function L:ll() self:logp('Log Level:', DEVS_LOG_LEVEL) end
-function L:IsScriptErrorsEnabled()
+function o:ll() self:logp('Log Level:', DEVS_LOG_LEVEL) end
+function o:IsScriptErrorsEnabled()
   self:logp('scriptErrors:', GetCVarBool('scriptErrors'))
 end
 
-function L:GetProfile() return ns:db().profile end
-function L:GetProfileNames() return ns:db():GetProfiles() end
+function o:GetProfile() return ns:db().profile end
+function o:GetProfileNames() return ns:db():GetProfiles() end
 
-function L:T() self:ToggleWindowed() end
-function L:ToggleWindowed()
+function o:T() self:ToggleWindowed() end
+function o:ToggleWindowed()
   local isMaximized = GetCVarBool(GX_MAXIMIZE)
   SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
   RestartGx()
 end
-function L:MaxScreen()
+function o:MaxScreen()
   SetCVar(GX_MAXIMIZE, 1);
   RestartGx()
 end
-function L:Windowed()
+function o:Windowed()
   SetCVar(GX_MAXIMIZE, 0);
   RestartGx()
 end
@@ -182,7 +184,7 @@ local function OutputAllSystemAPI(doc, system)
   return out
 end
 
-function L:API(name)
+function o:API(name)
   -- call /api first
   local doc = APIDocumentation
   local api = doc:FindSystemByName(name)
@@ -192,7 +194,7 @@ function L:API(name)
 end
 
 --- @see Interface/SharedXML/Color.lua
-function L:GetColors()
+function o:GetColors()
   local ret = {
     names = {},
     codes = {}
@@ -208,7 +210,7 @@ function L:GetColors()
 end
 
 -- /run d:Formation0()
-function L:FrameFormation0()
+function o:FrameFormation0()
   if ShadowUF then return end
   
   local scale = 0.7
@@ -225,7 +227,7 @@ function L:FrameFormation0()
 end
 
 -- /run d:Formation1()
-function L:FrameFormation1()
+function o:FrameFormation1()
   if ShadowUF then return end
   
   local scale = 0.85
@@ -246,7 +248,7 @@ function L:FrameFormation1()
 end
 
 -- /run d:Formation2()
-function L:FrameFormation2()
+function o:FrameFormation2()
   if ShadowUF then return end
   
   local scale = 0.85
@@ -267,7 +269,7 @@ function L:FrameFormation2()
 end
 
 --- Usage: /run d:c('hello', 'world')
-function L:c(...) ns.logp(libNamePretty, ...) end
+function o:c(...) ns.logp(libNamePretty, ...) end
 
 
 -- TODO: Add this as a feature; a textbox that takes a code to execute on login
