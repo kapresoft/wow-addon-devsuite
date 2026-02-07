@@ -19,6 +19,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
+local ip = ns.O.LibIconPickerUtil
 
 local libName = 'Developer'
 local p = ns:LC().DEV:NewLogger(libName)
@@ -49,13 +50,13 @@ Event::OnAddOnReady
 
 local function OnAddOnReady()
   
-  local MINIMAL_UI_MODE = false
+  local MINIMAL_UI_MODE = true
+  local FRAME_FORMATION = 0
   local MINIMAL_UI_FRAMES = {
-    MinimapCluster,
+    --MinimapCluster,
+    --BuffFrame,
     UIWidgetTopCenterContainerFrame, -- hellfire
-    BuffFrame,
   }
-  local FRAME_FORMATION = 2
   local SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
   
   --C_Timer.After(0.2, function()
@@ -129,17 +130,19 @@ function o:HideFrames(frames)
   end
 end
 
-function o:OpenLibIconPicker()
-  local lip = getLIP();
-  if not lip then return end
-  --- @type LibIconPicker_Options
-  local opt = {
-    icon      = 132111, showTextInput = true,
-    textInput = { label = 'Name:', value = 'My name' }
-  }
-  lip:Open(function(sel)
-    print('selected:', pf(sel))
-  end, opt)
+--- For testing LibIconPicker
+--- /dump d:ShowIconPicker()
+function o:ShowIconPicker()
+  ip:Get(function(lip)
+    --- @type LibIconPicker_Options
+    local opt = {
+      icon      = 132111, showTextInput = true,
+      textInput = { label = 'Name:', value = 'My name' }
+    }
+    lip:Open(function(selection)
+      print('selected:', pf(selection))
+    end, opt)
+  end)
 end
 
 function o:ll() self:logp('Log Level:', DEVS_LOG_LEVEL) end

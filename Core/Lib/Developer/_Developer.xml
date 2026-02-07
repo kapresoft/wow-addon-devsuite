@@ -2,6 +2,7 @@
 ..\FrameXML\UI.xsd">
 
 	<Script file="DebuggingSettingsGroup.lua" />
+	<Script file="LibIconPickerUtil.lua" />
 	<Script file="Developer.lua" />
 
 </Ui>

@@ -82,6 +82,10 @@ local M = {
     OptionsUtil = {},
     --- @type PopupDebugDialog
     PopupDebugDialog = {},
+    
+    --- Dev Mode Only
+    --- @type LibIconPickerUtil
+    LibIconPickerUtil = {},
 }; KO.LibModule.EnrichModules(M)
 
 --- @param o __Namespace | Namespace
