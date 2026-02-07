@@ -27,3 +27,7 @@ BaseLibraryObject_WithAceEvent
 --- @field name string Retrieves the module's name. This is an instance method that should be implemented to return the name of the module.
 --- @field major string Retrieves the major version of the module. i.e., <LibName>-1.0
 --- @field minor string Retrieves the minor version of the module. i.e., <LibName>-1.0
+
+
+--- @type LibIconPicker
+LibIconPicker = {}
