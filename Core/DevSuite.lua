@@ -240,6 +240,7 @@ function o.BINDING_DEVS_TOGGLE_FRAMESTACK()
     --- arg2: showRegions
     --- arg3 showAnchors
     --- Example showing all:  "111" or "true true true"
+    --- TODO: Show Tooltip/Message to press 'Control' to show dialog
     SlashCmdList["FRAMESTACK"]("false true true")
 end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
