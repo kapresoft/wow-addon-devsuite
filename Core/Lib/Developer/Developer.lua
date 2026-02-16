@@ -33,7 +33,11 @@ local SHOW_ADDON_LIST_ON_LOGIN
 Developer
 -------------------------------------------------------------------------------]]
 --- @class DevSuite_Developer
-local L = ns:NewLibWithEvent(libName); if ns:IsDev() then d = L end
+local L = ns:NewLibWithEvent(libName)
+if ns:IsDev() then
+  dsd = L;
+  DEVSUITE_DEV = L
+end
 
 local c1 = ns:K():cf(RED_THREAT_COLOR)
 local libNamePretty = c1(libName)
@@ -51,7 +55,8 @@ Event::OnAddOnReady
 local function OnAddOnReady()
   
   local MINIMAL_UI_MODE = true
-  local FRAME_FORMATION = 0
+  -- formation: 0=dev, 1=bottom, 2=top
+  local FRAME_FORMATION = 2
   local MINIMAL_UI_FRAMES = {
     --MinimapCluster,
     --BuffFrame,
@@ -59,9 +64,9 @@ local function OnAddOnReady()
   }
   local SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
   
-  --C_Timer.After(0.2, function()
-  --  L:OpenLibIconPicker()
-  --end)
+  C_Timer.After(0.2, function()
+    --L:ShowIconPicker()
+  end)
   
   C_Timer.After(1, function()
     p:vv(function()
@@ -131,13 +136,15 @@ function o:HideFrames(frames)
 end
 
 --- For testing LibIconPicker
---- /dump d:ShowIconPicker()
-function o:ShowIconPicker()
+--- /dump dsd:ShowIconPicker()
+--- /dump dsd:ShowIconPicker(5, 12)
+function o:ShowIconPicker(min, max)
   ip:Get(function(lip)
     --- @type LibIconPicker_Options
     local opt = {
       icon      = 132111, showTextInput = true,
-      textInput = { label = 'Name:', value = 'My name' }
+      textInput = {
+        label = 'Name:', value = 'My', min = min or 5, max = max or 10 }
     }
     lip:Open(function(selection)
       print('selected:', pf(selection))
