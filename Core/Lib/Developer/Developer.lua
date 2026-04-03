@@ -55,7 +55,7 @@ Event::OnAddOnReady
 local function OnAddOnReady()
   
   local MINIMAL_UI_MODE = true
-  -- formation: 0=dev, 1=bottom, 2=top
+  -- formation: 0=dev, 1=bottom, 2=top, nil=reset
   local FRAME_FORMATION = 2
   local MINIMAL_UI_FRAMES = {
     --MinimapCluster,
@@ -84,8 +84,14 @@ local function OnAddOnReady()
   -- todo next: add keybind on this feature, add to Options frame
   if MINIMAL_UI_MODE then o:HideFrames(MINIMAL_UI_FRAMES) end
   
-  if not ShadowUF then
+  if not ShadowUF and not InCombatLockdown() then
     C_Timer.After(1, function()
+      if not FRAME_FORMATION then
+        p:vv('Player and Target Frames have been reset to default.')
+        o:ResetPlayerFrames()
+        return
+      end
+      
       if FRAME_FORMATION == 1 then o:FrameFormation1()
       elseif FRAME_FORMATION == 2 then o:FrameFormation2()
       else
@@ -219,6 +225,15 @@ function o:GetColors()
   return ret
 end
 
+function o:ResetPlayerFrames()
+  local player, target = PlayerFrame, TargetFrame
+  
+  for _, fr in ipairs({ player, target }) do
+    fr:ResetToDefaultPosition()
+    fr:SetScale(1.0)
+  end
+end
+
 -- /run d:Formation0()
 function o:FrameFormation0()
   if ShadowUF then return end
@@ -240,7 +255,7 @@ end
 function o:FrameFormation1()
   if ShadowUF then return end
   
-  local scale = 0.85
+  local scale = 0.95
   local ofsy = -200
   if ns:IsMoP() then ofsy = -120 end
   
@@ -261,7 +276,7 @@ end
 function o:FrameFormation2()
   if ShadowUF then return end
   
-  local scale = 0.85
+  local scale = 0.95
   local ofsy = -110
   if ns:IsMoP() then ofsy = -120 end
   

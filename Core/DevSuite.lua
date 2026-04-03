@@ -50,15 +50,95 @@ function o:OnInitialize()
     O.DevConsoleModuleMixin:NewModule(self)
 end
 
+--- @return any
 function o:GetMouseFocus()
-    --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
-    local focusFn = GetMouseFoci or GetMouseFocus
-    local mf = focusFn()
-    DEVS_MF = mf
-    if not mf then return end
-    local name = 'Mouse Focused Object'
-    if type(mf.GetName) == 'function' then name = mf:GetName() end
-    self.PopupDialog:EvalObjectThenShow(mf, name)
+  --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
+  local focusFn = GetMouseFoci or GetMouseFocus
+  local mf = focusFn()
+  if not mf then return end
+  local val
+  if #mf > 0 then val = mf[1] end
+  if not val then return end
+  
+  --- @class MouseFocusVarDebugInfo
+  --- @field name string
+  --- @field dbgName string
+  --- @field dbgNameByParentKey string
+  --
+  --
+  --- @class MouseFocusParentDebugInfo
+  --- @field name string
+  --- @field parentKey string
+  --- @field dbgName string
+  --- @field dbgNameByParentKey string
+  --
+  --- @class MouseFocusDebugInfo
+  --- @field globalVarName string
+  --- @field mouseFocus MouseFocusVarDebugInfo
+  --- @field parent MouseFocusParentDebugInfo
+  --- @field children table<string[]>
+  --
+  --
+  --- @class MouseFocusInfo
+  --- @field debugInfo MouseFocusDebugInfo
+  --- @field val any The mouse focus value
+  local retVal = {
+    debugInfo = {
+      globalVarName = '_G.DEVS_MF',
+      mouseFocus = {},
+      parent = {},
+      children = {},
+    },
+    val = val
+  }
+  --
+  local debugInfo = retVal.debugInfo
+  local mouseFocus = debugInfo.mouseFocus
+  DEVS_MF = val
+  local name = 'Mouse Focused Object'
+  if val.GetName then
+    local n = val:GetName()
+    name = n or 'Unnamed'
+    mouseFocus.name = n or 'nil'
+  end
+  name = name .. '; var=DEVS_MF'
+
+  if val.GetDebugName then
+    mouseFocus.dbgName = val:GetDebugName()
+    mouseFocus.dbgNameByParentKey = val:GetDebugName(true)
+  end
+  if val.GetParentKey then mouseFocus.parentKey = val:GetParentKey() or 'nil' end
+  if val.GetParent then
+    local parent = debugInfo.parent
+    local p = val:GetParent()
+    if p then
+      parent.name = p and p.GetName and p:GetName() or 'nil'
+      if p.GetDebugName then
+        parent.dbgName = p:GetDebugName() or 'nil'
+        parent.dbgNameByParentKey = p:GetDebugName(true) or 'nil'
+      end
+    end
+  end
+  
+  -- children
+  local children = val.GetChildren and val:GetChildren()
+  if children then
+    local cL = debugInfo.children
+    for k, c in pairs(children) do
+      if type(c) == 'table' then
+        local d = {}
+        if c and c.GetParentKey then
+          local n = c:GetParentKey()
+          local dbgn = c.GetDebugName and c:GetDebugName()
+          d[n] = dbgn
+          table.insert(cL, d)
+        end
+      end
+    end
+  end
+  
+  self.PopupDialog:EvalObjectThenShow(retVal, name)
+  if self:IsFrameStackToolEnabled() then self:ToggleFrameStack() end
 end
 
 function o:EvalVar(globalVarName)
@@ -227,22 +307,10 @@ end
 -- ## -------------------------------------------------------------------------
 
 function o.BINDING_DEVS_OPTIONS_DLG() o:OpenConfig() end
-
 function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
 function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
 function o.BINDING_DEVS_TOGGLE_WINDOWED() o:ToggleWindowed() end
-function o.BINDING_DEVS_TOGGLE_FRAMESTACK()
-    --- @see Interface/AddOns/Blizzard_DebugTools/Blizzard_DebugTools.lua for mod key options
-    --- Option Key - go up in the UI tree
-    --- Control Key - inspect current
-    --- @see Interface/FrameXML/ChatFrame.lua
-    --- arg1: showHidden
-    --- arg2: showRegions
-    --- arg3 showAnchors
-    --- Example showing all:  "111" or "true true true"
-    --- TODO: Show Tooltip/Message to press 'Control' to show dialog
-    SlashCmdList["FRAMESTACK"]("false true true")
-end
+function o.BINDING_DEVS_TOGGLE_FRAMESTACK() o.ToggleFrameStack() end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     if ns:HasChatFrame() then ns.chatFrame:Clear() end
 end
@@ -257,10 +325,27 @@ function o.BINDING_DEVS_TOGGLE_DEBUG_CONSOLE()
     module:Disable()
 end
 
+--- @see Interface/AddOns/Blizzard_DebugTools/Blizzard_DebugTools.lua for mod key options
+--- Option Key - go up in the UI tree
+--- Control Key - inspect current
+--- @see Interface/FrameXML/ChatFrame.lua
+--- arg1: showHidden
+--- arg2: showRegions
+--- arg3 showAnchors
+--- Example showing all:  "111" or "true true true"
+--- TODO: Show Tooltip/Message to press 'Control' to show dialog
+function o:ToggleFrameStack() SlashCmdList["FRAMESTACK"]("false true true") end
+function o:IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTooltip:IsShown() end
+
+
 function o:log(...) ns.print(...)  end
 
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
 function o.ns() return DEV_SUITE_NS  end
 
+
+--[[-------------------------------------------------------------------
+Global Var
+---------------------------------------------------------------------]]
 DEV_SUITE = o;
 
