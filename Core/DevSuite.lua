@@ -6,7 +6,9 @@ local ns = select(2, ...)
 
 local O, GC, LibStub = ns.O, ns.GC, ns.LibStub
 local AceConfigDialog = ns:AceConfigDialog()
-
+--- @type AceAddon_3_0
+local AceAddon = ns.LibStubAce('AceAddon-3.0')
+local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
 local Table, String = ns:Table(), ns:String()
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
@@ -15,15 +17,18 @@ local DebugDialog = O.DebugDialog
 
 local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 
+--- @param ... any
+local function t(...) EventTrace:LogEvent(string.upper(ns.addon), ...) end
+
 --[[-----------------------------------------------------------------------------
 NewAddOn
 -------------------------------------------------------------------------------]]
---- @alias DevSuiteInterface DevSuite|AceConsole|AceEvent|AceHook
+--- @alias DevSuiteInterface DevSuite|AceConsole_3_0|AceEvent_3_0|AceHook_3_0|AceBucket_3_0
 --
 --
 --- @class DevSuite
---- @field private configDialogWidget AceConfigDialog
-local A = LibStub:NewAddon(ns.addon); if not A then return end
+--- @field private configDialogWidget AceConfigDialog_3_0
+local A = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not A then return end
 local p = ns:CreateDefaultLogger(ns.addon)
 
 --- @type PopupDebugDialog
@@ -40,14 +45,26 @@ local o = A
 O.MainController:Init(o)
 
 function o:OnInitialize()
-    O.AceDbInitializerMixin:New(self):InitDb()
-    self.Options = O.OptionsMixin:New(self.addon)
-    self.Options:InitOptions()
-    self:SendMessage(GC.M.OnAfterInitialize, self)
-    self:RegisterSlashCommands()
+  O.AceDbInitializerMixin:New(self):InitDb()
+  self.Options = O.OptionsMixin:New(self.addon)
+  self.Options:InitOptions()
+  self:SendMessage(GC.M.OnAfterInitialize, self)
+  self:RegisterSlashCommands()
+  O.DevConsoleModuleMixin:NewModule(self)
+  
+  if not EventTrace then return end
 
-    -- Create Modules here:
-    O.DevConsoleModuleMixin:NewModule(self)
+  local trace = ns:g().trace
+  --trace.show_at_startup = true
+  ns:SetEventTraceSearchKeyword(trace.preset_keyword)
+  if EventTrace:IsVisible() and trace.show_at_startup then return end
+  EventTrace:Hide()
+end
+
+--- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
+function o:OnEnable()
+  self:RegisterHooks()
+  debugDialog = DebugDialog:New()
 end
 
 --- @return any
@@ -204,12 +221,6 @@ end
 function o:RegisterHooks()
     local f = SettingsPanel or InterfaceOptionsFrame
     if f then self:HookScript(f, 'OnHide', 'OnHide_Config_WithoutSound') end
-end
-
---- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
-function o:OnEnable()
-    self:RegisterHooks()
-    debugDialog = DebugDialog:New()
 end
 
 -- ## -------------------------------------------------------------------------

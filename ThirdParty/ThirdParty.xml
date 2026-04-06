@@ -4,11 +4,16 @@
     <!-- LibStub, then CallbackHandler needs to be at the top -->
     <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
     <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
-
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Table.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\String.lua"/>
+    <!--@do-not-package@-->
     <!-- Exclude during development for perf -->
+    <!--@end-do-not-package@-->
     <!--@non-debug@
     <Include file="Ace3.xml"/>
     @end-non-debug@-->
+    <!--@do-not-package@-->
+    <!-- Kapresoft-LibUtil 1.0 is DEPRECATED-->
+    <!--@end-do-not-package@-->
     <Include file='Libs\Kapresoft-LibUtil\_Lib.xml'/>
-
 </Ui>

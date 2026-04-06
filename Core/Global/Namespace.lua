@@ -1,7 +1,6 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type LibStub
 local LibStub = LibStub
 
 --- @type CoreNamespace
@@ -60,6 +59,8 @@ local M = {
     AceDbInitializerMixin = {},
     --- @type API
     API = {},
+    --- @type DatabaseSchema
+    DatabaseSchema = {},
     --- @type DebugDialog
     DebugDialog = {},
     --- @type DebuggingSettingsGroup
@@ -91,6 +92,9 @@ local M = {
 --- @param o __Namespace | Namespace
 local function NameSpacePropertiesAndMethods(o)
   
+  -- todo next: remove trace_cvar_keyword
+  o.trace_cvar_keyword = 'DevSuite.trace.keyword'
+  
   local function InitLocalLibStub()
     --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
     local LocalLibStub = o:K().Objects.LibStubMixin:New(
@@ -98,6 +102,21 @@ local function NameSpacePropertiesAndMethods(o)
             function(name, newLibInstance) o:Register(name, newLibInstance) end)
     o.LibStubAce       = LibStub
     o.LibStub          = LocalLibStub
+  end
+  
+  --- @return Kapresoft_Table_2_0
+  function o:Table() return LibStub('Kapresoft-Table-2-0') end
+  --- @return Kapresoft_String_2_0
+  function o:String() return LibStub('Kapresoft-String-2-0') end
+  
+  --- @param rgbHex RGBHex|nil    @Optional
+  --- @return fun(key:string) : string The color formatted key
+  function o:colorFn(rgbHex)
+    return function(text)
+      local c = CreateColorFromRGBHexString(rgbHex)
+      assert(c, ('Invalid RGBHex color: %s'):format(rgbHex))
+      return c:WrapTextInColorCode(text)
+    end
   end
   
   --- @param moduleName string The module name, i.e. Logger
@@ -149,7 +168,7 @@ local function NameSpacePropertiesAndMethods(o)
   --- @param dbfn fun() | "function() return addon.db end"
   function o:SetAddOnFn(dbfn) self.addonDbFn = dbfn end
   
-  --- @return AddOn_DB
+  --- @return AceDBObjectInstance
   function o:db() return self.addonDbFn() end
   
   --- @return DevSuite_Global_Config
@@ -172,6 +191,19 @@ local function NameSpacePropertiesAndMethods(o)
   --- @return DevConsoleModuleInterface
   function o:DevConsoleModule() return self:a():DevConsole() end
   
+  --- @param keyword string
+  function o:SetEventTraceSearchKeyword(keyword)
+    if type(keyword) ~= 'string' then return end
+    local s = EventTrace.Log.Bar.SearchBox
+    if not s then return end
+    s:SetText(keyword)
+  end
+  
+  function o:GameTooltip_DefaultAnchor()
+    GameTooltip:SetOwner(UIParent, 'ANCHOR_NONE')
+    GameTooltip:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -10, 70)
+  end
+  
   InitLocalLibStub()
 end
 
@@ -183,6 +215,8 @@ Enrich Namespace
 --- @class __Namespace : CoreNamespace
 --- @field gameVersion GameVersion
 --- @field LocaleUtil LocaleUtil
+--- @field EvenTracePrinter EventTracePrinter
+
 local ns = kns
 
 --- @type Modules

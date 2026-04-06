@@ -55,7 +55,7 @@ local function Methods(o)
     --- @param addon DevSuite
     function o:Init(addon)
         self.addon = addon
-        --- @type AddOn_DB
+        --- @type AceDBObjectInstance
         self.addon.db = AceDB:New(GC.C.DB_NAME)
         ns:SetAddOnFn(function() return self.addon.db end)
     end
@@ -82,7 +82,7 @@ local function Methods(o)
     function o:InitDbDefaults()
         local profileName = ns:db():GetCurrentProfile()
         p:d(function() return 'profile: %s', profileName end)
-        ns:db():RegisterDefaults(ns.DefaultAddOnDatabase)
+        ns:db():RegisterDefaults(ns.O.DatabaseSchema:GetDatabase())
     end
 end
 
