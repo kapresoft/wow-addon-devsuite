@@ -13,7 +13,7 @@ _Main() {
     echo "  $_ls_out"
     return 1
   fi
-  ./dev/release.sh -duz
+  ./dev/release.sh -dz
 }
 
 _Main

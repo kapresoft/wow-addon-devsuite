@@ -88,3 +88,11 @@ L['DEVTOOLS_DEPTH_CUTOFF']           = true
 L['DEVTOOLS_DEPTH_CUTOFF::Desc']     = 'This parameter controls the maximum depth to which tables are inspected in the development tools like |cff00ccff/dump|r. By setting this value, users can limit how deeply the tools traverse nested tables during operations such as debugging or displaying data structures. A lower depth can prevent excessive processing time and output clutter when working with deeply nested tables. The default setting is |cff00ccff10|r, but it can be adjusted to accommodate different levels of complexity or to enhance performance during development tasks.'
 L['DEVTOOLS_MAX_ENTRY_CUTOFF']       = true
 L['DEVTOOLS_MAX_ENTRY_CUTOFF::Desc'] = 'This parameter sets the maximum number of table entries that are displayed by the development tools like |cff00ccff/dump|r. It helps manage the output when inspecting large tables, preventing overwhelming amounts of data from being shown at once. By default, only the first |cff00ccff30|r entries of a table are displayed. Adjusting this parameter can be useful for developers who need to either limit or expand their view when debugging complex data structures, depending on the level of detail required for their analysis.'
+
+L['DevSuite addon feature']     = true
+L['Clear current preset']       = true
+L['Preset Filters']             = true
+L['Preset Filters::DESC']       = 'Click to show predefined text|nfilters from DevSuite addon.'
+L['Add Preset Filter Keyword']  = true
+L['Clear']                      = true
+

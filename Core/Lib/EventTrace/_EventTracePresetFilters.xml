@@ -1,0 +1,199 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+<!--
+    <Script file="EventTracePrinter.lua"/>
+-->
+    <Script file="PresetFiltersContentFrame.lua"/>
+    <Script file="PresetFiltersButton.lua"/>
+
+    <CheckButton name="DevSuite_PresetFiltersButtonTemplate" virtual="true" parent="EventTrace" inherits="UIPanelButtonTemplate"
+            mixin="DevSuite_PresetFiltersButtonMixin"
+            registerForClicks="LeftButtonUp"
+             hidden="true">
+
+        <Size x="115" y="23"/>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEnter method="OnEnter"/>
+            <OnLeave method="OnLeave"/>
+            <OnClick method="OnClick"/>
+        </Scripts>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Arrow" file="Interface\ChatFrame\ChatFrameExpandArrow">
+                    <Size x="14" y="14"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" x="-6" y="-1"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK" textureSubLevel="1">
+                <Texture file="Interface\Buttons\WHITE8x8">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="3" y="-3"/>
+                        <Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+                    </Anchors>
+                    <Color r="0.05" g="0.1" b="0.2" a="0.55"/>
+                </Texture>
+            </Layer>
+        </Layers>
+        <NormalTexture inherits="UIPanelButtonDisabledTexture"/>
+        <PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
+        <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+        <HighlightTexture file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+            <TexCoords left="0" right="1.0" top="0.03" bottom="0.72"/>
+        </HighlightTexture>
+    </CheckButton>
+    <CheckButton name="DevSuite_ClearFilterButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate" registerForClicks="LeftButtonUp">
+        <Size x="115" y="26"/>
+        <Layers>
+            <Layer level="ARTWORK" textureSubLevel="1">
+                <Texture file="Interface\Buttons\WHITE8x8">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="3" y="-3"/>
+                        <Anchor point="BOTTOMRIGHT" x="-3" y="3"/>
+                    </Anchors>
+                    <Color r="0.05" g="0.1" b="0.2" a="0.55"/>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <NormalTexture inherits="UIPanelButtonDisabledTexture"/>
+        <PushedTexture inherits="UIPanelButtonDisabledDownTexture"/>
+        <DisabledTexture inherits="UIPanelButtonDisabledTexture"/>
+        <HighlightTexture file="Interface\Buttons\UI-Silver-Button-Highlight" alphaMode="ADD">
+            <TexCoords left="0" right="1.0" top="0.03" bottom="0.72"/>
+        </HighlightTexture>
+    </CheckButton>
+    <Button name="DevSuite_PredefinedKeywordsButton" virtual="true" inherits="BackdropTemplate">
+        <Size x="160" y="24"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="HighlightBg" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                    <Color r="1.0" g="0.85" b="0.2" a="0.40"/>
+                </Texture>
+            </Layer>
+
+            <Layer level="OVERLAY">
+                <FontString parentKey="text" inherits="GameFontNormalOutline">
+                    <Anchors>
+                        <Anchor point="LEFT" x="10" y="1"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+        <PushedTexture file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+    </Button>
+    <Frame name="DevSuite_PresetFiltersContentFrameTemplate" virtual="true" hidden="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG" clampedToScreen="true">
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+        <Size x="200" y="250"/>
+        <Layers>
+            <Layer level="ARTWORK" textureSubLevel="1">
+                <Texture alpha="0.3" parentKey="BottomInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="4" y="-34"/>
+                        <Anchor point="TOPRIGHT" x="-2" y="-34"/>
+                    </Anchors>
+                </Texture>
+                <Texture parentKey="HeaderBackground" name="$parentHeaderBackground"
+                         file="Interface\FrameGeneral\UI-Background-Rock">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="5" y="-4"/>
+                        <Anchor point="TOPRIGHT" x="-4" y="-4"/>
+                    </Anchors>
+                    <Size y="39"/>
+                </Texture>
+                <FontString parentKey="HeaderTitle" inherits="GameFontNormal">
+                    <Size x="100" y="12"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="TOP" x="0" y="-8" />
+                    </Anchors>
+                </FontString>
+
+                <Texture parentKey="HeaderIconLeft" alpha="1"
+                         file="Interface\AddOns\DevSuite\Core\Assets\DebugChatFrame-Logo-1-50px">
+                    <Size x="22" y="22"/>
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground"
+                                relativePoint="TOPLEFT" x="0" y="-2" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <Frame parentKey="ButtonsContainerFrame">
+                <Size x="170" y="50"/>
+                <Anchors>
+                    <Anchor point="TOP" relativePoint="TOP" x="2" y="18"/>
+                </Anchors>
+                <Frames>
+                    <Button parentKey="AddButton" inherits="IconButtonTemplate"
+                            registerForClicks="LeftButtonUp">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativePoint="RIGHT" x="5" y="28"/>
+                        </Anchors>
+                        <KeyValues>
+                            <KeyValue key="icon" value="interface\paperdollinfoframe\character-plus"/>
+                            <KeyValue key="iconSize" value="14" type="number"/>
+                            <KeyValue key="iconWidth" value="14" type="number"/>
+                            <KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+                        </KeyValues>
+                        <Scripts>
+                            <OnClick>
+                                print('AddButton::Clicked()')
+                            </OnClick>
+                        </Scripts>
+                    </Button>
+                    <Button parentKey="ClearButton" inherits="DevSuite_ClearFilterButtonTemplate">
+                        <Size x="70" y="14"/>
+                    </Button>
+                </Frames>
+            </Frame>
+            <ScrollFrame parentKey="ScrollFrame"
+                         inherits="UIPanelScrollFrameTemplate">
+                <Size x="190" y="330"/>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.ButtonsContainerFrame"
+                            relativePoint="BOTTOM" y="-16" />
+                    <Anchor point="LEFT" x="5"/>
+                    <Anchor point="RIGHT" x="-30"/>
+                    <Anchor point="BOTTOM" y="8"/>
+                </Anchors>
+
+                <Frames>
+                    <!-- THIS is what scrolls -->
+                    <Frame parentKey="ScrollChild" >
+                        <Size x="190" y="330"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT"/>
+                        </Anchors>
+                        <Frames>
+                        </Frames>
+                    </Frame>
+                </Frames>
+            </ScrollFrame>
+        </Frames>
+    </Frame>
+
+
+    <CheckButton name="DevSuite_PresetFiltersButton" inherits="DevSuite_PresetFiltersButtonTemplate"/>
+    <Frame name="DevSuite_PresetFiltersContentFrame"
+           inherits="BackdropTemplate, DevSuite_PresetFiltersContentFrameTemplate"
+           mixin="DevSuite_PresetFiltersContentFrameMixin">
+        <KeyValues>
+            <KeyValue key="anchorTo" value="DevSuite_PresetFiltersButton" type="global"/>
+        </KeyValues>
+        <Scripts>
+            <OnShow method="OnShow"/>
+        </Scripts>
+    </Frame>
+</Ui>
