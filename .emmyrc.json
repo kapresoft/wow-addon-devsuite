@@ -1,0 +1,73 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json",
+  "diagnostics": {
+    "disable": [
+      "assign-type-mismatch",
+      "undefined-global",
+      "undefined-field",
+      "param-type-mismatch",
+      "missing-fields",
+      "iter-variable-reassign",
+      "call-non-callable",
+      "access-invisible",
+      "need-check-nil"
+    ],
+    "globals": [
+      "pformat",
+      "UIParentLoadAddOn",
+      "CreateColorFromRGBHexString",
+      "RaidNotice_AddMessage",
+      "SettingsPanel",
+      "RaidWarningFrame",
+      "SlashCmdList",
+      "FrameStackTooltip",
+      "SOUNDKIT",
+      "ChatTypeInfo",
+      "StaticPopupDialogs",
+      "ReloadUI",
+      "StaticPopup_Visible",
+      "RegisterStateDriver",
+      "FrameUtil",
+      "APIDocumentation",
+      "PlayerFrame",
+      "TargetFrame",
+      "UIWidgetTopCenterContainerFrame",
+      "AddonList",
+      "OKAY",
+      "YES",
+      "BACKDROP_TOAST_12_12",
+      "FramerateFrame",
+      "ChatFrame1Tab",
+      "DEFAULT_CHAT_FRAME",
+      "ChatFrame1",
+      "DEVTOOLS_LONG_STRING_CUTOFF",
+      "FCF_SetWindowColor",
+      "FCF_SetWindowAlpha",
+      "CreateAnchor",
+      "AnchorUtil",
+      "UISpecialFrames",
+      "ACCEPT",
+      "CANCEL",
+      "Settings",
+      "SELECTED_CHAT_FRAME"
+    ]
+  },
+  "workspace": {
+    "library": [
+      "/Users/tony/sandbox/github/kapresoft/wow/tools/vscode-wow-api-cppcxy/Annotations",
+      "/Users/tony/sandbox/github/kapresoft/wow/wow-api-interface-cppcxy/Lib",
+      "${workspace}/ThirdParty/Libs/Kapresoft-LibUtil",
+      "${workspace}/ThirdParty/Libs/LibPrettyPrint/Libs"
+    ],
+    "ignoreDir": [
+      "**/.*",
+      "build",
+      "dist",
+      "doc",
+      "dev",
+      "legacy",
+      "_SV",
+      ".release/**"
+    ]
+  }
+}

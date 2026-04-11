@@ -5,7 +5,7 @@ Local Vars
 local ns = select(2, ...)
 local GC, L = ns.GC, ns:AceLocale()
 local strupper, strlower = strupper, strlower
-local IsNotBlank = ns:String().IsNotBlank
+local IsNotBlank = ns.String().IsNotBlank
 
 -- classic green
 local activeColor = CreateColorFromHexString("ff00ff00")
@@ -17,6 +17,7 @@ Module::PresetFiltersButton
 -------------------------------------------------------------------------------]]
 --- @see NamespaceObjects
 local libName = 'PresetFiltersButton'
+local p, pd, t, tf = ns:log(libName)
 
 --- @class PresetFiltersButtonMixin : Button
 --- @field Arrow TextureObj
@@ -31,7 +32,11 @@ local function activeC(text) return activeColor:WrapTextInColorCode(text) end
 local function ttC(text) return ttColor:WrapTextInColorCode(text) end
 
 --- @param ... any
-local function t(...) EventTrace:LogEvent(strupper(ns.addon), libName, ...) end
+local function t(...)
+  local evt = ns:evt(); if not evt then return end
+  evt:LogEvent(strupper(ns.addon), libName, ...)
+end
+
 --- @return PresetFiltersContentFrame
 local function contentFrame() return DevSuite_PresetFiltersContentFrame end
 
@@ -43,9 +48,20 @@ local o = S
 
 --- EventTrace will auto show on dependency
 function o:OnLoad()
+  self:RegisterMessage(ns.GC.toMsg('PresetFilterClose'), 'OnPresetFilterClose')
+  self:RegisterMessage(GC.M.OnAfterEnable, 'OnAfterEnable')
+end
+
+--- @private
+function o:OnAfterEnable()
+  C_Timer.After(1, function()
+    p('OnAfterEnable', 'called...')
+      ns:traceUtil():t(libName, 'OnAfterEnable', 'called')
+  end)
+  self:SetParent(ns:evt())
   self:EventTraceHooks()
   
-  local anchorTo = EventTrace.SubtitleBar.ViewFilter
+  local anchorTo = ns:evt().SubtitleBar.ViewFilter
   self:Show()
   self:SetPoint('LEFT', anchorTo, 'RIGHT', 2, 0)
   self:SetText(L['Preset Filters'])
@@ -54,20 +70,17 @@ function o:OnLoad()
   fs:SetPoint("LEFT", 3, 0)
   fs:SetPoint("RIGHT", -10, 0)
   
-  self:RegisterMessage(ns.GC.toMsg('PresetFilterClose'), 'OnPresetFilterClose')
-  self:RegisterMessage(GC.M.OnAfterInitialize, 'OnAfterInitialize')
+  self:UpdateButtonTextState()
 end
-
---- @private
-function o:OnAfterInitialize() self:UpdateButtonTextState() end
 --- @private
 function o:OnPresetFilterClose(evt, src) self:Click() end
 
 --- @private
 function o:EventTraceHooks()
-  local onClicks = { EventTrace.SubtitleBar.ViewLog,
-                     EventTrace.SubtitleBar.ViewFilter,
-                     EventTrace.SubtitleBar.OptionsDropdown }
+  local subtitleBar = ns:evt().SubtitleBar
+  local onClicks = { subtitleBar.ViewLog,
+                     subtitleBar.ViewFilter,
+                     subtitleBar.OptionsDropdown }
   for i, f in ipairs(onClicks) do
     if f and not self:IsHooked(f, 'OnClick') then
       self:HookScript(f, 'OnClick', 'OnClickOthers')
@@ -76,6 +89,7 @@ function o:EventTraceHooks()
 end
 
 function o:OnClick()
+  p('OnClick')
   local f = contentFrame()
   if self:GetChecked() then return f:Show() end
   f:Hide()
@@ -87,7 +101,7 @@ function o:OnClickOthers()
 end
 
 function o:OnEnter()
-  ns:GameTooltip_DefaultAnchor()
+  ns.GameTooltip_DefaultAnchor()
   GameTooltip:AddLine(L['Preset Filters::DESC'])
   self:UpdateGameTooltipActiveState()
   GameTooltip:Show()

@@ -34,7 +34,7 @@ Developer
 -------------------------------------------------------------------------------]]
 --- @class DevSuite_Developer
 local L = ns:NewLibWithEvent(libName)
-if ns:IsDev() then
+if ns.IsDev() then
   dsd = L;
   DEVSUITE_DEV = L
 end

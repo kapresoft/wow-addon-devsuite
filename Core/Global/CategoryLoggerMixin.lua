@@ -43,18 +43,18 @@ Methods
 -------------------------------------------------------------------------------]]
 local o = L; do
 
-    --- @param nSpace __Namespace
+    --- @param nSpace Namespace
     --- @param logCategories LogCategories
     function o:Configure(nSpace, logCategories)
         assert(logCategories, 'CategoryLoggerMixin:Mixin(): LogCategories is required.')
         nSpace.LogCategories = function() return logCategories end
         local CategoryLogger = nSpace:KO().CategoryMixin:New()
-        CategoryLogger:Configure(nSpace.addonLogName, logCategories, {
+        CategoryLogger:Configure(nSpace.nameShort, logCategories, {
             enabledCategoriesSupplierFn = function() return __GetCategories() end,
             consoleColors   = nSpace.GC.C.CONSOLE_COLORS,
             levelSupplierFn = function() return __GetLogLevel() end,
             printerFn       = nSpace.print,
-            enabled         = nSpace:IsDev(),
+            enabled         = nSpace.IsDev(),
         })
         nSpace.CategoryLogger = function() return CategoryLogger end
         nSpace:K():Mixin(nSpace, o)

@@ -7,25 +7,13 @@ Type: CoreNamespace
 --[[-----------------------------------------------------------------------------
 Type: CoreNamespace
 -------------------------------------------------------------------------------]]
---- @type CoreNamespace
+--- @class PreNamespace : CoreNamespace
+--- @field name Name
+--- @field O Modules
 local ns = select(2, ...)
 local K = ns.Kapresoft_LibUtil
 K:MixinWithDefExc(ns, K.Objects.CoreNamespaceMixin, K.Objects.NamespaceAceLibraryMixin)
 
---- The "name" field conflicts with K.Objects. We need to restore it here
---- @deprecated Deprecated. Use ns.addon
-ns.name                        = ns.addon
-ns.addonFriendlyName           = 'Dev Suite'
-ns.addonGlobalVarName          = 'DEV_SUITE'
-ns.addonGlobalNamespaceVarName = 'DEV_SUITE_NS'
-ns.addonShortName              = 'ds'
-ns.addonLogName                = string.upper(ns.addonShortName)
-ns.debugConsoleTabName         = ns.addonFriendlyName
-ns.useShortName                = true
-
-function ns:preferredName() return (ns.useShortName == true and ns.addonShortName) or ns.addon end
-
---- @type Modules
 ns.O = ns.O or {}
 
 --- @type Kapresoft_LibUtil_ColorDefinition
@@ -64,4 +52,4 @@ ns.debug = { flag = flag }
 Namespace Methods
 -------------------------------------------------------------------------------]]
 --- @return boolean
-function ns:IsDev() return ns.debug.flag.developer == true end
+function ns.IsDev() return ns.debug.flag.developer == true end

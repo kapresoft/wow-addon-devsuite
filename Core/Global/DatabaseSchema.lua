@@ -3,7 +3,8 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type CoreNamespace
 local ns = select(2, ...)
-local Tbl_DeepCopy = ns:Table().deep_copy
+local Table = LibStub('Kapresoft-Table-2-0')
+local Tbl_DeepCopy = Table.DeepCopy
 
 ---@class DevSuite_AceDBObject_3_0
 ---@field keys table

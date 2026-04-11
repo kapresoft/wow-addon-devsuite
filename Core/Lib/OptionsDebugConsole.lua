@@ -46,7 +46,7 @@ function S:CreateDebugConsoleGroup()
     return options
 end
 
-function S:Args() return ns:a().Options.options.args end
+function S:Args() return ns.a().Options.options.args end
 
 function S:DebugConsoleSection(debugConf, seq)
 
