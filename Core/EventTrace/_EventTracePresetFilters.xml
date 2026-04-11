@@ -25,7 +25,7 @@
                     </Anchors>
                 </Texture>
             </Layer>
-            <Layer level="ARTWORK" textureSubLevel="1">
+            <Layer>
                 <Texture file="Interface\Buttons\WHITE8x8">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="3" y="-3"/>
@@ -45,7 +45,7 @@
     <CheckButton name="DevSuite_ClearFilterButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate" registerForClicks="LeftButtonUp">
         <Size x="115" y="26"/>
         <Layers>
-            <Layer level="ARTWORK" textureSubLevel="1">
+            <Layer textureSubLevel="1">
                 <Texture file="Interface\Buttons\WHITE8x8">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="3" y="-3"/>
@@ -92,7 +92,7 @@
         </Scripts>
         <Size x="200" y="250"/>
         <Layers>
-            <Layer level="ARTWORK" textureSubLevel="1">
+            <Layer textureSubLevel="1">
                 <Texture alpha="0.3" parentKey="BottomInsetEdge" atlas="_UI-Frame-DiamondMetal-EdgeTop" useAtlasSize="true" horizTile="true">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="4" y="-34"/>
