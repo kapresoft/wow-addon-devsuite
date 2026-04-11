@@ -4,6 +4,8 @@
     <!-- LibStub, then CallbackHandler needs to be at the top -->
     <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
     <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
+    <Include file='LibPrettyPrint.xml'/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\AceLib.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Table.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\String.lua"/>
     <!--@do-not-package@-->

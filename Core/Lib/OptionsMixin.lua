@@ -57,21 +57,21 @@ local o = S; do
     --- @return OptionsMixin
     function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
 
-    ---@param opt AceConfigOption
+    --[[---@param opt AceConfigOption
     local function ConfigureDebugging(opt)
         --@do-not-package@
-        if not ns:IsDev() then return end
+        if not ns.IsDev() then return end
         opt.args.debugging = O.DebuggingSettingsGroup:CreateDebuggingGroup()
         p:a(function() return 'Debugging tab in Settings UI is enabled.' end)
         --@end-do-not-package@
         DEVS_LOG_LEVEL = 0
-    end
+    end]]
 
     function o:CreateOptions()
         self.order = ns:CreateSequence(1)
 
         local options = {
-            name = ns.name,
+            name = ns.addon,
             handler = self,
             type = "group",
             args = {
@@ -79,7 +79,10 @@ local o = S; do
                 eventTraceUI = self:CreateEventTraceUIOptions(),
                 --debugConsole = self:CreateDebugConsoleGroup(),
             }
-        }; ConfigureDebugging(options)
+        }
+
+        -- disable in favor of manual tracing with EventTrace
+        -- ConfigureDebugging(options)
 
         return options
     end

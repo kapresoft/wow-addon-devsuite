@@ -41,7 +41,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     end
 
     --@do-not-package@
-    if ns:IsDev() then
+    if ns.IsDev() then
         isLogin = true
         p:vv(function()
             return "IsLogin=%s IsReload=%s LogLevel=%s",
@@ -58,7 +58,7 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o MainController | AceEventInterface
+--- @param o MainController | AceEvent_3_0
 local function PropsAndMethods(o)
 
     --- Init Method: Called by DevSuite.lua

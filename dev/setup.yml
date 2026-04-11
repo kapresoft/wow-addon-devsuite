@@ -38,6 +38,13 @@ ignore:
   - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
   - ThirdParty-Libs/Kapresoft-LibUtil/dev
   - ThirdParty-Libs/Kapresoft-LibUtil/doc
+  - ThirdParty-Libs/LibPrettyPrint/*.sh
+  - ThirdParty-Libs/LibPrettyPrint/*.xml
+  - ThirdParty-Libs/LibPrettyPrint/Assets
+  - ThirdParty-Libs/LibPrettyPrint/dev
+  - ThirdParty-Libs/LibPrettyPrint/doc
+  - ThirdParty-Libs/LibPrettyPrint/ThirdParty
+  - ThirdParty-Libs/LibPrettyPrint/LICENSE
 
 # Base path is .release/
 move-folders:

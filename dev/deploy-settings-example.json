@@ -1,0 +1,169 @@
+{
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.builtin": {
+        "basic": "disable",
+        "debug": "disable",
+        "io": "disable",
+        "math": "disable",
+        "os": "disable",
+        "package": "disable",
+        "string": "disable",
+        "table": "disable",
+        "utf8": "disable"
+    },
+    "Lua.workspace.library": [
+        "/Users/tony/sandbox/github/kapresoft/wow/tools/vscode-wow-api/Annotations/Core",
+        "/Users/tony/sandbox/github/kapresoft/wow/wow-api-interface/Lib",
+        "/Users/tony/sandbox/github/kapresoft/wow/wow-lib-util/Lib",
+        "~/.vscode/extensions/ketho.wow-api-0.22.3/Annotations/Core"
+    ],
+    "Lua.diagnostics.globals": [
+        "UIParentLoadAddOn",
+        "EventTrace",
+        "RaidNotice_AddMessage",
+        "SettingsPanel",
+        "RaidWarningFrame",
+        "SlashCmdList",
+        "FrameStackTooltip",
+        "SOUNDKIT",
+        "ChatTypeInfo",
+        "StaticPopupDialogs",
+        "ReloadUI",
+        "StaticPopup_Visible",
+        "StaticPopup_Show",
+        "CreateColorFromRGBHexString",
+        "RegisterStateDriver",
+        "FrameUtil",
+        "APIDocumentation",
+        "PlayerFrame",
+        "TargetFrame",
+        "UIWidgetTopCenterContainerFrame",
+        "AddonList",
+        "OKAY",
+        "YES",
+        "BACKDROP_TOAST_12_12",
+        "FramerateFrame",
+        "ChatFrame1Tab",
+        "DEFAULT_CHAT_FRAME",
+        "ChatFrame1",
+        "DEVTOOLS_LONG_STRING_CUTOFF",
+        "FCF_SetWindowColor",
+        "FCF_SetWindowAlpha",
+        "CreateAnchor",
+        "AnchorUtil",
+        "UISpecialFrames",
+        "LibStub",
+        "YELLOW_FONT_COLOR",
+        "GameTooltip",
+        "UIParent",
+        "SetCVar",
+        "GetCVarBool",
+        "BLUE_FONT_COLOR",
+        "getglobal",
+        "GetCVar",
+        "RED_THREAT_COLOR",
+        "CreateColorFromHexString",
+        "BackdropTemplateMixin",
+        "HEIRLOOM_BLUE_COLOR",
+        "ADVENTURES_COMBAT_LOG_BLUE",
+        "FACTION_GREEN_COLOR",
+        "LIGHTGRAY_FONT_COLOR",
+        "RED_FONT_COLOR",
+        "setglobal",
+        "COMMON_GRAY_COLOR"
+    ],
+    "Lua.diagnostics.disable": [
+        "assign-type-mismatch"
+    ],
+    "deploy": {
+        "openOutputOnDeploy": false,
+        "env": {
+            "importVarsAsPlaceholders": true,
+            "vars": {
+                "addon": "DevSuite",
+                "desktop-dir": "/Users/tony/Desktop",
+                "wow-dir": "/Applications/wow",
+                "wow-classic-dir": "${wow-dir}/_classic_",
+                "wow-classic-anniv-dir": "${wow-dir}/_anniversary_",
+                "wow-classic-era-dir": "${wow-dir}/_classic_era_",
+                "wow-retail-dir": "${wow-dir}/_retail_",
+                "wow-classic-deploy": "${wow-classic-dir}/Interface/AddOns/${addon}",
+                "wow-classic-anniv-deploy": "${wow-classic-anniv-dir}/Interface/AddOns/${addon}",
+                "wow-classic-era-deploy": "${wow-classic-era-dir}/Interface/AddOns/${addon}",
+                "wow-retail-deploy": "${wow-retail-dir}/Interface/AddOns/${addon}",
+                "wow-desktop-deploy": "${desktop-dir}/${addon}"
+            }
+        },
+        "packages": [
+            {
+                "deployOnSave": true,
+                "fastCheckOnSave": true,
+                "fastCheckOnSync": true,
+                "alwaysSyncIfNewer": true,
+                "name": "Deploy Addon",
+                "button": {
+                    "enabled": true,
+                    "text": "Deploy",
+                    "tooltip": "Deploy ActionbarPlus addon",
+                    "targets": [
+                        "wow-classic",
+                        "wow-classic-anniv",
+                        "wow-retail",
+                        "wow-classic-era",
+                        "desktop"
+                    ]
+                },
+                "exclude": [
+                    "_**/**",
+                    "**/User/*.json",
+                    ".gitignore",
+                    ".gitattributes",
+                    ".idea/**",
+                    "**/.vscode/**",
+                    ".git/**",
+                    ".github/**",
+                    "Dev.toc",
+                    "build/**",
+                    "dev/**",
+                    "doc/**",
+                    "out/**",
+                    "**/*.yaml",
+                    "**/*.md"
+                ]
+            }
+        ],
+        "targets": [
+            {
+                "name": "wow-classic",
+                "type": "local",
+                "description": "Deploys to wow classic addon folder",
+                "dir": "${wow-classic-deploy}"
+            },
+            {
+                "name": "wow-classic-anniv",
+                "type": "local",
+                "description": "Deploys to wow classic anniversary addon folder",
+                "dir": "${wow-classic-anniv-deploy}"
+            },
+            {
+                "name": "wow-classic-era",
+                "type": "local",
+                "description": "Deploys to wow classic addon folder",
+                "dir": "${wow-classic-era-deploy}"
+            },
+            {
+                "name": "wow-retail",
+                "type": "local",
+                "description": "Deploys to wow retail addon folder",
+                "dir": "${wow-retail-deploy}"
+            },
+            {
+                "name": "desktop",
+                "enabled": false,
+                "type": "local",
+                "description": "Deploys to desktop ActionbarPlus folder (for testing)",
+                "dir": "${wow-desktop-deploy}"
+            }
+        ]
+    }
+}

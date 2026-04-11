@@ -59,8 +59,8 @@ local c3, c4  = K:cf(ADVENTURES_COMBAT_LOG_BLUE), K:cf(FACTION_GREEN_COLOR)
 local c5  = K:cf(LIGHTGRAY_FONT_COLOR)
 
 local p       = ns:CreateDefaultLogger(MODULE_NAME)
-local pre     = ns.sformat('{{%s::%s}}:', c1(ns.addonLogName), c2(MODULE_NAME))
-local pre_dev = ns.sformat('{{%s::%s}}:', ns.f.debug(ns.addonLogName), c2(MODULE_NAME))
+local pre     = ns.sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
+local pre_dev = ns.sformat('{{%s::%s}}:', ns.f.debug(nameShort), c2(MODULE_NAME))
 local logp    = ns.LogFunctions.logp(pre)
 local logpd   = ns.LogFunctions.logp(pre_dev)
 local printp  = ns.LogFunctions.printp(pre)
@@ -135,7 +135,7 @@ function d:InitializeDebugChatFrame()
 
     ns:ChatFrame():InitialTabSelection(ns:dbg().selectLogConsoleTab)
 
-    if ns:IsDev() then
+    if ns.IsDev() then
         p:f3(function() return 'IsShown(): %s', ns:IsChatFrameTabShown() end)
         logpd('Addon Usage avail?', ns.O.API:IsAddonUsageAvailable())
     end
@@ -164,13 +164,13 @@ function d:EnableDebugChatFrame()
             else
                 self.DebugChatFrameNotLoadable = true
             end
-            if ns:IsDev() then
+            if ns.IsDev() then
                 logpd(sformat('DebugChatFrame Loaded OnDemand: %s', successText))
             end
             if info and loadSuccess ~= true then
                 logp(sformat('DebugChatFrame is not available. [Reason: %s]', info.reason))
             end
-            if ns:IsDev() then
+            if ns.IsDev() then
                 logpd('Error Message:', errorMsg)
             end
         end)
@@ -182,7 +182,7 @@ function d:EnableDebugChatFrame()
 
     --- @type DebugChatFrameOptionsInterface
     local opt = {
-        chatFrameTabName = ns.debugConsoleTabName,
+        chatFrameTabName = ns.addon,
         font = DCF_ConsoleMonoCondensedSemiBoldOutline,
         fontSize = ns:db().global.console_fontSize,
         windowAlpha = 0.9,
@@ -200,7 +200,7 @@ function d:EnableDebugChatFrame()
 
     logp(c5('-------------------------------------------'))
     logp(c1(':: Debug ChatFrame initialized ::'));
-    logp( '  IsDev:', c3(ns:IsDev()), 'GameVersion:', c4(ns.gameVersion))
+    logp( '  IsDev:', c3(ns.IsDev()), 'GameVersion:', c4(ns.gameVersion))
 
     local maxFontLen = 45
     local font, size, flags = cf:GetFont()

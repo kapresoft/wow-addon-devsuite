@@ -4,47 +4,50 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 
-local O, GC, LibStub = ns.O, ns.GC, ns.LibStub
+local O, GC = ns.O, ns.GC
 local AceConfigDialog = ns:AceConfigDialog()
---- @type AceAddon_3_0
-local AceAddon = ns.LibStubAce('AceAddon-3.0')
+
+local AceAddon = ns.Ace():AceAddon()
 local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
-local Table, String = ns:Table(), ns:String()
+local Table, String = ns.Table(), ns.String()
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
-local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.isEmpty
+local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.IsEmpty
 local DebugDialog = O.DebugDialog
 
 local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
 
---- @param ... any
-local function t(...) EventTrace:LogEvent(string.upper(ns.addon), ...) end
+--- @type any
+DEVS_MF = nil
 
 --[[-----------------------------------------------------------------------------
 NewAddOn
 -------------------------------------------------------------------------------]]
---- @alias DevSuiteInterface DevSuite|AceConsole_3_0|AceEvent_3_0|AceHook_3_0|AceBucket_3_0
---
---
---- @class DevSuite
---- @field private configDialogWidget AceConfigDialog_3_0
-local A = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not A then return end
-local p = ns:CreateDefaultLogger(ns.addon)
+--- @class DevSuite : AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceBucket-3.0
+--- @field private configDialogWidget AceConfigDialog-3.0
+--- @field private onHideHooked boolean
+local o = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
+local p, pd, t, tf = ns:log(ns.addon)
 
 --- @type PopupDebugDialog
-A.PopupDialog = nil
+o.PopupDialog = nil
 --- @type DebugDialogWidget
 local debugDialog
 
 --[[-----------------------------------------------------------------------------
 Methods
+UIParentLoadAddOn("Blizzard_DebugTools")
+/dump UIParentLoadAddOn("Blizzard_EventTrace")
+/dump IsAddOnLoaded('Blizzard_DebugTools')
+/dump IsAddOnLoaded('Blizzard_EventTrace')
+/dump EventTrace
 -------------------------------------------------------------------------------]]
---- @type DevSuite | DevSuiteInterface
-local o = A
 
 O.MainController:Init(o)
 
 function o:OnInitialize()
+  self.onHideHooked = false
+
   O.AceDbInitializerMixin:New(self):InitDb()
   self.Options = O.OptionsMixin:New(self.addon)
   self.Options:InitOptions()
@@ -52,24 +55,60 @@ function o:OnInitialize()
   self:RegisterSlashCommands()
   O.DevConsoleModuleMixin:NewModule(self)
   
-  if not EventTrace then return end
-
-  local trace = ns:g().trace
-  --trace.show_at_startup = true
-  ns:SetEventTraceSearchKeyword(trace.preset_keyword)
-  if EventTrace:IsVisible() and trace.show_at_startup then return end
-  EventTrace:Hide()
+  --local isLoggedIn = IsLoggedIn()
+  --local isPlayerInWorld = IsPlayerInWorld()
+  --C_Timer.After(2, function()
+  --  local tu = ns:traceUtil()
+  --  tu:t('OnInitialize', 'isLoggedIn=', isLoggedIn)
+  --  tu:t('OnInitialize', 'isPlayerInWorld=', isPlayerInWorld)
+  --end)
+  
+  --if not EventTrace then return end
+  --
+  --local trace = ns:g().trace
+  ----trace.show_at_startup = true
+  --ns:SetEventTraceSearchKeyword(trace.preset_keyword)
+  --if EventTrace:IsVisible() and trace.show_at_startup then return end
+  --EventTrace:Hide()
 end
 
 --- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
 function o:OnEnable()
   self:RegisterHooks()
   debugDialog = DebugDialog:New()
+  o.OnLoadEventTrace()
+  if IsPlayerInWorld() then
+    ns:traceUtil():t('OnEnable', 'Sent Message', 'OnAfterEnable', 'IsDev=', ns.IsDev())
+    self:SendMessage(GC.M.OnAfterEnable, self)
+  else
+    ns:traceUtil():t('OnEnable', 'Registered Event', 'OnAfterEnable', 'IsDev=', ns.IsDev())
+    self:RegisterEvent(GC.E.PLAYER_ENTERING_WORLD, 'OnPlayerEnteringWorld')
+  end
+end
+
+function o:OnPlayerEnteringWorld()
+  ns:traceUtil():t(ns.addon, 'OnPlayerEnteringWorld', 'called...')
+  self:UnregisterEvent(GC.E.PLAYER_ENTERING_WORLD)
+  self:SendMessage(GC.M.OnAfterEnable, self)
+end
+
+function o.OnLoadEventTrace()
+  --@do-not-package@
+  C_Timer.After(1, function()
+      t('OnLoadEventTrace', 'evt=', tostring(ns:evt()))
+  end)
+  --@end-do-not-package@
+  local trace = ns:g().trace
+  ns:InitEventTrace()
+  --trace.show_at_startup = true
+  ns:traceUtil():SetEventTraceSearchKeyword(trace.preset_keyword)
+  local evt = ns:evt()
+  if evt:IsVisible() and trace.show_at_startup then return end
+  evt:Hide()
 end
 
 --- @return any
 function o:GetMouseFocus()
-  --p:log('Mouse Focus: %s', pformat(GetMouseFocus()))
   local focusFn = GetMouseFoci or GetMouseFocus
   local mf = focusFn()
   if not mf then return end
@@ -113,35 +152,33 @@ function o:GetMouseFocus()
   local mouseFocus = debugInfo.mouseFocus
   DEVS_MF = val
   local name = 'Mouse Focused Object'
-  if val.GetName then
-    local n = val:GetName()
-    name = n or 'Unnamed'
-    mouseFocus.name = n or 'nil'
+  if type(val.GetName) == "function" then
+      local n = val:GetName()
+      name = n or 'Unnamed'
+      mouseFocus.name = n or 'nil'
+      mouseFocus.dbgName = val:GetDebugName()
+      mouseFocus.dbgNameByParentKey = val:GetDebugName(true)
   end
   name = name .. '; var=DEVS_MF'
 
-  if val.GetDebugName then
-    mouseFocus.dbgName = val:GetDebugName()
-    mouseFocus.dbgNameByParentKey = val:GetDebugName(true)
-  end
-  if val.GetParentKey then mouseFocus.parentKey = val:GetParentKey() or 'nil' end
-  if val.GetParent then
+  if type(val.GetParentKey) == 'function' then mouseFocus.parentKey = val:GetParentKey() or 'nil' end
+  if type(val.GetParent) == 'function' then
     local parent = debugInfo.parent
-    local p = val:GetParent()
-    if p then
-      parent.name = p and p.GetName and p:GetName() or 'nil'
-      if p.GetDebugName then
-        parent.dbgName = p:GetDebugName() or 'nil'
-        parent.dbgNameByParentKey = p:GetDebugName(true) or 'nil'
+    local pf = val:GetParent()
+    if type(pf) == 'table' then
+      parent.name = pf and pf.GetName and pf:GetName() or 'nil'
+      if type(pf.GetDebugName) == 'function' then
+        parent.dbgName = pf:GetDebugName() or 'nil'
+        parent.dbgNameByParentKey = pf:GetDebugName(true) or 'nil'
       end
     end
   end
   
   -- children
   local children = val.GetChildren and val:GetChildren()
-  if children then
+  if type(children) == 'table' then
     local cL = debugInfo.children
-    for k, c in pairs(children) do
+    for _, c in pairs(children) do
       if type(c) == 'table' then
         local d = {}
         if c and c.GetParentKey then
@@ -155,10 +192,10 @@ function o:GetMouseFocus()
   end
   
   self.PopupDialog:EvalObjectThenShow(retVal, name)
-  if self:IsFrameStackToolEnabled() then self:ToggleFrameStack() end
+  if o.IsFrameStackToolEnabled() then o.ToggleFrameStack() end
 end
 
-function o:EvalVar(globalVarName)
+function o.EvalVar(globalVarName)
     --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
     debugDialog:SetCodeText(globalVarName)
     debugDialog:SetContent(pformat(getglobal(globalVarName)))
@@ -167,7 +204,7 @@ function o:EvalVar(globalVarName)
     debugDialog:Show()
 end
 
-function o:EvalObject(obj, varName, _isGlobal)
+function o.EvalObject(obj, varName, _isGlobal)
     local isGlobal = _isGlobal or false
     local codeText = ''
     local localityLabel = 'Local'
@@ -185,8 +222,7 @@ end
 function o:OpenConfig()
     if AceConfigDialog.OpenFrames[ns.addon] then return end
     AceConfigDialog:SelectGroup(ns.addon)
-    self:DialogGlitchHack();
-    self.onHideHooked = self.onHideHooked or false
+    o.DialogGlitchHack();
     PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
     self.configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
     if not self.onHideHooked then
@@ -195,7 +231,7 @@ function o:OpenConfig()
     end
 end
 --- This hacks solves the range UI notch not positioning properly
-function o:DialogGlitchHack()
+function o.DialogGlitchHack()
     AceConfigDialog:SelectGroup(ns.addon, "debugging")
     AceConfigDialog:Open(ns.addon)
     C_Timer.After(0.01, function()
@@ -204,17 +240,16 @@ function o:DialogGlitchHack()
     end)
 end
 
-function o:OpenConfigGeneral() AceConfigDialog:Open(ns.addon) end
-function o:OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'autoload_addons')) end
-function o:DebugSettings() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'debugging')) end
+function o.OpenConfigGeneral() AceConfigDialog:Open(ns.addon) end
+function o.OpenConfigAutoLoadedOptions() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'autoload_addons')) end
+function o.DebugSettings() AceConfigDialog:Open(ns.addon, AceConfigDialog:SelectGroup(ns.addon, 'debugging')) end
 
-function o:OnHide_Config_WithSound() self:OnHide_Config(true) end
-function o:OnHide_Config_WithoutSound() self:OnHide_Config() end
+function o.OnHide_Config_WithSound() o.OnHide_Config(true) end
+function o.OnHide_Config_WithoutSound() o.OnHide_Config() end
 
---- @param enableSound BooleanOptional
-function o:OnHide_Config(enableSound)
+--- @param enableSound BooleanOptional|nil
+function o.OnHide_Config(enableSound)
     local enable = enableSound == true
-    p:d(function() return 'OnHide_Config called with enableSound=%s', tostring(enable) end)
     if true == enable then PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE) end
 end
 
@@ -235,17 +270,17 @@ end
 function o:SlashCommand_Config_Handler()
   self:OpenConfig()
 end
-function o:SlashCommand_Dialog_Handler()
+function o.SlashCommand_Dialog_Handler()
   if debugDialog:IsShown() then debugDialog.a:Hide()
   else debugDialog:Show()
   end
 end
-function o:SlashCommand_Info_Handler()
-    p:a(GC:GetAddonInfoFormatted())
+function o.SlashCommand_Info_Handler()
+    p(GC:GetAddonInfoFormatted())
 end
-function o:SlashCommand_Help_Handler()
+function o.SlashCommand_Help_Handler()
   local C = GC.C
-  p:a('')
+  print('')
   local COMMAND_DIALOG_TEXT = 'Toggles the debug dialog UI'
   local COMMAND_CONFIG_TEXT = 'Shows the config UI'
   local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
@@ -253,38 +288,36 @@ function o:SlashCommand_Help_Handler()
   local COMMAND_HELP_TEXT   = 'Shows this help'
   local OPTIONS_LABEL       = 'options'
   local USAGE_LABEL         = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
-  p:a(USAGE_LABEL)
-  p:a(OPTIONS_LABEL .. ":")
-  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'info', COMMAND_INFO_TEXT end)
-  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'config', COMMAND_CONFIG_TEXT end)
-  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dialog', COMMAND_DIALOG_TEXT end)
-  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'clear', COMMAND_CLEAR_TEXT end)
-  p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'help', COMMAND_HELP_TEXT end)
-  --@do-not-package@
-  if ns:IsDev() then
-    local vn     = ns.addonGlobalNamespaceVarName
-    local nsDump = sformat('dump %s or %s.ns()', vn, vn)
-    p:a(c1('options (debug):'))
-    p:a(function() return C.CONSOLE_OPTIONS_FORMAT, 'dump <ns>', nsDump end)
-  end
-  --@end-do-not-package@
-  p:a('Other commands:')
-  p:a(function() return c1('/devsuite-options')
-          .. ' or /ds-options for the Ace3 AceConfig command line options.' end)
+  print(USAGE_LABEL)
+  print(OPTIONS_LABEL .. ":")
+  print(C.CONSOLE_OPTIONS_FORMAT:format('info', COMMAND_INFO_TEXT))
+  print(C.CONSOLE_OPTIONS_FORMAT:format('config', COMMAND_CONFIG_TEXT))
+  print(C.CONSOLE_OPTIONS_FORMAT:format('dialog', COMMAND_DIALOG_TEXT))
+  print(C.CONSOLE_OPTIONS_FORMAT:format('clear', COMMAND_CLEAR_TEXT))
+  print(C.CONSOLE_OPTIONS_FORMAT:format('help', COMMAND_HELP_TEXT))
+  print('Other commands:')
+  print(c1('/devsuite-options'), 'or /ds-options for the Ace3 AceConfig command line options.')
+end
+
+--- @param text string The space separated string. Example: 'one two three'
+local function ParseSpaceSeparatedVar(text)
+    local rt = {}
+    for a in text:gmatch("%S+") do table.insert(rt, a) end
+    return rt
 end
 
 --- @param spaceSeparatedArgs string
 function o:SlashCommands(spaceSeparatedArgs)
-    local args = Table.parseSpaceSeparatedVar(spaceSeparatedArgs)
-    local cmd, qualifier = unpack(args)
+    local args = ParseSpaceSeparatedVar(spaceSeparatedArgs)
+    --local cmd, qualifier = unpack(args)
     if IsEmptyTable(args) then
-        return self:SlashCommand_Help_Handler()
+        return o.SlashCommand_Help_Handler()
     end
     if IsAnyOf('config', unpack(args)) or IsAnyOf('conf', unpack(args)) then
         return self:SlashCommand_Config_Handler()
     end
     if IsAnyOf('dialog', unpack(args)) then
-        return self:SlashCommand_Dialog_Handler()
+        return o.SlashCommand_Dialog_Handler()
     end
     if IsAnyOf('cls', unpack(args))
             or IsAnyOf('clr', unpack(args))
@@ -292,19 +325,13 @@ function o:SlashCommands(spaceSeparatedArgs)
         return self.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     end
     if IsAnyOf('info', unpack(args)) then
-        return self:SlashCommand_Info_Handler()
+        return o.SlashCommand_Info_Handler()
     end
-    --@do-not-package@
-    if cmd == 'dump' then
-        if qualifier ~= 'ns' then return ns:K().dump(ns.addonGlobalVarName) end
-        return ns:K().dump(ns.addonGlobalNamespaceVarName)
-    end
-    --@end-do-not-package@
-    self:SlashCommand_Help_Handler(); return
+    o.SlashCommand_Help_Handler(); return
 end
 
 local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetCVarBool, RestartGx
-function o:ToggleWindowed()
+function o.ToggleWindowed()
     local isMaximized = GetCVarBool(GX_MAXIMIZE)
     SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
     RaidNotice_AddMessage(RaidWarningFrame, "Toggling Window Mode!", ChatTypeInfo["RAID_WARNING"])
@@ -320,7 +347,7 @@ end
 function o.BINDING_DEVS_OPTIONS_DLG() o:OpenConfig() end
 function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
 function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
-function o.BINDING_DEVS_TOGGLE_WINDOWED() o:ToggleWindowed() end
+function o.BINDING_DEVS_TOGGLE_WINDOWED() o.ToggleWindowed() end
 function o.BINDING_DEVS_TOGGLE_FRAMESTACK() o.ToggleFrameStack() end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     if ns:HasChatFrame() then ns.chatFrame:Clear() end
@@ -345,15 +372,10 @@ end
 --- arg3 showAnchors
 --- Example showing all:  "111" or "true true true"
 --- TODO: Show Tooltip/Message to press 'Control' to show dialog
-function o:ToggleFrameStack() SlashCmdList["FRAMESTACK"]("false true true") end
-function o:IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTooltip:IsShown() end
-
-
-function o:log(...) ns.print(...)  end
-
+function o.ToggleFrameStack() SlashCmdList["FRAMESTACK"]("false true true") end
+function o.IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTooltip:IsShown() end
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
-function o.ns() return DEV_SUITE_NS  end
-
+function o.ns() return DEV_SUITE_NS end
 
 --[[-------------------------------------------------------------------
 Global Var

@@ -1,13 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-<!--
-    <Script file="EventTracePrinter.lua"/>
--->
     <Script file="PresetFiltersContentFrame.lua"/>
     <Script file="PresetFiltersButton.lua"/>
 
-    <CheckButton name="DevSuite_PresetFiltersButtonTemplate" virtual="true" parent="EventTrace" inherits="UIPanelButtonTemplate"
+    <CheckButton name="DevSuite_PresetFiltersButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate"
             mixin="DevSuite_PresetFiltersButtonMixin"
             registerForClicks="LeftButtonUp"
              hidden="true">

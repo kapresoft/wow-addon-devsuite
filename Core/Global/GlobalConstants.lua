@@ -17,7 +17,7 @@ local date = date
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type CoreNamespace
+--- @type PreNamespace
 local ns = select(2, ...)
 
 local kch = ns.Kapresoft_LibUtil.CH
@@ -44,9 +44,8 @@ end
 
 --- @param moduleName string
 local function ToStringFunction(moduleName)
-    local name = ns:preferredName()
-    if moduleName then return function() return string.format(TOSTRING_SUBMODULE_FMT, name, moduleName) end end
-    return function() return string.format(TOSTRING_ADDON_FMT, name) end
+    if moduleName then return function() return string.format(TOSTRING_SUBMODULE_FMT, ns.name, moduleName) end end
+    return function() return string.format(TOSTRING_ADDON_FMT, ns.name) end
 end
 
 --[[-----------------------------------------------------------------------------
@@ -73,8 +72,9 @@ GlobalConstants
 --- @class GlobalConstants
 local L = {}
 
---- @param o GlobalConstants
-local function GlobalConstantProperties(o)
+local function GlobalConstantProperties()
+
+    local o = L
 
     o.LibName = LibName
     o.ToStringFunction = ToStringFunction
@@ -119,6 +119,8 @@ local function GlobalConstantProperties(o)
         --- @type Name
         OnAfterInitialize = {},
         --- @type Name
+        OnAfterEnable = {},
+        --- @type Name
         OnAddOnReady = {},
         --- @type Name
         OnToggleFrameRate = {},
@@ -148,14 +150,15 @@ local function GlobalConstantProperties(o)
 
 end
 
-local isDev = ns:IsDev()
+local isDev = ns.IsDev()
 --@do-not-package@
 isDev = true
 --@end-do-not-package@
 
 --- @param o GlobalConstants
-local function Methods(o)
+local function Methods()
 
+    local o = L
     function o:AIU()
         if o.AddonInfoUtil then return o.AddonInfoUtil end
         o.AddonInfoUtil = ns:AddonInfoUtil():New(ns.addon, ns.consoleColors, isDev)
@@ -176,6 +179,10 @@ local function Methods(o)
     end
 end
 
-GlobalConstantProperties(L)
-Methods(L)
-ns.GC = L
+GlobalConstantProperties()
+Methods()
+
+--- @type Namespace
+local xns = ns
+
+xns.GC = L
