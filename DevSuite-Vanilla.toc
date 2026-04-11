@@ -39,4 +39,4 @@
 
 ThirdParty\ThirdParty.xml
 Core\Vanilla.lua
-Core\_Core.xml
+DevSuite.xml
