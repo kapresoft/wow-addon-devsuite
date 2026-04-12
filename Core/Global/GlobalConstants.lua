@@ -8,19 +8,10 @@ Lua Vars
 local sformat = string.format
 
 --[[-----------------------------------------------------------------------------
-Blizzard Vars
--------------------------------------------------------------------------------]]
-local GetAddOnMetadata = GetAddOnMetadata
-local date = date
-
-
---[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type PreNamespace
+--- @type Namespace
 local ns = select(2, ...)
-
-local kch = ns.Kapresoft_LibUtil.CH
 
 local consoleCommand = "devsuite"
 local consoleCommandShort = "ds"
@@ -29,7 +20,6 @@ local consoleCommandOptionsShort = consoleCommandShort .. '-options'
 
 local CONFIRM_RELOAD_UI_NAME = ns.addon .. '_CONFIRM_RELOAD_UI'
 
-local ADDON_INFO_FMT = '%s|cfdeab676: %s|r'
 local TOSTRING_ADDON_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe}}|r'
 local TOSTRING_SUBMODULE_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe::|r|cfdfbeb2d%s|r|cfdfefefe}}|r'
 
@@ -63,8 +53,15 @@ StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
 Console Colors
 -------------------------------------------------------------------------------]]
 local consoleColors = ns.consoleColors
-local command = kch:FormatColor(consoleColors.primary, '/' .. consoleCommand)
-local commandShort = kch:FormatColor(consoleColors.primary, '/' .. consoleCommandShort)
+local primaryColor = CreateColorFromHexString('ff' .. consoleColors.primary)
+local function colorP(text) return primaryColor:WrapTextInColorCode(text) end
+
+local command = colorP('/' .. consoleCommand)
+local commandShort = colorP('/' .. consoleCommandShort)
+
+C_Timer.After(1, function()
+  print('command:', command)
+end)
 
 --[[-----------------------------------------------------------------------------
 GlobalConstants

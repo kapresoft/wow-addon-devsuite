@@ -3,9 +3,9 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local GC, L = ns.GC, ns:AceLocale()
+local GC, L = ns.GC, ns:GetLocale()
 local strupper, strlower = strupper, strlower
-local IsNotBlank = ns.String().IsNotBlank
+local IsNotBlank = ns:String().IsNotBlank
 
 -- classic green
 local activeColor = CreateColorFromHexString("ff00ff00")
@@ -18,10 +18,10 @@ Module::PresetFiltersButton
 --- @see NamespaceObjects
 local libName = 'PresetFiltersButton'
 local p, pd, t, tf = ns:log(libName)
-
+local Ace = ns:Ace()
 --- @class PresetFiltersButtonMixin : Button
 --- @field Arrow TextureObj
-local S = ns:AceEvent(ns:AceHook()); DevSuite_PresetFiltersButtonMixin = S
+local S = Ace:NewAceEvent(Ace:NewAceHook()); DevSuite_PresetFiltersButtonMixin = S
 --
 --- @alias PresetFiltersButton PresetFiltersButtonMixin | CheckButtonObj | AceEvent_3_0 | AceHook_3_0
 --

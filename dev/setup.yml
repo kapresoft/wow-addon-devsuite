@@ -38,6 +38,7 @@ ignore:
   - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
   - ThirdParty-Libs/Kapresoft-LibUtil/dev
   - ThirdParty-Libs/Kapresoft-LibUtil/doc
+  - ThirdParty-Libs/Kapresoft-LibUtil/_Lib.xml
   - ThirdParty-Libs/LibPrettyPrint/*.sh
   - ThirdParty-Libs/LibPrettyPrint/*.xml
   - ThirdParty-Libs/LibPrettyPrint/Assets

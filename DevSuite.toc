@@ -37,4 +37,5 @@
 
 ThirdParty\ThirdParty.xml
 Core\Retail.lua
-Core\_Core.xml
+DevSuite.xml
+

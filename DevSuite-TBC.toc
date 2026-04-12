@@ -40,4 +40,4 @@
 
 ThirdParty\ThirdParty.xml
 Core\TBC.lua
-Core\_Core.xml
+DevSuite.xml

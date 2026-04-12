@@ -23,12 +23,12 @@ Local Vars
 local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 
-local ACE, API = ns:AceLibrary(), O.API
-local AceConfig, AceConfigDialog, AceDBOptions = ACE.AceConfig, ACE.AceConfigDialog, ACE.AceDBOptions
-local ACU = ns:KO().AceConfigUtil:New(ns.addon)
-
-local c1 = ns:K():cf(RED_FONT_COLOR)
-local c2 = ns:K():cf(YELLOW_FONT_COLOR)
+local Ace, API = ns:Ace(), O.API
+local AceConfigDialog, AceDBOptions = Ace:AceConfigDialog(), Ace:AceDBOptions()
+local ACU = ns:AceConfigUtil():New(ns.addon)
+local ColorFormatter = ns:ColorFormatter()
+local c1 = ColorFormatter.cf(RED_FONT_COLOR)
+local c2 = ColorFormatter.cf(YELLOW_FONT_COLOR)
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -43,7 +43,8 @@ Types: ProfileSelectValues
 -------------------------------------------------------------------------------]]
 --- @type OptionsMixin | AceEvent_3_0
 local o = S; do
-    local L = ns:AceLocale()
+    local L = ns:
+    GetLocale()
 
     --- Automatically called by CreateAndInitFromMixin(..)
     --- @param addon DevSuite
@@ -68,7 +69,7 @@ local o = S; do
     end]]
 
     function o:CreateOptions()
-        self.order = ns:CreateSequence(1)
+        self.order = ns.CreateSequence(1)
 
         local options = {
             name = ns.addon,
@@ -89,6 +90,7 @@ local o = S; do
 
     function o:CreateGeneralOptions()
         local order = self.order
+        local ACU= ACU
 
         local aULabel = c2(L['Addon Usage: Automatically Show UI'])
         if not O.API:IsAddonUsageAvailable() then
@@ -257,7 +259,7 @@ local o = S; do
         -- This creates the Profiles Tab/Section in Settings UI
         options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
 
-        AceConfig:RegisterOptionsTable(ns.addon, options, {
+        Ace.AceConfig():RegisterOptionsTable(ns.addon, options, {
             ns.GC.C.CONSOLE_COMMAND_OPTIONS, ns.GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
         AceConfigDialog:AddToBlizOptions(ns.addon, ns.addon)
         if API:GetUIScale() > 1.0 then return end

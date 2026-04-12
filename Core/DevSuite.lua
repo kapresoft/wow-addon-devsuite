@@ -5,11 +5,11 @@ Local Vars
 local ns = select(2, ...)
 
 local O, GC = ns.O, ns.GC
-local AceConfigDialog = ns:AceConfigDialog()
+local AceConfigDialog = ns:Ace():AceConfigDialog()
 
-local AceAddon = ns.Ace():AceAddon()
+local AceAddon = ns:Ace():AceAddon()
 local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
-local Table, String = ns.Table(), ns.String()
+local Table, String = ns:Table(), ns:String()
 local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
 local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.IsEmpty
@@ -26,6 +26,7 @@ NewAddOn
 --- @class DevSuite : AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceBucket-3.0
 --- @field private configDialogWidget AceConfigDialog-3.0
 --- @field private onHideHooked boolean
+--- @field PopupDialog PopupDebugDialog
 local o = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
 local p, pd, t, tf = ns:log(ns.addon)
 
@@ -220,16 +221,18 @@ function o.EvalObject(obj, varName, _isGlobal)
 end
 
 function o:OpenConfig()
-    if AceConfigDialog.OpenFrames[ns.addon] then return end
-    AceConfigDialog:SelectGroup(ns.addon)
-    o.DialogGlitchHack();
-    PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
-    self.configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
-    if not self.onHideHooked then
-        self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
-        self.onHideHooked = true
-    end
+  if AceConfigDialog.OpenFrames[ns.addon] then return end
+  print('ns.addon=', ns.addon, 'frames=', AceConfigDialog.OpenFrames)
+  AceConfigDialog:SelectGroup(ns.addon)
+  o.DialogGlitchHack();
+  PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
+  self.configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
+  if not self.onHideHooked then
+    self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
+    self.onHideHooked = true
+  end
 end
+
 --- This hacks solves the range UI notch not positioning properly
 function o.DialogGlitchHack()
     AceConfigDialog:SelectGroup(ns.addon, "debugging")

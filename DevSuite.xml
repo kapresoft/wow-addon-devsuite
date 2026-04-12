@@ -1,11 +1,10 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-    <Script file="Core\_Core.lua"/>
-
-    <Script file="Core\Global\GlobalConstants.lua"/>
+    <Script file="Core\Global\ThirdPartyLibsSetup.lua"/>
     <Script file="Core\Global\CategoryLoggerMixin.lua"/>
     <Script file="Core\Global\Namespace.lua"/>
+    <Script file="Core\Global\GlobalConstants.lua"/>
     <Script file="Core\Global\API.lua"/>
 
     <!--@do-not-package@-->

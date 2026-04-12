@@ -11,7 +11,7 @@ local O, M = ns.O, ns.M
 local ERROR_STATUS = 'ERROR'
 local ERROR_COLOR = '|cffFF7D83'
 
-local String, AceGUI = ns.String(), ns:AceLibrary().AceGUI
+local String, AceGUI = ns:String(), ns:Ace():AceGUI()
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 local EqualsIgnoreCase = String.EqualsIgnoreCase
@@ -34,13 +34,14 @@ local function OnClose(w)
     w:SetStatusText('')
 end
 
----@param name string
----@return Profile_Config_Item
----@param items table<number, Profile_Config_Item>
+--- @param name string
+--- @param items table<number, Profile_Config_Item>
+--- @return Profile_Config_Item?
 local function findItem(name, items)
-    for i, item in ipairs(items) do
-        if EqualsIgnoreCase(name, item.name) then return item end
-    end
+  for i, item in ipairs(items) do
+    if EqualsIgnoreCase(name, item.name) then return item end
+  end
+  return nil
 end
 
 local function ClampDialogSize(desiredW, desiredH)
@@ -102,9 +103,8 @@ local function OnShow(w)
   anchor:SetPoint(w.f, true)
 end
 
----@type DebugDialogWidget
+--- @param w DebugDialogWidget
 local function CodeEditBox_OnEditFocusGained(w) w:EnableAcceptButton() end
-
 
 ---@param w DebugDialogWidget
 local function CodeEditBox_OnEnterPressed(w, literalVarName)
@@ -141,13 +141,14 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
             return
         end
 
-        local replace = ns.String().replace
+        local replace = String.Replace
 
         if 'table' == type(val) and val.__tostring then
             local text = ''
+            local vprime
             for i, v in ipairs(val) do
-                v = replace(v, 'function ', 'function A:')
-                text = text .. v .. ' end;'
+                vprime = replace(v, 'function ', 'function A:')
+                text = text .. vprime .. ' end;'
             end
             w:SetContent(text)
             return
@@ -207,7 +208,7 @@ end
 --- @param self FrameObj
 local function Frame_SaveDialogAnchorHook(self)
   Frame_UpdateSize(self)
-  
+
   --- @type AnchorMixin
   local anchor = AnchorUtil.CreateAnchorFromPoint(self, 1)
   if not anchor then return end
@@ -240,83 +241,84 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param w DebugDialogWidget
-local function widgetMethods(w)
-  function w:Show() w.a:Show() end
-  function w:GetTitle() return w.a.titletext:GetText() end
-  function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
-  function w:EnableAcceptButton() w.a.codeEditBox.button:Enable() end
-  function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
-  function w:IsShown() return self.f:IsShown() end
-  
-  function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
-  function w:SetStatusText(text) w.a:SetStatusText(text) end
-  function w:ClearContent() self.contentEditBox:SetText('') end
-  function w:SetContent(content)
-    local text
-    if type(content) == 'string' then text = '' end
-    if #tostring(content) > 0 then
-      if self:IsShowFunctions() then
-        text = pformat:A():pformat(content)
-      else
-        text = pformat(content)
-      end
-    end
-    self.contentEditBox:SetText(text)
-    w:SaveHistory()
-  end
-  
-  --- Splits a string at the first ':' character (nil-safe)
-  --- @param s string|nil
-  --- @return string|nil string|nil
-  function w:SplitFirstColon(s)
-    if type(s) ~= "string" then
-      return nil, nil
-    end
-    
-    local left, right = s:match("^(.-):(.*)$")
-    return left, right
-  end
-  
-  --- @param text string
-  function w:SetErrorContent(text)
-    self:SetStatusText(ERROR_STATUS)
-    local argType = type(text)
-    assert(argType == 'string', ('Expected type[string] but got [%s] instead.'):format(argType))
-    --if not text then self:ClearContent(); return end
-    if #text <= 0 then return end
-    
-    local source, msg = self:SplitFirstColon(text)
-    if source and msg then
-      local msgp = ("%s%s|r|n%s"):format(ERROR_COLOR, source, msg)
-      self.contentEditBox:SetText(msgp)
+--- @class DebugDialogWidgetMixin
+local DebugDialogWidgetMixin = {}
+local w = DebugDialogWidgetMixin
+
+function w:Show() w.a:Show() end
+function w:GetTitle() return w.a.titletext:GetText() end
+function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
+function w:EnableAcceptButton() w.a.codeEditBox.button:Enable() end
+function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
+function w:IsShown() return self.f:IsShown() end
+
+function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
+function w:SetStatusText(text) w.a:SetStatusText(text) end
+function w:ClearContent() self.contentEditBox:SetText('') end
+function w:SetContent(content)
+  local text
+  if type(content) == 'string' then text = '' end
+  if #tostring(content) > 0 then
+    if self:IsShowFunctions() then
+      text = pformat:A():pformat(content)
     else
-      self.contentEditBox:SetText(("%s%s|r"):format(ERROR_COLOR, text))
+      text = pformat(content)
     end
   end
-  
-  function w:Submit() self.codeEditBox.button:Click() end
-  function w:HasCodeContent()
-    local codeValue = self.codeEditBox:GetText()
-    return IsNotBlank(codeValue)
+  self.contentEditBox:SetText(text)
+  w:SaveHistory()
+end
+
+--- Splits a string at the first ':' character (nil-safe)
+--- @param s string|nil
+--- @return string?, string?
+function w:SplitFirstColon(s)
+  if type(s) ~= "string" then
+    return nil, nil
   end
-  
-  -- /run DEVS.profile.debugDialog.items = nil
-  -- /dump DEVS.profile.debugDialog.items
-  function w:SaveHistory()
-    local codeText = w.codeEditBox:GetText()
-    if IsBlank(codeText) then return end
-    local selectedKey = w.histDropdown:GetValue()
-    if IsBlank(selectedKey) then return end
-    
-    local items = ns:profile().debugDialog.items
-    local item  = findItem(selectedKey, items)
-    if item then
-      item.value = codeText;
-      return
-    end
-    --p:log('SaveHistory::Error: failed to save history.')
+
+  local left, right = s:match("^(.-):(.*)$")
+  return left, right
+end
+
+--- @param text string
+function w:SetErrorContent(text)
+  self:SetStatusText(ERROR_STATUS)
+  local argType = type(text)
+  assert(argType == 'string', ('Expected type[string] but got [%s] instead.'):format(argType))
+  --if not text then self:ClearContent(); return end
+  if #text <= 0 then return end
+
+  local source, msg = self:SplitFirstColon(text)
+  if source and msg then
+    local msgp = ("%s%s|r|n%s"):format(ERROR_COLOR, source, msg)
+    self.contentEditBox:SetText(msgp)
+  else
+    self.contentEditBox:SetText(("%s%s|r"):format(ERROR_COLOR, text))
   end
+end
+
+function w:Submit() self.codeEditBox.button:Click() end
+function w:HasCodeContent()
+  local codeValue = self.codeEditBox:GetText()
+  return IsNotBlank(codeValue)
+end
+
+-- /run DEVS.profile.debugDialog.items = nil
+-- /dump DEVS.profile.debugDialog.items
+function w:SaveHistory()
+  local codeText = w.codeEditBox:GetText()
+  if IsBlank(codeText) then return end
+  local selectedKey = w.histDropdown:GetValue()
+  if IsBlank(selectedKey) then return end
+
+  local items = ns:profile().debugDialog.items
+  local item  = findItem(selectedKey, items)
+  if item then
+    item.value = codeText;
+    return
+  end
+  --p:log('SaveHistory::Error: failed to save history.')
 end
 
 --[[-----------------------------------------------------------------------------
@@ -349,7 +351,7 @@ function D:New()
   dialog:SetHeight(800)
   
   local settings = ns:g().debug_dialog
-  local f        = dialog.frame
+  local f = dialog.frame
   if f.SetResizeBounds then -- WoW 10.0
     f:SetResizeBounds(400, 550)
   else
@@ -415,23 +417,22 @@ function D:New()
   
   dialog:Hide()
   
-  --- @class DebugDialogWidget
+  --- @class DebugDialogWidget : DebugDialogWidgetMixin
   --- @field f FrameObj
   --- @field a DebugDialogAceFrameWidget
   --- @field private __sizeAdjusted boolean
   local widget  = {
     profile        = profile,
     a              = dialog,
-    f              = dialog.frame,
+    f              = f,
     codeEditBox    = codeEditBox,
     contentEditBox = contentEditBox,
     showFnEditBox  = showFnEditBox,
     histDropdown   = histDropdown,
-  }
+  }; Mixin(widget, DebugDialogWidgetMixin)
   dialog.widget = widget
-  widgetMethods(widget)
   RegisterCallbacks(widget)
-  
+
   return widget;
 end
 
