@@ -1,7 +1,7 @@
 --- @type Namespace
 local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
-local L = ns:AceLocale()
+local L = ns:GetLocale()
 
 local keywordFrameHeight = 24
 
@@ -17,9 +17,9 @@ local keywordFrameHeight = 24
 --- @field HeaderTitle FontStringObj
 --- @field HeaderIconLeft TextureObj
 --- @field HeaderBackground TextureObj
-DevSuite_PresetFiltersContentFrameMixin = ns:AceEvent()
+DevSuite_PresetFiltersContentFrameMixin = ns:Ace():NewAceEvent()
 --
---- @alias PresetFiltersContentFrame PresetFiltersContentFrameMixin | FrameObj | AceEvent_3_0
+--- @alias PresetFiltersContentFrame PresetFiltersContentFrameMixin | FrameObj | AceEvent-3.0
 --
 
 --[[-------------------------------------------------------------------
@@ -28,7 +28,7 @@ Support Functions
 --- @param ... any
 local function t(...) EventTrace:LogEvent(string.upper(ns.addon), 'EventTraceFrameMixin', ...) end
 
---- @param self ButtonObj
+--- @param self Button
 --- @param relativeTo Frame
 local function AddButton_Init(self, relativeTo)
   self.tooltipText = L['Add Preset Filter Keyword']
@@ -135,7 +135,7 @@ function o:OnShow()
   self:RefreshPredefinedFilters()
 end
 
---- @param self ButtonObj
+--- @param self Button
 --- @param owner PresetFiltersContentFrame
 --- @param keyword string
 local function PredefinedKeywordsButton_Init(self, owner, keyword)
@@ -145,7 +145,7 @@ local function PredefinedKeywordsButton_Init(self, owner, keyword)
   self.__used = true
   self:SetScript('OnClick', function(b)
     owner:SaveEventTraceSearchKeyword(b.text:GetText())
-    owner:SendMessage(ns.GC.toMsg('PresetFilterClose'), 'EventTraceFrame::' .. b.text:GetText())
+    owner:SendMessage(GC.toMsg('PresetFilterClose'), 'EventTraceFrame::' .. b.text:GetText())
   end)
   self:SetScript("OnEnter", function(btn)
     btn.HighlightBg:Show()
@@ -184,7 +184,9 @@ function o:RefreshPredefinedFilters()
     --- @type ButtonObj
     local f = self.buttonPool[keyword]
     if not f then
-      f = CreateFrame("Button", nil, child, "DevSuite_PredefinedKeywordsButton")
+      --- @type Template
+      local template = "DevSuite_PredefinedKeywordsButton"
+      f = CreateFrame("Button", nil, child, template)
       self.buttonPool[keyword] = f
     end
     PredefinedKeywordsButton_Init(f, self, keyword)
@@ -227,5 +229,5 @@ end
 --- @param srcName string
 function o:NotifyListeners(srcName)
   t('NotifyListeners', 'btn=', srcName)
-  self:SendMessage(ns.GC.toMsg('PresetFilterClose'), 'EventTraceFrame::' .. srcName)
+  self:SendMessage(GC.toMsg('PresetFilterClose'), 'EventTraceFrame::' .. srcName)
 end

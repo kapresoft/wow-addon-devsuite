@@ -26,7 +26,7 @@ local function PropsAndMethods(o)
 
     --- @return AceConfigOption
     function o:CreateDebuggingGroup()
-        local seq = ns:CreateSequence(1)
+        local seq = ns.CreateSequence(1)
 
         --- @type AceConfigOption
         local debugConf = {

@@ -4,8 +4,9 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
-local LibUtil, AceEvent = ns:K(), ns:AceEvent()
-local AceDB = ns:AceDB()
+local Ace = ns:Ace()
+local LibUtil, AceEvent = ns:K(), Ace:NewAceEvent()
+local AceDB = Ace:AceDB()
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 

@@ -36,4 +36,4 @@
 
 ThirdParty\ThirdParty.xml
 Core\Wrath.lua
-Core\_Core.xml
+DevSuite.xml

@@ -9,7 +9,7 @@ local Tbl_DeepCopy = Table.DeepCopy
 ---@class DevSuite_AceDBObject_3_0
 ---@field keys table
 ---@field sv table
----@field defaults AceDB_3_0.Schema Cache of defaults
+---@field defaults AceDB.Schema Cache of defaults
 ---@field parent table
 
 --[[-------------------------------------------------------------------
@@ -101,10 +101,11 @@ end
 --[[-----------------------------------------------------------------------------
 Type: Profile_Config
 -------------------------------------------------------------------------------]]
---- @class Profile_Config : AceDB_Profile
+--- @class Profile_Config
 --- @field enable boolean This is the standard enable. Don't use.
 --- @field auto_loaded_addons AutoLoadedAddons
 --- @field debugDialog Profile_Config_DebugDialog
+--- @field last_eval Index
 local DefaultProfileSettings = {
   enable      = true,
   debugDialog = {
@@ -128,7 +129,7 @@ Type: TraceConfig
 --[[-----------------------------------------------------------------------------
 Type: Character_Config
 -------------------------------------------------------------------------------]]
---- @class Character_Config : AceDB_Character
+--- @class Character_Config
 
 --[[-----------------------------------------------------------------------------
 Type: AceDBObjectInstance

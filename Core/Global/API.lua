@@ -10,8 +10,8 @@ New Instance
 -------------------------------------------------------------------------------]]
 local libName = M.API()
 --- @class API
-local L = ns:NewLib(libName)
-local p = ns:CreateDefaultLogger(libName)
+local L = {}; ns:Register(libName, L)
+local p, pd, t, tf = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods

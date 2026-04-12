@@ -1,0 +1,35 @@
+<!--suppress ALL -->
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Libs\Kapresoft-LibUtil\Lib\Constants.lua"/>
+	<Script file="Libs\Kapresoft-LibUtil\Lib\Init.lua"/>
+
+	<Include file="Libs\Kapresoft-LibUtil\Lib\LibStubMixin\_LibStubMixin.xml"/>
+
+	<Include file="Libs\Kapresoft-LibUtil\Lib\pprint\pprint.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\LibFactoryMixin\_LibFactoryMixin.xml"/>
+
+	<Script file="Libs\Kapresoft-LibUtil\Lib\Library.lua"/>
+
+	<Include file="Libs\Kapresoft-LibUtil\Lib\LibModule\_LibModule.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Mixin\_Mixin.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Assert\_Assert.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Table\_Table.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\String\_String.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Ace3\_Ace3.xml"/>
+
+	<Include file="Libs\Kapresoft-LibUtil\Lib\IncrementerBuilder\_IncrementerBuilder.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\SequenceMixin\_SequenceMixin.xml" />
+	<Include file="Libs\Kapresoft-LibUtil\Lib\LuaEvaluator\_LuaEvaluator.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Safecall\_Safecall.xml"/>
+	<Include file="Libs\Kapresoft-LibUtil\Lib\LoggerMixin\_LoggerMixin.xml"/>
+
+	<Include file="Libs\Kapresoft-LibUtil\Lib\Util\_Util.xml"/>
+
+	<Script file="Libs\Kapresoft-LibUtil\Lib\NamespaceKapresoftLibMixin.lua"/>
+	<Script file="Libs\Kapresoft-LibUtil\Lib\NamespaceAceLibraryMixin.lua"/>
+
+	<Script file="Libs\Kapresoft-LibUtil\Lib\CoreNamespaceMixin.lua"/>
+
+</Ui>

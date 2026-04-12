@@ -7,7 +7,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local Ace = ns.Ace()
+local Ace = ns:Ace()
 
 --- @type AceEvent_3_0
 local AceEvent = Ace:AceEvent()

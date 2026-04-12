@@ -5,7 +5,7 @@ Local Vars
 local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
 local MSG = GC.M
-local L = ns:AceLocale()
+local L = ns:GetLocale()
 local ACU = ns:KO().AceConfigUtil:New(ns.addon)
 local NameDescG = ns.LocaleUtil.NameDescGlobal
 local sformat = ns.sformat
@@ -41,7 +41,7 @@ function S:CreateDebugConsoleGroup()
     }
     options.args  = {}
 
-    local seq = ns:CreateSequence(1)
+    local seq = ns.CreateSequence(1)
     self:DebugConsoleSection(options, seq)
     return options
 end

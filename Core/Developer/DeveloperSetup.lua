@@ -1,14 +1,12 @@
 --[[-----------------------------------------------------------------------------
 Namespace
 -------------------------------------------------------------------------------]]
---- @type CoreNamespace
+--- @type Namespace
 local ns = select(2, ...)
 --[[-----------------------------------------------------------------------------
-Debug Flags
+Dev Settings
 -------------------------------------------------------------------------------]]
-local d                  = ns.debug
-local flag               = ns.debug.flag
-flag.developer           = true
+ns.settings.developer = true
 
 --[[-----------------------------------------------------------------------------
 Debug Vars
@@ -21,16 +19,6 @@ Debug Vars
 --DEVTOOLS_USE_FUNCTION_CACHE = true;-- Look up function names
 --DEVTOOLS_USE_USERDATA_CACHE = true;-- Look up userdata names
 --DEVTOOLS_INDENT='  ';              -- Indentation string
-
---[[-----------------------------------------------------------------------------
-Lua Vars
--------------------------------------------------------------------------------]]
-local K          = ns:K()
-local sformat    = string.format
-local libName    = 'DeveloperSetup'
-
---- @class DeveloperSetup
-local L = {}; ns.DeveloperSetup = L
 
 --[[-----------------------------------------------------------------------------
 Main Code

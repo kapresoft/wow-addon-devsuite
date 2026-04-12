@@ -36,4 +36,4 @@
 
 ThirdParty\ThirdParty.xml
 Core\Mists.lua
-Core\_Core.xml
+DevSuite.xml
