@@ -125,5 +125,5 @@ end
 --- @param prefix Name|nil
 function o:_EventName(prefix)
   if prefix == nil then return self.eventBase end
-  return ("%s::%s"):format(self.eventBase, upperc(prefix))
+  return ("%s::%s"):format(self.eventBase, prefix)
 end

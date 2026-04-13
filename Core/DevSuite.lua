@@ -15,8 +15,8 @@ local tostring, type = tostring, type
 local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.IsEmpty
 local DebugDialog = O.DebugDialog
 
-local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
-
+--local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
+local c1 = ns:ColorFormatter().cf(BLUE_FONT_COLOR)
 --- @type any
 DEVS_MF = nil
 
@@ -378,7 +378,7 @@ end
 function o.ToggleFrameStack() SlashCmdList["FRAMESTACK"]("false true true") end
 function o.IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTooltip:IsShown() end
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
-function o.ns() return DEV_SUITE_NS end
+function o.ns() return DevSuite_NS end
 
 --[[-------------------------------------------------------------------
 Global Var

@@ -91,10 +91,11 @@ local M = {
 --[[-----------------------------------------------------------------------------
 Enrich Namespace
 -------------------------------------------------------------------------------]]
---- @class Namespace : PreNamespace, CategoryLoggerMixin, ChatLogFrameMixin
+--- @class Namespace : PreNamespace, CategoryLoggerMixin
 --- @field GC GlobalConstants
 --- @field addon string
 --- @field gameVersion GameVersion
+--- @field chatFrame ChatLogFrame
 --- @field CategoryLoggerMixin CategoryLoggerMixin
 --- @field O Modules
 --- @field LocaleUtil LocaleUtil
@@ -109,11 +110,11 @@ ns.nameShort = 'DS'
 --[[-----------------------------------------------------------------------------
 Colors
 -------------------------------------------------------------------------------]]
---- @type Kapresoft_LibUtil_ColorDefinition
+--- @type Kapresoft-ColorDefinition-2-0
 ns.consoleColors = {
-    primary   = 'FF780A',
-    secondary = 'fbeb2d',
-    tertiary = 'ffffff',
+    primary   = CreateColorFromRGBHexString('FF780A'),
+    secondary = CreateColorFromRGBHexString('fbeb2d'),
+    tertiary  = CreateColorFromRGBHexString('ffffff'),
 }
 --ns.ch = ns:NewConsoleHelper(ns.consoleColors)
 
@@ -244,7 +245,7 @@ function ns:NewLib(libName, ...)
   assert(libName, "LibName is required")
   local newLib = {}
   local len    = select("#", ...)
-  if len > 0 then newLib = self:K():Mixin({}, ...) end
+  if len > 0 then newLib = Mixin({}, ...) end
   newLib.mt = { __tostring = function() return 'Lib:' .. libName end }
   setmetatable(newLib, newLib.mt)
   self.O[libName] = newLib
@@ -254,9 +255,9 @@ function ns:NewLibWithEvent(libName, ...)
   assert(libName, "LibName is required")
 
   local TOSTRING_ADDON_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe}}|r'
-  local newLib = self:AceLibrary().AceEvent:Embed({})
+  local newLib = self:Ace():NewAceEvent()
   local len    = select("#", ...)
-  if len > 0 then newLib = self:K():Mixin(newLib, ...) end
+  if len > 0 then newLib = Mixin(newLib, ...) end
   newLib.mt = { __tostring = function() return string.format(TOSTRING_ADDON_FMT, libName) end }
   setmetatable(newLib, newLib.mt)
   self.O[libName] = newLib
@@ -303,11 +304,14 @@ function ns.GameTooltip_DefaultAnchor()
   GameTooltip:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -10, 70)
 end
 
+---@param chatFrame ChatLogFrame
+function ns:RegisterChatFrame(chatFrame) self.chatFrame = chatFrame end
+
 InitLocalLibStub()
 
 --[[-----------------------------------------------------------------------------
 --- Global Settings
 -------------------------------------------------------------------------------]]
 --- @type Namespace
-DEV_SUITE_NS = ns
+DevSuite_NS = ns
 if not pf then pf = ns.pformat end

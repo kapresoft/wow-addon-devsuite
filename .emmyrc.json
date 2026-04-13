@@ -3,15 +3,15 @@
   "diagnostics": {
     "disable": [
       "access-invisible",
-      "assign-type-mismatch",
-      "undefined-global",
-      "undefined-field",
-      "param-type-mismatch",
-      "missing-fields",
-      "iter-variable-reassign",
-      "call-non-callable",
       "access-invisible",
+      "assign-type-mismatch",
+      "call-non-callable",
+      "iter-variable-reassign",
+      "missing-fields",
       "need-check-nil",
+      "param-type-mismatch",
+      "undefined-field",
+      "undefined-global",
       "unnecessary-if",
       "unused"
     ],
@@ -63,15 +63,21 @@
       "${workspace}/ThirdParty/Libs/LibPrettyPrint/Libs"
     ],
     "ignoreDir": [
-      "**/.*",
       "build",
       "dist",
       "doc",
       "dev",
       "legacy",
       "_SV",
-      ".checkout",
-      ".release/**"
+      "Lib",
+      ".claude",
+      ".release",
+      ".checkout"
+    ],
+    "ignoreGlobs": [
+      "**/.*/**",
+      ".claude/**"
     ]
   }
 }
+

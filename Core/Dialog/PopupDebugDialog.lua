@@ -14,7 +14,7 @@ Local Vars
 local ns = select(2, ...)
 
 local pformat = ns.pformat
-local AceGUI = ns:AceLibrary().AceGUI
+local AceGUI = ns:AceGUI()
 local LuaEvaluator = ns:KO().LuaEvaluator
 
 local libName = ns.M.PopupDebugDialog()
