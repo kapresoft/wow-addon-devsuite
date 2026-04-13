@@ -239,21 +239,26 @@ local function RegisterCallbacks(w)
 end
 
 --[[-----------------------------------------------------------------------------
-Methods
+DebugDialogWidgetMixin
 -------------------------------------------------------------------------------]]
 --- @class DebugDialogWidgetMixin
-local DebugDialogWidgetMixin = {}
-local w = DebugDialogWidgetMixin
+--- @field profile Profile_Config
+--- @field f FrameObj
+--- @field a DebugDialogAceFrameWidget
+--- @field contentEditBox DebugDialog_Content_MultiLineEditBox
+--- @field codeEditBox DebugDialog_Code_MultiLineEditBox
+--- @field histDropdown DebugDialog_History_Dropdown
+local DebugDialogWidgetMixin = {}; local w = DebugDialogWidgetMixin
 
-function w:Show() w.a:Show() end
-function w:GetTitle() return w.a.titletext:GetText() end
+function w:Show() self.a:Show() end
+function w:GetTitle() return self.a.titletext:GetText() end
 function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
-function w:EnableAcceptButton() w.a.codeEditBox.button:Enable() end
+function w:EnableAcceptButton() self.a.codeEditBox.button:Enable() end
 function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
 function w:IsShown() return self.f:IsShown() end
 
 function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
-function w:SetStatusText(text) w.a:SetStatusText(text) end
+function w:SetStatusText(text) self.a:SetStatusText(text) end
 function w:ClearContent() self.contentEditBox:SetText('') end
 function w:SetContent(content)
   local text
@@ -266,7 +271,7 @@ function w:SetContent(content)
     end
   end
   self.contentEditBox:SetText(text)
-  w:SaveHistory()
+  self:SaveHistory()
 end
 
 --- Splits a string at the first ':' character (nil-safe)
@@ -307,9 +312,9 @@ end
 -- /run DEVS.profile.debugDialog.items = nil
 -- /dump DEVS.profile.debugDialog.items
 function w:SaveHistory()
-  local codeText = w.codeEditBox:GetText()
+  local codeText = self.codeEditBox:GetText()
   if IsBlank(codeText) then return end
-  local selectedKey = w.histDropdown:GetValue()
+  local selectedKey = self.histDropdown:GetValue()
   if IsBlank(selectedKey) then return end
 
   local items = ns:profile().debugDialog.items
@@ -320,6 +325,7 @@ function w:SaveHistory()
   end
   --p:log('SaveHistory::Error: failed to save history.')
 end
+
 
 --[[-----------------------------------------------------------------------------
 Constructor
@@ -370,7 +376,7 @@ function D:New()
   inlineGroup:SetFullWidth(true)
   dialog:AddChild(inlineGroup)
   
-  --- @class DebugDialog_Code_MultiLineEditBox
+  --- @class DebugDialog_Code_MultiLineEditBox : AceGUIMultiLineEditBox
   local codeEditBox = AceGUI:Create("MultiLineEditBox")
   dialog.codeEditBox = codeEditBox
   codeEditBox:SetLabel('')
@@ -384,7 +390,7 @@ function D:New()
   -- checked by default
   showFnEditBox:SetValue(true)
   
-  --- @class DebugDialog_History_Dropdown
+  --- @class DebugDialog_History_Dropdown : AceGUIDropdown
   local histDropdown = AceGUI:Create("Dropdown")
   histDropdown:SetLabel("History:")
   --- @type table<number, Profile_Config_Item>
@@ -405,7 +411,7 @@ function D:New()
   inlineGroup:AddChild(histDropdown)
   inlineGroup:AddChild(codeEditBox)
   
-  --- @class DebugDialog_Content_MultiLineEditBox
+  --- @class DebugDialog_Content_MultiLineEditBox : AceGUIMultiLineEditBox
   local contentEditBox = AceGUI:Create("MultiLineEditBox")
   contentEditBox:SetLabel('Output:')
   contentEditBox:SetText('')
@@ -418,8 +424,6 @@ function D:New()
   dialog:Hide()
   
   --- @class DebugDialogWidget : DebugDialogWidgetMixin
-  --- @field f FrameObj
-  --- @field a DebugDialogAceFrameWidget
   --- @field private __sizeAdjusted boolean
   local widget  = {
     profile        = profile,
@@ -430,6 +434,7 @@ function D:New()
     showFnEditBox  = showFnEditBox,
     histDropdown   = histDropdown,
   }; Mixin(widget, DebugDialogWidgetMixin)
+
   dialog.widget = widget
   RegisterCallbacks(widget)
 

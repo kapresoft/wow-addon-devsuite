@@ -21,7 +21,7 @@ local p, pd, t, tf = ns:log(libName)
 local Ace = ns:Ace()
 --- @class PresetFiltersButtonMixin : Button
 --- @field Arrow TextureObj
-local S = Ace:NewAceEvent(Ace:NewAceHook()); DevSuite_PresetFiltersButtonMixin = S
+local S = ns:AceEmbed({}, ns:AceEvent(), ns:AceHook()); DevSuite_PresetFiltersButtonMixin = S
 --
 --- @alias PresetFiltersButton PresetFiltersButtonMixin | CheckButtonObj | AceEvent_3_0 | AceHook_3_0
 --

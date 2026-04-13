@@ -53,7 +53,7 @@ StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
 Console Colors
 -------------------------------------------------------------------------------]]
 local consoleColors = ns.consoleColors
-local primaryColor = CreateColorFromHexString('ff' .. consoleColors.primary)
+local primaryColor = consoleColors.primary
 local function colorP(text) return primaryColor:WrapTextInColorCode(text) end
 
 local command = colorP('/' .. consoleCommand)
@@ -67,6 +67,7 @@ end)
 GlobalConstants
 -------------------------------------------------------------------------------]]
 --- @class GlobalConstants
+--- @field AddonInfoUtil Kapresoft-AddonInfoUtil-2-0
 local L = {}
 
 local function GlobalConstantProperties()
@@ -154,11 +155,11 @@ isDev = true
 
 --- @param o GlobalConstants
 local function Methods()
-
+    local AddonInfoUtil = LibStub('Kapresoft-AddonInfoUtil-2-0')
     local o = L
-    function o:AIU()
+    function o:AIU()tr('GlobalConstants', 'AddonInfoUtil=', o.AddonInfoUtil)
         if o.AddonInfoUtil then return o.AddonInfoUtil end
-        o.AddonInfoUtil = ns:AddonInfoUtil():New(ns.addon, ns.consoleColors, isDev)
+        o.AddonInfoUtil = AddonInfoUtil:New(ns.addon, ns.consoleColors)
         return o.AddonInfoUtil
     end
 

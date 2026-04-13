@@ -5,13 +5,18 @@
     <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
     <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
     <Include file='LibPrettyPrint.xml'/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\AceLib.lua"/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Table.lua"/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\String.lua"/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\ColorFormatter.lua"/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\ChatLogFrameMixin.lua"/>
-    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\SequenceMixin.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\AceConfigUtil.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\AceLib.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\ColorFormatter.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\ConsoleHelperMixin.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\DebugChatFrameMixin.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\GameVersionMixin.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\SequenceMixin.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\String.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Table.lua"/>
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\TimeUtil.lua"/>
+
+    <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\AddonInfoUtil.lua"/>
     <!--@do-not-package@-->
     <!-- Exclude during development for perf -->
     <!--@end-do-not-package@-->

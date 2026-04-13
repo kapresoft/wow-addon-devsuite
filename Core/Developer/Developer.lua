@@ -18,7 +18,7 @@ local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetC
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
-local ns = select(2, ...)
+local ns = DevSuite_NS
 local ip = ns.O.LibIconPickerUtil
 
 local libName = 'Developer'
@@ -257,7 +257,7 @@ function o:FrameFormation1()
   
   local scale = 0.95
   local ofsy = -200
-  if ns:IsMoP() then ofsy = -120 end
+  if ns:IsMists() then ofsy = -120 end
   
   --- @type FrameObj
   local pf = PlayerFrame
@@ -278,7 +278,7 @@ function o:FrameFormation2()
   
   local scale = 0.95
   local ofsy = -110
-  if ns:IsMoP() then ofsy = -120 end
+  if ns:IsMists() then ofsy = -120 end
   
   --- @type FrameObj
   local pf = PlayerFrame
