@@ -21,7 +21,6 @@ New Library
 local libName = M.DebugDialog()
 --- @class DebugDialog : DialogWidgetMixin
 local D = ns:NewLib(libName); ns:K():Mixin(D, O.DialogWidgetMixin)
-local p = ns:CreateDefaultLogger(libName)
 local pformat = ns.pformat
 
 --[[-----------------------------------------------------------------------------
@@ -122,7 +121,7 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
         return
     end
 
-    local env = { pformat = ns.pformat, sformat = ns.sformat }
+    local env = { pformat = ns.fmt, sformat = ns.sformat }
     env.mt = { __index = _G }
     setmetatable(env, env.mt)
     setfenv(func, env)
@@ -168,9 +167,6 @@ local function HistDropDown_OnValueChanged(w, selectedValue)
     w:SetCodeText(selItem.value)
     w:EnableAcceptButtonDelayed()
 end
-
---- @param w DebugDialogWidget
-local function ShowFnEditBox_OnValueChanged(w, checkedState) w.codeEditBox.button:Enable() end
 
 --- @param frame FrameObj
 local function Frame_OnSizeChanged(frame)
@@ -232,9 +228,6 @@ local function RegisterCallbacks(w)
   w.histDropdown:SetCallback("OnValueChanged", function(fw, event, selectedIndex)
     HistDropDown_OnValueChanged(w, selectedIndex)
   end)
-  w.showFnEditBox:SetCallback("OnValueChanged", function(fw, event, checkedState)
-    ShowFnEditBox_OnValueChanged(w, checkedState)
-  end)
   hooksecurefunc(w.f, "StopMovingOrSizing", Frame_SaveDialogAnchorHook)
 end
 
@@ -254,21 +247,22 @@ function w:Show() self.a:Show() end
 function w:GetTitle() return self.a.titletext:GetText() end
 function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
 function w:EnableAcceptButton() self.a.codeEditBox.button:Enable() end
+--- @deprecated functions are always shown now
 function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
 function w:IsShown() return self.f:IsShown() end
 
 function w:SetCodeText(text) self.codeEditBox:SetText(text or '') end
 function w:SetStatusText(text) self.a:SetStatusText(text) end
 function w:ClearContent() self.contentEditBox:SetText('') end
+
+local fmtML = ns.fmt:New({
+  multiline_tables = true, show_all = true, show_function=true, depth_limit = 5
+})
 function w:SetContent(content)
   local text
   if type(content) == 'string' then text = '' end
   if #tostring(content) > 0 then
-    if self:IsShowFunctions() then
-      text = pformat:A():pformat(content)
-    else
-      text = pformat(content)
-    end
+    text = fmtML(content)
   end
   self.contentEditBox:SetText(text)
   self:SaveHistory()
@@ -384,12 +378,6 @@ function D:New()
   codeEditBox:SetHeight(200)
   codeEditBox:SetText('')
   
-  --- @class DebugDialog_ShowFunction_CheckBox
-  local showFnEditBox = AceGUI:Create("CheckBox")
-  showFnEditBox:SetLabel("Show Functions")
-  -- checked by default
-  showFnEditBox:SetValue(true)
-  
   --- @class DebugDialog_History_Dropdown : AceGUIDropdown
   local histDropdown = AceGUI:Create("Dropdown")
   histDropdown:SetLabel("History:")
@@ -407,7 +395,6 @@ function D:New()
     histDropdown:SetValue(orderKeys[1])
   end
   
-  inlineGroup:AddChild(showFnEditBox)
   inlineGroup:AddChild(histDropdown)
   inlineGroup:AddChild(codeEditBox)
   
@@ -431,7 +418,6 @@ function D:New()
     f              = f,
     codeEditBox    = codeEditBox,
     contentEditBox = contentEditBox,
-    showFnEditBox  = showFnEditBox,
     histDropdown   = histDropdown,
   }; Mixin(widget, DebugDialogWidgetMixin)
 

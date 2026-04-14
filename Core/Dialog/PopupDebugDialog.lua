@@ -20,7 +20,6 @@ local LuaEvaluator = ns:KO().LuaEvaluator
 local libName = ns.M.PopupDebugDialog()
 --- @class PopupDebugDialog : PopupDebugDialogFrame
 local L = ns:NewLib(libName)
-local p = ns:CreateDefaultLogger(libName)
 
 local FRAME_NAME = ns.addon .. 'DebugDialog'
 local FRAME_TITLE = ns.addon .. ' Dialog'

@@ -11,7 +11,6 @@ local libName = ns.M.OptionsUtil()
 --- @class OptionsUtil
 --- @field optionsMixin OptionsMixin
 local L = ns:NewLibWithEvent(libName)
-local p = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods

@@ -23,7 +23,7 @@ local libName = 'LibIconPickerUtil'
 local S = {}; ns:Register(libName, S)
 
 local libName = 'LibIconPickerUtil'
-local p = ns:LC().DEV:NewLogger(libName)
+local p, pd, t, tf = ns:log(libName)
 
 --- @type LibIconPickerUtil
 local o = S;

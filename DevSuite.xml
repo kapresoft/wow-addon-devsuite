@@ -2,7 +2,6 @@
 ..\FrameXML\UI.xsd">
 
     <Script file="Core\Global\ThirdPartyLibsSetup.lua"/>
-    <Script file="Core\Global\CategoryLoggerMixin.lua"/>
     <Script file="Core\Global\Namespace.lua"/>
     <Script file="Core\Global\GlobalConstants.lua"/>
     <Script file="Core\Global\API.lua"/>

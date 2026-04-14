@@ -1,10 +1,12 @@
 --[[-----------------------------------------------------------------------------
 Type: GeneralConfigOptionArgs
 -------------------------------------------------------------------------------]]
---- @class GeneralConfigOptionArgs
+--- @class GeneralConfigOptionArgs : AceConfigOption
 --- @field showFPS AceConfigOption
 --- @field addonUsage_AutomaticallyShow AceConfigOption
 --- @field specialNoticeText AceConfigOption
+--- @field spacer1 AceConfigOption
+--- @field enableDebugConsole boolean
 
 --[[-----------------------------------------------------------------------------
 Type: DebugConsoleOptionArgs
@@ -22,6 +24,7 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
+local L = ns:GetLocale()
 
 local Ace, API = ns:Ace(), O.API
 local AceConfigDialog, AceDBOptions = Ace:AceConfigDialog(), Ace:AceDBOptions()
@@ -35,236 +38,215 @@ New Instance
 -------------------------------------------------------------------------------]]
 --- @class OptionsMixin
 local libName = M.OptionsMixin()
-local S       = ns:NewLibWithEvent(libName)
-local p       = ns:CreateDefaultLogger(libName)
+local o = ns:AceEvent(); ns:Register(libName, o)
 
 --[[-----------------------------------------------------------------------------
 Types: ProfileSelectValues
 -------------------------------------------------------------------------------]]
---- @type OptionsMixin | AceEvent_3_0
-local o = S; do
-    local L = ns:
-    GetLocale()
 
-    --- Automatically called by CreateAndInitFromMixin(..)
-    --- @param addon DevSuite
-    function o:Init(addon)
-        self.addon = addon
-        self.util = O.OptionsUtil:New(o)
+--- Automatically called by CreateAndInitFromMixin(..)
+--- @param addon DevSuite
+function o:Init(addon)
+    self.addon = addon
+    self.util = O.OptionsUtil:New(o)
+end
+
+--- Usage:  local instance = OptionsMixin:New(addon)
+--- @param addon DevSuite
+--- @return OptionsMixin
+function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
+
+function o:CreateOptions()
+    self.order = ns.CreateSequence(1)
+
+    local options = {
+        name = ns.addon,
+        handler = self,
+        type = "group",
+        args = {
+            general = self:CreateGeneralOptions(),
+            eventTraceUI = self:CreateEventTraceUIOptions(),
+        }
+    }
+
+    -- disable in favor of manual tracing with EventTrace
+    -- ConfigureDebugging(options)
+
+    return options
+end
+
+function o:CreateGeneralOptions()
+    local order = self.order
+
+    local aULabel = c2(L['Addon Usage: Automatically Show UI'])
+    if not O.API:IsAddonUsageAvailable() then
+        aULabel = L['Addon Usage: Automatically Show UI']
     end
 
-    --- Usage:  local instance = OptionsMixin:New(addon)
-    --- @param addon DevSuite
-    --- @return OptionsMixin
-    function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
-
-    --[[---@param opt AceConfigOption
-    local function ConfigureDebugging(opt)
-        --@do-not-package@
-        if not ns.IsDev() then return end
-        opt.args.debugging = O.DebuggingSettingsGroup:CreateDebuggingGroup()
-        p:a(function() return 'Debugging tab in Settings UI is enabled.' end)
-        --@end-do-not-package@
-        DEVS_LOG_LEVEL = 0
-    end]]
-
-    function o:CreateOptions()
-        self.order = ns.CreateSequence(1)
-
-        local options = {
-            name = ns.addon,
-            handler = self,
-            type = "group",
-            args = {
-                general = self:CreateGeneralOptions(),
-                eventTraceUI = self:CreateEventTraceUIOptions(),
-                --debugConsole = self:CreateDebugConsoleGroup(),
-            }
-        }
-
-        -- disable in favor of manual tracing with EventTrace
-        -- ConfigureDebugging(options)
-
-        return options
-    end
-
-    function o:CreateGeneralOptions()
-        local order = self.order
-        local ACU= ACU
-
-        local aULabel = c2(L['Addon Usage: Automatically Show UI'])
-        if not O.API:IsAddonUsageAvailable() then
-            aULabel = L['Addon Usage: Automatically Show UI']
-        end
-
-        --- @class GeneralConfigOption : AceConfigOption
-        --- @field args GeneralConfigOptionArgs
-        local general = {
-            type  = "group",
-            name  = L['General'],
-            desc  = L['General::Desc'],
-            order = order:get(),
-            args  = {},
-        }
-        local a = general.args
-
-        local function DebugConsoleGetFn() return ns:dbg().enableLogConsole == true end
-        local function DebugConsoleSetFn(_, v)
-            local val = (v == true)
-            ns:dbg().enableLogConsole = val
-            if val then return ns:DevConsoleModule():Enable() end
-            ns:DevConsoleModule():Disable()
-        end
-
-        a.enableDebugConsole = ACU:CreateGlobalOption('Enable Debug Console', {
-            type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
-            get  = DebugConsoleGetFn,
-            set  = DebugConsoleSetFn,
-        }); a.enableDebugConsole.name = c2(a.enableDebugConsole.name)
-        local edc = a.enableDebugConsole
-        if not DebugChatFrame then
-            --a.enableDebugConsole.name = a.enableDebugConsole.name .. '( Requires DebugChatFrame AddOn Library)'
-            --a.enableDebugConsole.descStyle = 'inline'
-            ns:dbg().enableLogConsole = false
-            edc.desc = "Requires " .. c1('DebugChatFrame') .. ' AddOn'
-            edc.disabled = true
-        end
-
-        a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
-            type      = 'toggle',
-            width     = 'full',
-            descStyle = 'inline',
-            order     = order:next(),
-            get       = self.util:GlobalGet('show_fps', false),
-            set       = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
-        }); a.showFPS.name = c2(a.showFPS.name)
-
-        a.addonUsage_AutomaticallyShow = {
-            disabled  = not O.API:IsAddonUsageAvailable(),
-            order     = order:next(),
-            width     = 'full',
-            name      = aULabel,
-            desc      = ns.LocaleUtil.G('Addon Usage: Automatically Show UI::Desc'),
-            descStyle = 'inline',
-            type      = 'toggle',
-            get       = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
-            set       = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
-        }
-        a.fontSize = {
-            name    = c2(L['Console Font Size']),
-            desc    = ns.LocaleUtil.G('Choose a Console Font Size'),
-            order   = order:next(),
-            type    = 'range',
-            min     = 10,
-            max     = 18,
-            step    = 2,
-            get     = self.util:GlobalGet('console_fontSize'),
-            set     = self.util:GlobalSet('console_fontSize', nil, function(_, val)
-                ns:SetChatFrameFontSize(val)
-            end)
-        }
-
-        local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
-        if showSpecialNotice then
-            local a             = general.args
-            a.spacer1           = { type = "description", name = '\n\n  ', width = "full", order = order:next() }
-            a.specialNoticeText = {
-                name     = c1(L['Addon Manager Special Notice']),
-                type     = "description",
-                fontSize = 'medium',
-                order    = order:next()
-            }
-        end
-
-        return general
-    end
-
-    function o:CreateEventTraceUIOptions()
-      local order = self.order
-      
-      --- @class EventTraceUIOptionArgs
-      
-      
-      --- @class EventTraceUIOption : AceConfigOption
-      --- @field args EventTraceUIOptionArgs
-      local evenTrace = {
+    --- @class GeneralConfigOption : AceConfigOption
+    --- @field args GeneralConfigOptionArgs
+    local general = {
         type  = "group",
-        name  = L['EventTrace UI'],
-        desc  = L['EventTrace UI::Desc'],
-        order = order:next(),
+        name  = L['General'],
+        desc  = L['General::Desc'],
+        order = order:get(),
         args  = {},
-      }
-      local a = evenTrace.args
-      
-      a.headerDesc = {
-        type = "description",
-        name = "Add custom trace keywords to filter EventTrace logs. Keywords appear in the Trace UI.\n\n",
-        fontSize = "medium",
-        order = order:next(),
-        width = "full",
-      }
-      
-      local newName = ''
-      a.newTraceKeyword = {
-        type = "input",
-        name = "New Trace Keyword",
-        get = function() return nil end,
-        set = function(_, val)
-          newName = val
-        end,
-        order = order:next(),
-      }
-      a.newTraceKeywordDesc = {
-        type = "description",
-        name = "Enter a keyword to add to the Trace UI filter list.",
-        order = order:next(),
-        width = "full",
-      }
-      
-      a.spacer1           = { type = "description", name = '\n  ', width = "full", order = order:next() }
-      
-      local current = 'ABP V2::BarsUI'
-      local allKeywords = {['ABP V2']='abpv2', ['ABP V2::BarsUI']='barsui'}
-      a.deleteTraceKeyword = {
-        type = "select",
-        name = "Delete Trace Keyword",
-        values = function()
-          local t = {}
-          for name in pairs(allKeywords) do
-            t[name] = name
-          end
-          return t
-        end,
-        get = function() return current end,
-        set = function(_, val)
-          --db:SetProfile(val)
-          --print('delete trace keyword called...')
-          current = val
-        end,
-        order = order:next(),
-      }
-      a.deleteTraceKeywordDesc = {
-        type = "description",
-        name = "Select a keyword to remove from the Trace UI",
-        order = order:next(),
-        width = "full",
-      }
-      return evenTrace
-    end
-  
-    function o:InitOptions()
-        local options = self:CreateOptions()
-        self.options = options
+    }
+    local a = general.args
 
-        -- This creates the Profiles Tab/Section in Settings UI
-        options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
-
-        Ace.AceConfig():RegisterOptionsTable(ns.addon, options, {
-            ns.GC.C.CONSOLE_COMMAND_OPTIONS, ns.GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
-        AceConfigDialog:AddToBlizOptions(ns.addon, ns.addon)
-        if API:GetUIScale() > 1.0 then return end
-
-        AceConfigDialog:SetDefaultSize(ns.addon, 950, 600)
+    local function DebugConsoleGetFn() return ns:dbg().enableLogConsole == true end
+    local function DebugConsoleSetFn(_, v)
+        local val = (v == true)
+        ns:dbg().enableLogConsole = val
+        if val then return ns:DevConsoleModule():Enable() end
+        ns:DevConsoleModule():Disable()
     end
 
+    a.enableDebugConsole = ACU:CreateGlobalOption('Enable Debug Console', {
+        type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
+        get  = DebugConsoleGetFn,
+        set  = DebugConsoleSetFn,
+    }); a.enableDebugConsole.name = c2(a.enableDebugConsole.name)
+    local edc = a.enableDebugConsole
+    if not DebugChatFrame then
+        --a.enableDebugConsole.name = a.enableDebugConsole.name .. '( Requires DebugChatFrame AddOn Library)'
+        --a.enableDebugConsole.descStyle = 'inline'
+        ns:dbg().enableLogConsole = false
+        edc.desc = "Requires " .. c1('DebugChatFrame') .. ' AddOn'
+        edc.disabled = true
+    end
+
+    a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
+        type      = 'toggle',
+        width     = 'full',
+        descStyle = 'inline',
+        order     = order:next(),
+        get       = self.util:GlobalGet('show_fps', false),
+        set       = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate)
+    }); a.showFPS.name = c2(a.showFPS.name)
+
+    a.addonUsage_AutomaticallyShow = {
+        disabled  = not O.API:IsAddonUsageAvailable(),
+        order     = order:next(),
+        width     = 'full',
+        name      = aULabel,
+        desc      = ns.LocaleUtil.G('Addon Usage: Automatically Show UI::Desc'),
+        descStyle = 'inline',
+        type      = 'toggle',
+        get       = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
+        set       = self.util:GlobalSet('addon_addonUsage_auto_show_ui')
+    }
+    a.fontSize = {
+        name    = c2(L['Console Font Size']),
+        desc    = ns.LocaleUtil.G('Choose a Console Font Size'),
+        order   = order:next(),
+        type    = 'range',
+        min     = 10,
+        max     = 18,
+        step    = 2,
+        get     = self.util:GlobalGet('console_fontSize'),
+        set     = self.util:GlobalSet('console_fontSize', nil, function(_, val)
+            ns:SetChatFrameFontSize(val)
+        end)
+    }
+
+    local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
+    if showSpecialNotice then
+        a.spacer1 = { type = "description", name = '\n\n  ', width = "full", order = order:next() }
+        a.specialNoticeText = {
+            name     = c1(L['Addon Manager Special Notice']),
+            type     = "description",
+            fontSize = 'medium',
+            order    = order:next()
+        }
+    end
+
+    return general
+end
+
+function o:CreateEventTraceUIOptions()
+  local order = self.order
+
+  --- @class EventTraceUIOptionArgs
+  --
+  --- @class EventTraceUIOption : AceConfigOption
+  --- @field args EventTraceUIOptionArgs
+  local evenTrace = {
+    type  = "group",
+    name  = L['EventTrace UI'],
+    desc  = L['EventTrace UI::Desc'],
+    order = order:next(),
+    args  = {},
+  }
+  local a = evenTrace.args
+
+  a.headerDesc = {
+    type = "description",
+    name = "Add custom trace keywords to filter EventTrace logs. Keywords appear in the Trace UI.\n\n",
+    fontSize = "medium",
+    order = order:next(),
+    width = "full",
+  }
+
+  local newName = ''
+  a.newTraceKeyword = {
+    type = "input",
+    name = "New Trace Keyword",
+    get = function() return nil end,
+    set = function(_, val)
+      newName = val
+    end,
+    order = order:next(),
+  }
+  a.newTraceKeywordDesc = {
+    type = "description",
+    name = "Enter a keyword to add to the Trace UI filter list.",
+    order = order:next(),
+    width = "full",
+  }
+
+  a.spacer1 = { type = "description", name = '\n  ', width = "full", order = order:next() }
+
+  local current = 'ABP V2::BarsUI'
+  local allKeywords = {['ABP V2']='abpv2', ['ABP V2::BarsUI']='barsui'}
+  a.deleteTraceKeyword = {
+    type = "select",
+    name = "Delete Trace Keyword",
+    values = function()
+      local t = {}
+      for name in pairs(allKeywords) do
+        t[name] = name
+      end
+      return t
+    end,
+    get = function() return current end,
+    set = function(_, val)
+      --db:SetProfile(val)
+      --print('delete trace keyword called...')
+      current = val
+    end,
+    order = order:next(),
+  }
+  a.deleteTraceKeywordDesc = {
+    type = "description",
+    name = "Select a keyword to remove from the Trace UI",
+    order = order:next(),
+    width = "full",
+  }
+  return evenTrace
+end
+
+function o:InitOptions()
+  local options = self:CreateOptions()
+  self.options = options
+
+  -- This creates the Profiles Tab/Section in Settings UI
+  options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
+
+  ns:AceConfig():RegisterOptionsTable(ns.addon, options, {
+    ns.GC.C.CONSOLE_COMMAND_OPTIONS, GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
+  AceConfigDialog:AddToBlizOptions(ns.addon, ns.addon)
+  if API:GetUIScale() > 1.0 then return end
+
+  AceConfigDialog:SetDefaultSize(ns.addon, 950, 600)
 end

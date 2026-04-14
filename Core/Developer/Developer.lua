@@ -22,7 +22,7 @@ local ns = DevSuite_NS
 local ip = ns.O.LibIconPickerUtil
 
 local libName = 'Developer'
-local p = ns:LC().DEV:NewLogger(libName)
+local p, pd, t, tf = ns:log(libName)
 
 -- Settings
 -- /run DEVS_SHOW_ADDON_LIST_ON_LOGIN = true
@@ -69,15 +69,9 @@ local function OnAddOnReady()
   end)
   
   C_Timer.After(1, function()
-    p:vv(function()
-      return "MINIMAL_UI_MODE: %s", MINIMAL_UI_MODE
-    end)
-    p:vv(function()
-      return "FRAME_FORMATION: %s", FRAME_FORMATION
-    end)
-    p:vv(function()
-      return "DEVS_SHOW_ADDON_LIST_ON_LOGIN: %s", SHOW_ADDON_LIST_ON_LOGIN
-    end)
+      p('MINIMAL_UI_MODE:', MINIMAL_UI_MODE)
+      p('FRAME_FORMATION:', FRAME_FORMATION)
+      p('DEVS_SHOW_ADDON_LIST_ON_LOGIN:', SHOW_ADDON_LIST_ON_LOGIN)
   end)
   
   if SHOW_ADDON_LIST_ON_LOGIN and AddonList then AddonList:Show() end
@@ -158,7 +152,6 @@ function o:ShowIconPicker(min, max)
   end)
 end
 
-function o:ll() self:logp('Log Level:', DEVS_LOG_LEVEL) end
 function o:IsScriptErrorsEnabled()
   self:logp('scriptErrors:', GetCVarBool('scriptErrors'))
 end

@@ -96,7 +96,6 @@ Enrich Namespace
 --- @field addon string
 --- @field gameVersion GameVersion
 --- @field chatFrame ChatLogFrame
---- @field CategoryLoggerMixin CategoryLoggerMixin
 --- @field O Modules
 --- @field LocaleUtil LocaleUtil
 --- @field fmt LibPrettyPrint_Formatter
@@ -164,12 +163,6 @@ end
 
 --- @type Modules
 ns.M = M
-
--- todo: Remove CategoryLoggerMixin @see CategoryLoggerMixin#LC() and CategoryLoggerMixin#CreateDefaultLogger()
-ns.CategoryLoggerMixin:Configure(ns, LogCategories)
-
-ns.mt = { __tostring = function() return addonName .. '::Namespace'  end }
-setmetatable(ns, ns.mt)
 
 local function InitLocalLibStub()
   --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
