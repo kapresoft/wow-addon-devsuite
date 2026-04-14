@@ -21,7 +21,6 @@ New Library
 local libName = ns.M.DialogWidgetMixin()
 --- @class DialogWidgetMixin
 local L = ns:NewLib(libName)
-local p = ns:CreateDefaultLogger(libName)
 
 ---@param frameName string
 ---@param frameInstance table The frame object

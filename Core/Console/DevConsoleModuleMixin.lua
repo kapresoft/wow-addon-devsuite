@@ -156,7 +156,6 @@ function d:GetDefaultChatFrame()
 end
 
 function d:OnDefaultChatFrameChanged()
-    t('OnDefaultChatFrameChanged', 'DefaultChatFrame=', c3(d:GetDefaultChatFrame()))
     ns:ChatFrame():SetAsDefaultChatFrame(ns:dbg().makeDefaultChatFrame == true)
 end
 
@@ -179,8 +178,8 @@ function d:InitializeDebugChatFrame()
 
     ns:ChatFrame():InitialTabSelection(ns:dbg().selectLogConsoleTab)
     --@do-not-package@
-    logp('IsShown():', ns:IsChatFrameTabShown())
-    logp('Addon Usage avail?', O.API:IsAddonUsageAvailable())
+    logp('IsShown():', c3(ns:IsChatFrameTabShown()))
+    logp('Addon Usage avail?', c3(O.API:IsAddonUsageAvailable()))
     --@end-do-not-package@
     self:OnDefaultChatFrameChanged()
 end
@@ -200,11 +199,7 @@ function d:EnableDebugChatFrame()
       local U = ns:KO().AddonUtil
       U:LoadOnDemand(addonName, function(loadSuccess, info, errorMsg)
           local successText = c2(tostring(loadSuccess))
-          if loadSuccess then
-              C_Timer.After(0.0, function()
-                  t('LoadDebugChatFrame','loadSuccess=', successText)
-              end)
-              return
+          if loadSuccess then return
           else
               self.DebugChatFrameNotLoadable = true
           end

@@ -79,26 +79,18 @@ function o:OnEnable()
   debugDialog = DebugDialog:New()
   o.OnLoadEventTrace()
   if IsPlayerInWorld() then
-    ns:traceUtil():t('OnEnable', 'Sent Message', 'OnAfterEnable', 'IsDev=', ns.IsDev())
     self:SendMessage(GC.M.OnAfterEnable, self)
   else
-    ns:traceUtil():t('OnEnable', 'Registered Event', 'OnAfterEnable', 'IsDev=', ns.IsDev())
     self:RegisterEvent(GC.E.PLAYER_ENTERING_WORLD, 'OnPlayerEnteringWorld')
   end
 end
 
 function o:OnPlayerEnteringWorld()
-  ns:traceUtil():t(ns.addon, 'OnPlayerEnteringWorld', 'called...')
   self:UnregisterEvent(GC.E.PLAYER_ENTERING_WORLD)
   self:SendMessage(GC.M.OnAfterEnable, self)
 end
 
 function o.OnLoadEventTrace()
-  --@do-not-package@
-  C_Timer.After(1, function()
-      t('OnLoadEventTrace', 'evt=', tostring(ns:evt()))
-  end)
-  --@end-do-not-package@
   local trace = ns:g().trace
   ns:InitEventTrace()
   --trace.show_at_startup = true
@@ -222,7 +214,6 @@ end
 
 function o:OpenConfig()
   if AceConfigDialog.OpenFrames[ns.addon] then return end
-  print('ns.addon=', ns.addon, 'frames=', AceConfigDialog.OpenFrames)
   AceConfigDialog:SelectGroup(ns.addon)
   o.DialogGlitchHack();
   PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)

@@ -4,8 +4,6 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 
---- @class DeveloperNamespace : __Namespace
-
 --[[-------------------------------------------------------------------
 Support Functions
 ---------------------------------------------------------------------]]
@@ -86,4 +84,3 @@ end
 Verbose Logging in Dev Mode
 ---------------------------------------------------------------------]]
 local _, _, t = ns:log('DeveloperNamespace')
-C_Timer.After(1, function() t('loaded...') end)

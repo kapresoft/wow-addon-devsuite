@@ -1,7 +1,3 @@
-if type(DEVS_DB) ~= "table" then DEVS_DB = {} end
-if type(DEVS_LOG_LEVEL) ~= "number" then DEVS_LOG_LEVEL = 1 end
-if type(DEVS_DEBUG_MODE) ~= "boolean" then DEVS_DEBUG_MODE = false end
-
 --[[-----------------------------------------------------------------------------
 Lua Vars
 -------------------------------------------------------------------------------]]
@@ -17,26 +13,9 @@ local consoleCommand = "devsuite"
 local consoleCommandShort = "ds"
 local consoleCommandOptions = consoleCommand .. '-options'
 local consoleCommandOptionsShort = consoleCommandShort .. '-options'
-
 local CONFIRM_RELOAD_UI_NAME = ns.addon .. '_CONFIRM_RELOAD_UI'
 
-local TOSTRING_ADDON_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe}}|r'
-local TOSTRING_SUBMODULE_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe::|r|cfdfbeb2d%s|r|cfdfefefe}}|r'
-
---- @param moduleName string
---- @param optionalMajorVersion number|string
-local function LibName(moduleName, optionalMajorVersion)
-    assert(moduleName, "Module name is required for LibName(moduleName)")
-    local majorVersion = optionalMajorVersion or '1.0'
-    local v = sformat("%s-%s-%s", ns.addon, moduleName, majorVersion)
-    return v
-end
-
---- @param moduleName string
-local function ToStringFunction(moduleName)
-    if moduleName then return function() return string.format(TOSTRING_SUBMODULE_FMT, ns.name, moduleName) end end
-    return function() return string.format(TOSTRING_ADDON_FMT, ns.name) end
-end
+local function AddonInfoUtil() return LibStub('Kapresoft-AddonInfoUtil-2-0') end
 
 --[[-----------------------------------------------------------------------------
 ConfirmAndReload UI
@@ -59,10 +38,6 @@ local function colorP(text) return primaryColor:WrapTextInColorCode(text) end
 local command = colorP('/' .. consoleCommand)
 local commandShort = colorP('/' .. consoleCommandShort)
 
-C_Timer.After(1, function()
-  print('command:', command)
-end)
-
 --[[-----------------------------------------------------------------------------
 GlobalConstants
 -------------------------------------------------------------------------------]]
@@ -70,116 +45,95 @@ GlobalConstants
 --- @field AddonInfoUtil Kapresoft-AddonInfoUtil-2-0
 local L = {}
 
-local function GlobalConstantProperties()
+local o = L
 
-    local o = L
+local consoleCommandTextFormat = '|cfd2db9fb%s|r'
 
-    o.LibName = LibName
-    o.ToStringFunction = ToStringFunction
+--- @class GlobalAttributes
+local C = {
+  DB_NAME = 'DEVS_DB',
+  CHECK_VAR_SYNTAX_FORMAT = '|cfdeab676%s ::|r %s',
+  CONSOLE_COMMAND = consoleCommand,
+  CONSOLE_COMMAND_SHORT = consoleCommandShort,
+  CONSOLE_COMMAND_OPTIONS = consoleCommandOptions,
+  CONSOLE_COMMAND_OPTIONS_SHORT = consoleCommandOptionsShort,
+  CONSOLE_COLORS = consoleColors,
+  CONSOLE_HEADER_FORMAT = '|cfdeab676### %s ###|r',
+  CONSOLE_OPTIONS_FORMAT = '  - %-8s|cfdeab676:: %s|r',
+  CONSOLE_PLAIN = command,
+  HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
+}
 
-    local consoleCommandTextFormat = '|cfd2db9fb%s|r'
+--- @class EventNames
+local E = {
+  OnEnter = 'OnEnter',
+  OnEvent = 'OnEvent',
+  OnLeave = 'OnLeave',
+  OnModifierStateChanged = 'OnModifierStateChanged',
+  OnDragStart = 'OnDragStart',
+  OnDragStop = 'OnDragStop',
+  OnMouseUp = 'OnMouseUp',
+  OnMouseDown = 'OnMouseDown',
+  OnReceiveDrag = 'OnReceiveDrag',
 
-    --- @class GlobalAttributes
-    local C = {
-        DB_NAME = 'DEVS_DB',
-        CHECK_VAR_SYNTAX_FORMAT = '|cfdeab676%s ::|r %s',
-        CONSOLE_COMMAND = consoleCommand,
-        CONSOLE_COMMAND_SHORT = consoleCommandShort,
-        CONSOLE_COMMAND_OPTIONS = consoleCommandOptions,
-        CONSOLE_COMMAND_OPTIONS_SHORT = consoleCommandOptionsShort,
-        CONSOLE_COLORS = consoleColors,
-        CONSOLE_HEADER_FORMAT = '|cfdeab676### %s ###|r',
-        CONSOLE_OPTIONS_FORMAT = '  - %-8s|cfdeab676:: %s|r',
-        CONSOLE_PLAIN = command,
-        HELP_COMMAND = sformat(consoleCommandTextFormat, command .. ' help'),
-    }
+  -- Blizzard Events
+  PLAYER_ENTERING_WORLD = 'PLAYER_ENTERING_WORLD',
+  UPDATE_INSTANCE_INFO = 'UPDATE_INSTANCE_INFO',
+  MODIFIER_STATE_CHANGED = 'MODIFIER_STATE_CHANGED',
+}
 
-    --- @class EventNames
-    local E = {
-        OnEnter = 'OnEnter',
-        OnEvent = 'OnEvent',
-        OnLeave = 'OnLeave',
-        OnModifierStateChanged = 'OnModifierStateChanged',
-        OnDragStart = 'OnDragStart',
-        OnDragStop = 'OnDragStop',
-        OnMouseUp = 'OnMouseUp',
-        OnMouseDown = 'OnMouseDown',
-        OnReceiveDrag = 'OnReceiveDrag',
+--- @class MessageNames
+local MessageNames = {
+  --- @type Name
+  OnAfterInitialize = {},
+  --- @type Name
+  OnAfterEnable = {},
+  --- @type Name
+  OnAddOnReady = {},
+  --- @type Name
+  OnToggleFrameRate = {},
+  --- @type Name
+  OnApplyAndRestart = {},
+  --- @type Name
+  OnSyncAddOnEnabledState = {},
+  --- @type Name
+  OnDebugConsoleDefaultChatFrameState = {},
+};
+local function uniqueName(name)
+  return sformat('%s::%s', ns.addon, name)
+end
+---@param event string The originating Blizzard Event name
+local function toMsg(event) return uniqueName(event) end
+local function InitMessageNames()
+  for n, _ in pairs(MessageNames) do
+    local addOnMessage = uniqueName(n)
+    MessageNames[n] = addOnMessage
+  end
+end; InitMessageNames(MessageNames)
 
-        -- Blizzard Events
-        PLAYER_ENTERING_WORLD = 'PLAYER_ENTERING_WORLD',
-        UPDATE_INSTANCE_INFO = 'UPDATE_INSTANCE_INFO',
-        MODIFIER_STATE_CHANGED = 'MODIFIER_STATE_CHANGED',
-    }
+o.C = C
+o.E = E
+o.M = MessageNames
+o.toMsg = toMsg
 
-    --- @class MessageNames
-    local MessageNames = {
-        --- @type Name
-        OnAfterInitialize = {},
-        --- @type Name
-        OnAfterEnable = {},
-        --- @type Name
-        OnAddOnReady = {},
-        --- @type Name
-        OnToggleFrameRate = {},
-        --- @type Name
-        OnApplyAndRestart = {},
-        --- @type Name
-        OnSyncAddOnEnabledState = {},
-        --- @type Name
-        OnDebugConsoleDefaultChatFrameState = {},
-    };
-    local function uniqueName(name)
-        return sformat('%s::%s', ns.addon, name)
-    end
-    ---@param event string The originating Blizzard Event name
-    local function toMsg(event) return uniqueName(event) end
-    local function InitMessageNames()
-        for n,_ in pairs(MessageNames) do
-            local addOnMessage = uniqueName(n)
-            MessageNames[n] = addOnMessage
-        end
-    end; InitMessageNames(MessageNames)
-
-    o.C = C
-    o.E = E
-    o.M = MessageNames
-    o.toMsg = toMsg
-
+function o:AIU()
+  if o.AddonInfoUtil then return o.AddonInfoUtil end
+  o.AddonInfoUtil = AddonInfoUtil():New(ns.addon, consoleColors)
+  return o.AddonInfoUtil
 end
 
-local isDev = ns.IsDev()
---@do-not-package@
-isDev = true
---@end-do-not-package@
-
---- @param o GlobalConstants
-local function Methods()
-    local AddonInfoUtil = LibStub('Kapresoft-AddonInfoUtil-2-0')
-    local o = L
-    function o:AIU()tr('GlobalConstants', 'AddonInfoUtil=', o.AddonInfoUtil)
-        if o.AddonInfoUtil then return o.AddonInfoUtil end
-        o.AddonInfoUtil = AddonInfoUtil:New(ns.addon, ns.consoleColors)
-        return o.AddonInfoUtil
-    end
-
-    function o:GetAddonInfoFormatted()
-        return self:AIU():GetInfoSlashCommandText()
-    end
-
-    function o:GetMessageLoadedText()
-        return self:AIU():GetMessageLoadedText(command, commandShort)
-    end
-
-    function o:ConfirmAndReload()
-        if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME) end
-        return false
-    end
+function o:GetAddonInfoFormatted()
+  return self:AIU():GetInfoSlashCommandText()
 end
 
-GlobalConstantProperties()
-Methods()
+function o:GetMessageLoadedText()
+  return self:AIU():GetMessageLoadedText(command, commandShort)
+end
 
+function o:ConfirmAndReload()
+  if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME) end
+  return false
+end
 --- @type Namespace
 local xns = ns
 

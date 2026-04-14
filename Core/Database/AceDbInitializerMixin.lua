@@ -1,8 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
-local ns = select(2, ...)
+local ns = DevSuite_NS
 local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
 local Ace = ns:Ace()
 local LibUtil, AceEvent = ns:K(), Ace:NewAceEvent()
@@ -67,12 +66,11 @@ local function Methods(o)
   function o:New(addon) return LibUtil:CreateAndInitFromMixin(o, addon) end
 
   function o:InitDb()
-      p('Initialize called...')
       AddonCallbackMethods(self.addon)
 
-      local OnProfileChanged = "OnProfileChanged"
-      local OnProfileReset = "OnProfileReset"
-      local OnProfileCopied = "OnProfileCopied"
+      local OnProfileChanged  = "OnProfileChanged"
+      local OnProfileReset    = "OnProfileReset"
+      local OnProfileCopied   = "OnProfileCopied"
       ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
       ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
       ns:db().RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
@@ -82,7 +80,6 @@ local function Methods(o)
 
   function o:InitDbDefaults()
     local profileName = ns:db():GetCurrentProfile()
-    C_Timer.After(1, function() t('InitDbDefaults', 'profile:', profileName) end)
     ns:db():RegisterDefaults(ns.O.DatabaseSchema:GetDatabase())
   end
 

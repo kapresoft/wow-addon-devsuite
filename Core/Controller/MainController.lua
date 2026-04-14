@@ -16,10 +16,8 @@ New Instance
 -------------------------------------------------------------------------------]]
 local libName = ns.M.MainController()
 --- @class MainController
-local L = ns:NewLibWithEvent(libName)
-local p = ns:CreateDefaultLogger(libName)
-local pm = ns:LC().MESSAGE:NewLogger(libName)
-local pp = ns:CreateDefaultLogger(ns.addon)
+local L = ns:NewAceEvent(); ns:Register(libName, L)
+local p, pd, t, tf = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -43,16 +41,15 @@ local function OnPlayerEnteringWorld(frame, event, ...)
     --@do-not-package@
     if ns.IsDev() then
         isLogin = true
-        p:vv(function()
-            return "IsLogin=%s IsReload=%s LogLevel=%s",
-                    ns.f.val(isLogin), ns.f.val(isReload), ns.f.val(DEVS_LOG_LEVEL)
-        end)
+        t('IsLogin=', ns.f.val(isLogin),
+        'IsReload=', ns.f.val(isReload),
+        'IsDev=', ns:IsDev())
     end
     --@end-do-not-package@
 
     if not isLogin then return end
 
-    pp:a(GC:GetMessageLoadedText())
+    p(GC:GetMessageLoadedText())
 end
 
 --[[-----------------------------------------------------------------------------
@@ -75,16 +72,12 @@ end
 
 --- @private
 function o:RegisterEvents()
-    p:f1("RegisterEvents called...")
     self:RegisterOnPlayerEnteringWorld()
     self:RegisterMessage(MSG.OnAddOnReady, function(msg) self:OnAddonReady(msg)  end)
 end
 
 --- @private
-function o:OnAddonReady(msg)
-    p:d(function() return "MSG:R:%s", msg end)
-    self:InitializeState()
-end
+function o:OnAddonReady(msg) self:InitializeState() end
 
 --- @private
 function o:InitializeState()
@@ -93,7 +86,6 @@ function o:InitializeState()
         self:OnToggleFrameRate()
         self:InitAddonUsage()
     end)
-
 end
 
 function o:OnToggleFrameRate() L:ShowFPS(ns:db().global.show_fps) end
@@ -163,6 +155,5 @@ function o:CreateEventFrame()
 end
 
 AceEvent:RegisterMessage(MSG.OnToggleFrameRate, function(msg, source, ...)
-    pm:f1(function() return '%s: source=%s', MSG.OnToggleFrameRate, source end)
     L:OnToggleFrameRate()
 end)

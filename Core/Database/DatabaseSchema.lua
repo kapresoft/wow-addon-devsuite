@@ -6,7 +6,7 @@ local ns = select(2, ...)
 local Table = LibStub('Kapresoft-Table-2-0')
 local Tbl_DeepCopy = Table.DeepCopy
 
----@class DevSuite_AceDBObject_3_0
+---@class DevSuite_AceDBObject_3_0 : AceDBObject-3.0
 ---@field keys table
 ---@field sv table
 ---@field defaults AceDB.Schema Cache of defaults

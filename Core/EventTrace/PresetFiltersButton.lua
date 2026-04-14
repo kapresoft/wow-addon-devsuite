@@ -54,13 +54,9 @@ end
 
 --- @private
 function o:OnAfterEnable()
-  C_Timer.After(1, function()
-    p('OnAfterEnable', 'called...')
-      ns:traceUtil():t(libName, 'OnAfterEnable', 'called')
-  end)
   self:SetParent(ns:evt())
   self:EventTraceHooks()
-  
+
   local anchorTo = ns:evt().SubtitleBar.ViewFilter
   self:Show()
   self:SetPoint('LEFT', anchorTo, 'RIGHT', 2, 0)
@@ -69,9 +65,10 @@ function o:OnAfterEnable()
   fs:SetTextColor(1, 0.85, 0.4)
   fs:SetPoint("LEFT", 3, 0)
   fs:SetPoint("RIGHT", -10, 0)
-  
+
   self:UpdateButtonTextState()
 end
+
 --- @private
 function o:OnPresetFilterClose(evt, src) self:Click() end
 

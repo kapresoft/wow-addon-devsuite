@@ -1,4 +1,8 @@
 --[[-----------------------------------------------------------------------------
+todo next: This file is longer being used. To be deleted.
+-------------------------------------------------------------------------------]]
+
+--[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
@@ -13,7 +17,6 @@ New Instance
 local libName = ns.M.DebuggingSettingsGroup()
 --- @class DebuggingSettingsGroup
 local S       = ns:NewLibWithEvent(libName);
-local p       = ns:CreateDefaultLogger(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods

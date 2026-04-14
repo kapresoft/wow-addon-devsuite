@@ -16,7 +16,6 @@ New Instance
 local libName = ns.M.OptionsDebugConsole()
 --- @class OptionsDebugConsole : AceEvent
 local S = ns:NewLibWithEvent(libName)
-local p = ns:CreateDefaultLogger(libName)
 
 --- spacer
 local sp = '                                                                   '
