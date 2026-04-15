@@ -65,7 +65,6 @@ function o:CreateOptions()
         type = "group",
         args = {
             general = self:CreateGeneralOptions(),
-            eventTraceUI = self:CreateEventTraceUIOptions(),
         }
     }
 
@@ -162,78 +161,6 @@ function o:CreateGeneralOptions()
     end
 
     return general
-end
-
-function o:CreateEventTraceUIOptions()
-  local order = self.order
-
-  --- @class EventTraceUIOptionArgs
-  --
-  --- @class EventTraceUIOption : AceConfigOption
-  --- @field args EventTraceUIOptionArgs
-  local evenTrace = {
-    type  = "group",
-    name  = L['EventTrace UI'],
-    desc  = L['EventTrace UI::Desc'],
-    order = order:next(),
-    args  = {},
-  }
-  local a = evenTrace.args
-
-  a.headerDesc = {
-    type = "description",
-    name = "Add custom trace keywords to filter EventTrace logs. Keywords appear in the Trace UI.\n\n",
-    fontSize = "medium",
-    order = order:next(),
-    width = "full",
-  }
-
-  local newName = ''
-  a.newTraceKeyword = {
-    type = "input",
-    name = "New Trace Keyword",
-    get = function() return nil end,
-    set = function(_, val)
-      newName = val
-    end,
-    order = order:next(),
-  }
-  a.newTraceKeywordDesc = {
-    type = "description",
-    name = "Enter a keyword to add to the Trace UI filter list.",
-    order = order:next(),
-    width = "full",
-  }
-
-  a.spacer1 = { type = "description", name = '\n  ', width = "full", order = order:next() }
-
-  local current = 'ABP V2::BarsUI'
-  local allKeywords = {['ABP V2']='abpv2', ['ABP V2::BarsUI']='barsui'}
-  a.deleteTraceKeyword = {
-    type = "select",
-    name = "Delete Trace Keyword",
-    values = function()
-      local t = {}
-      for name in pairs(allKeywords) do
-        t[name] = name
-      end
-      return t
-    end,
-    get = function() return current end,
-    set = function(_, val)
-      --db:SetProfile(val)
-      --print('delete trace keyword called...')
-      current = val
-    end,
-    order = order:next(),
-  }
-  a.deleteTraceKeywordDesc = {
-    type = "description",
-    name = "Select a keyword to remove from the Trace UI",
-    order = order:next(),
-    width = "full",
-  }
-  return evenTrace
 end
 
 function o:InitOptions()
