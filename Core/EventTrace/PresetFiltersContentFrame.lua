@@ -1,6 +1,6 @@
 --- @type Namespace
 local ns = select(2, ...)
-local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
+local O, GC, M = ns.O, ns.GC, ns.M
 local L = ns:GetLocale()
 
 local keywordFrameHeight = 24
@@ -17,7 +17,7 @@ local keywordFrameHeight = 24
 --- @field HeaderTitle FontStringObj
 --- @field HeaderIconLeft TextureObj
 --- @field HeaderBackground TextureObj
-DevSuite_PresetFiltersContentFrameMixin = ns:Ace():NewAceEvent()
+DevSuite_PresetFiltersContentFrameMixin = ns:NewAceEvent()
 --
 --- @alias PresetFiltersContentFrame PresetFiltersContentFrameMixin | FrameObj | AceEvent-3.0
 --

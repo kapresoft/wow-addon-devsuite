@@ -53,18 +53,14 @@ end
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---local colorUtil      = ns:KO().ColorUtil
---local primaryColor   = colorUtil:NewColorFromHex(ns.consoleColors.primary .. 'fc')
---local secondaryColor = colorUtil:NewColorFromHex(ns.consoleColors.secondary .. 'fc')
 local primaryColor   = ns.consoleColors.primary
 local secondaryColor = ns.consoleColors.secondary
 
-local K       = ns:K()
-local c = ns:ColorFormatter()
-local c1, c2  = c.cf(primaryColor), c.cf(secondaryColor)
-local c3, c4  = c.cf(ADVENTURES_COMBAT_LOG_BLUE), c.cf(FACTION_GREEN_COLOR)
-local c5  = c.cf(LIGHTGRAY_FONT_COLOR)
-local windowAlpha, windowColor = 0.9, CreateColorFromRGBHexString('343434')
+local cfmt = ns:ColorFormatter()
+local c1, c2  = cfmt:ColorFn(primaryColor), cfmt:ColorFn(secondaryColor)
+local c3, c4  = cfmt:ColorFn(ADVENTURES_COMBAT_LOG_BLUE), cfmt:ColorFn(FACTION_GREEN_COLOR)
+local c5  = cfmt:ColorFn(LIGHTGRAY_FONT_COLOR)
+local windowAlpha, windowColor = 0.9, cfmt:ColorFromHex('ff343434')
 
 local p, pd, t, tf = ns:log(libName)
 local pre     = sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
@@ -196,7 +192,7 @@ function d:EnableDebugChatFrame()
       if self.DebugChatFrameNotLoadable == true then return end
 
       local addonName = 'DebugChatFrame'
-      local U = ns:KO().AddonUtil
+      local U = ns:AddonUtil()
       U:LoadOnDemand(addonName, function(loadSuccess, info, errorMsg)
           local successText = c2(tostring(loadSuccess))
           if loadSuccess then return

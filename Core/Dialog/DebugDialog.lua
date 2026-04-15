@@ -20,8 +20,7 @@ New Library
 -------------------------------------------------------------------------------]]
 local libName = M.DebugDialog()
 --- @class DebugDialog : DialogWidgetMixin
-local D = ns:NewLib(libName); ns:K():Mixin(D, O.DialogWidgetMixin)
-local pformat = ns.pformat
+local D = ns:NewLib(libName); Mixin(D, O.DialogWidgetMixin)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
@@ -121,7 +120,7 @@ local function CodeEditBox_OnEnterPressed(w, literalVarName)
         return
     end
 
-    local env = { pformat = ns.fmt, sformat = ns.sformat }
+    local env = { fmt = ns.fmt, sformat = ns.sformat, ns=ns, O=O }
     env.mt = { __index = _G }
     setmetatable(env, env.mt)
     setfenv(func, env)

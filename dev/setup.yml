@@ -32,20 +32,23 @@ ignore:
   - CHANGELOG.md
   - Core
   - Bindings.xml
+  - DevSuite.xml
   - ThirdParty-Libs/Ace3/Bindings.xml
   - ThirdParty-Libs/Kapresoft-LibUtil/External
   - ThirdParty-Libs/Kapresoft-LibUtil/Kapresoft-LibUtil.toc
   - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
   - ThirdParty-Libs/Kapresoft-LibUtil/dev
   - ThirdParty-Libs/Kapresoft-LibUtil/doc
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib
   - ThirdParty-Libs/Kapresoft-LibUtil/_Lib.xml
   - ThirdParty-Libs/LibPrettyPrint/*.sh
-  - ThirdParty-Libs/LibPrettyPrint/*.xml
+  - ThirdParty-Libs/LibPrettyPrint/LibPrettyPrint.xml
   - ThirdParty-Libs/LibPrettyPrint/Assets
   - ThirdParty-Libs/LibPrettyPrint/dev
   - ThirdParty-Libs/LibPrettyPrint/doc
   - ThirdParty-Libs/LibPrettyPrint/ThirdParty
   - ThirdParty-Libs/LibPrettyPrint/LICENSE
+  - ThirdParty-Libs/LibPrettyPrint/Libs/Developer
 
 # Base path is .release/
 move-folders:

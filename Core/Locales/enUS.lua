@@ -6,7 +6,7 @@
 ]]--
 --- @type Namespace
 local ns = select(2, ...)
-local c1 = ns:K():cf(HEIRLOOM_BLUE_COLOR)
+local c1 = ns:ColorFn(HEIRLOOM_BLUE_COLOR)
 
 local silent = true
 --@do-not-package@

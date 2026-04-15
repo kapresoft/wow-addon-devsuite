@@ -6,7 +6,7 @@ local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
 local MSG = GC.M
 local L = ns:GetLocale()
-local ACU = ns:KO().AceConfigUtil:New(ns.addon)
+local ACU = ns:AceConfigUtil():New(ns.addon)
 local NameDescG = ns.LocaleUtil.NameDescGlobal
 local sformat = ns.sformat
 
@@ -23,7 +23,7 @@ local sp = '                                                                   '
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
-local function NotifyChange() ns.LibStubAce("AceConfigRegistry-3.0"):NotifyChange(ns.addon) end
+local function NotifyChange() LibStub("AceConfigRegistry-3.0"):NotifyChange(ns.addon) end
 
 --[[-----------------------------------------------------------------------------
 Methods

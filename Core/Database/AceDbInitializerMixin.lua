@@ -2,9 +2,9 @@
 Local Vars
 -------------------------------------------------------------------------------]]
 local ns = DevSuite_NS
-local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
+local O, GC, M = ns.O, ns.GC, ns.M
 local Ace = ns:Ace()
-local LibUtil, AceEvent = ns:K(), Ace:NewAceEvent()
+local AceEvent = Ace:NewAceEvent()
 local AceDB = Ace:AceDB()
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
@@ -13,10 +13,12 @@ local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 New Instance
 -------------------------------------------------------------------------------]]
 local libName = M.AceDbInitializerMixin()
---- @alias AceDbInitializer AceDbInitializerMixin
---- @class AceDbInitializerMixin : Module
-local L = LibStub:NewLibrary(libName)
+--- @class AceDbInitializerMixin : AceEvent-3.0
+local S = ns:NewAceEvent(); ns:Register(libName, S)
 local p, pd, t, tf = ns:log(libName)
+--
+--- @class AceDbInitializer : AceDbInitializerMixin
+--
 
 --[[-----------------------------------------------------------------------------
 ConfirmAndReload UI
@@ -40,50 +42,48 @@ local function ConfirmAndReload()
     return false
 end
 
-
 ---@param a DevSuite
 local function AddonCallbackMethods(a)
-    function a:OnProfileChanged() t('OnProfileChanged() called..') end
-    function a:OnProfileCopied() t('OnProfileCopied() called...') end
-    function a:OnProfileReset() t('OnProfileReset() called...') end
+  function a:OnProfileChanged() t('OnProfileChanged() called..') end
+  function a:OnProfileCopied() t('OnProfileCopied() called...') end
+  function a:OnProfileReset() t('OnProfileReset() called...') end
 end
 
----@param o AceDbInitializerMixin
-local function Methods(o)
+--[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+local o = S
 
-  --- Called by Mixin Automatically
-  --- @param addon DevSuite
-  function o:Init(addon)
-      self.addon = addon
-      --- @type AceDBObjectInstance
-      self.addon.db = AceDB:New(GC.C.DB_NAME)
-      ns:SetAddOnFn(function() return self.addon.db end)
-  end
-
-  --- Usage:  local instance = AceDbInitializerMixin:New(addon)
-  --- @param addon DevSuite
-  --- @return AceDbInitializer
-  function o:New(addon) return LibUtil:CreateAndInitFromMixin(o, addon) end
-
-  function o:InitDb()
-      AddonCallbackMethods(self.addon)
-
-      local OnProfileChanged  = "OnProfileChanged"
-      local OnProfileReset    = "OnProfileReset"
-      local OnProfileCopied   = "OnProfileCopied"
-      ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
-      ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
-      ns:db().RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
-      ns:db().RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
-      self:InitDbDefaults()
-  end
-
-  function o:InitDbDefaults()
-    local profileName = ns:db():GetCurrentProfile()
-    ns:db():RegisterDefaults(ns.O.DatabaseSchema:GetDatabase())
-  end
-
+--- Called by Mixin Automatically
+--- @param addon DevSuite
+function o:Init(addon)
+  self.addon = addon
+  --- @type AceDBObjectInstance
+  self.addon.db = AceDB:New(GC.C.DB_NAME)
+  ns:SetAddOnFn(function() return self.addon.db end)
 end
 
-Methods(L)
+--- Usage:  local instance = AceDbInitializerMixin:New(addon)
+--- @param addon DevSuite
+--- @return AceDbInitializer
+function o:New(addon) return CreateAndInitFromMixin(o, addon) end
+
+function o:InitDb()
+  AddonCallbackMethods(self.addon)
+
+  local OnProfileChanged = "OnProfileChanged"
+  local OnProfileReset   = "OnProfileReset"
+  local OnProfileCopied  = "OnProfileCopied"
+  ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+  ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+  ns:db().RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
+  ns:db().RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
+  self:InitDbDefaults()
+end
+
+function o:InitDbDefaults()
+  local profileName = ns:db():GetCurrentProfile()
+  ns:db():RegisterDefaults(ns.O.DatabaseSchema:GetDatabase())
+end
+
 

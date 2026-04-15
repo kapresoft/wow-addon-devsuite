@@ -10,13 +10,11 @@ local AceConfigDialog = ns:Ace():AceConfigDialog()
 local AceAddon = ns:Ace():AceAddon()
 local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
 local Table, String = ns:Table(), ns:String()
-local pformat, sformat = ns.pformat, string.format
 local tostring, type = tostring, type
 local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.IsEmpty
 local DebugDialog = O.DebugDialog
 
---local c1 = ns:ColorUtil():NewFormatterFromColor(BLUE_FONT_COLOR)
-local c1 = ns:ColorFormatter().cf(BLUE_FONT_COLOR)
+local c1 = ns:ColorFormatter():ColorFn(BLUE_FONT_COLOR)
 --- @type any
 DEVS_MF = nil
 
@@ -191,8 +189,8 @@ end
 function o.EvalVar(globalVarName)
     --if stringOrObjToEval ~= nil then debugDialog:SetCodeTextContent(optionalLabel) end
     debugDialog:SetCodeText(globalVarName)
-    debugDialog:SetContent(pformat(getglobal(globalVarName)))
-    local label = sformat('Global variable name: %s', globalVarName)
+    debugDialog:SetContent(ns.fmt(getglobal(globalVarName)))
+    local label = ns.sformat('Global variable name: %s', globalVarName)
     debugDialog:SetStatusText(label)
     debugDialog:Show()
 end
@@ -206,8 +204,8 @@ function o.EvalObject(obj, varName, _isGlobal)
         localityLabel = 'Global'
     end
     debugDialog:SetCodeText(codeText)
-    debugDialog:SetContent(pformat(obj))
-    local label = sformat('%s variable name: %s', localityLabel, varName)
+    debugDialog:SetContent(ns.fmt(obj))
+    local label = ns.sformat('%s variable name: %s', localityLabel, varName)
     debugDialog:SetStatusText(label)
     debugDialog:Show()
 end
@@ -281,7 +279,7 @@ function o.SlashCommand_Help_Handler()
   local COMMAND_CLEAR_TEXT  = 'Clears the debug console (Alias: cls, clr)'
   local COMMAND_HELP_TEXT   = 'Shows this help'
   local OPTIONS_LABEL       = 'options'
-  local USAGE_LABEL         = sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
+  local USAGE_LABEL         = ns.sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
   print(USAGE_LABEL)
   print(OPTIONS_LABEL .. ":")
   print(C.CONSOLE_OPTIONS_FORMAT:format('info', COMMAND_INFO_TEXT))

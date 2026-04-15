@@ -23,20 +23,20 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local O, GC, M, LibStub = ns.O, ns.GC, ns.M, ns.LibStub
+local O, GC, M = ns.O, ns.GC, ns.M
 local L = ns:GetLocale()
 
 local Ace, API = ns:Ace(), O.API
 local AceConfigDialog, AceDBOptions = Ace:AceConfigDialog(), Ace:AceDBOptions()
 local ACU = ns:AceConfigUtil():New(ns.addon)
-local ColorFormatter = ns:ColorFormatter()
-local c1 = ColorFormatter.cf(RED_FONT_COLOR)
-local c2 = ColorFormatter.cf(YELLOW_FONT_COLOR)
+local cfmt = ns:ColorFormatter()
+local c1 = cfmt:ColorFn(RED_FONT_COLOR)
+local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class OptionsMixin
+--- @class OptionsMixin : AceEvent-3.0
 local libName = M.OptionsMixin()
 local o = ns:AceEvent(); ns:Register(libName, o)
 
@@ -54,7 +54,7 @@ end
 --- Usage:  local instance = OptionsMixin:New(addon)
 --- @param addon DevSuite
 --- @return OptionsMixin
-function o:New(addon) return ns:K():CreateAndInitFromMixin(o, addon) end
+function o:New(addon) return CreateAndInitFromMixin(o, addon) end
 
 function o:CreateOptions()
     self.order = ns.CreateSequence(1)

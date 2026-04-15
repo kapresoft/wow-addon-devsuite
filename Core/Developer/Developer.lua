@@ -39,7 +39,8 @@ if ns.IsDev() then
   DEVSUITE_DEV = L
 end
 
-local c1 = ns:K():cf(RED_THREAT_COLOR)
+local cfmt = ns:ColorFormatter()
+local c1 = cfmt:ColorFn(RED_THREAT_COLOR)
 local libNamePretty = c1(libName)
 
 --- This method show's the caller
@@ -147,7 +148,7 @@ function o:ShowIconPicker(min, max)
         label = 'Name:', value = 'My', min = min or 5, max = max or 10 }
     }
     lip:Open(function(selection)
-      print('selected:', pf(selection))
+      print('selected:', fmt(selection))
     end, opt)
   end)
 end

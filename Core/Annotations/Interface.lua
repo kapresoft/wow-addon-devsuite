@@ -8,7 +8,7 @@ pformat = {}
 Aliases and Callbacks
 -------------------------------------------------------------------------------]]
 --- @alias AutoLoadedAddons table<AddOnName, Boolean>
---- @alias AddOnCallbackFn fun(addOn:AddOnInfo) | "function(addOn) print('addOn:', pformat(addOn)) end"
+--- @alias AddOnCallbackFn fun(addOn:AddOnInfo) | "function(addOn) print('addOn:', addOn) end"
 
 --[[-----------------------------------------------------------------------------
 BaseLibraryObject

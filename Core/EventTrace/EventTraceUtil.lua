@@ -41,7 +41,7 @@ function o:New(addon, showAtStartup, predicateFn)
 end
 
 -- light green
-local c_base = ns.colorFn('88ff88')
+local c_base = ns:ColorFn('88ff88')
 
 --- @private
 --- @param addon Name

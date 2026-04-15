@@ -2,17 +2,47 @@
 Local Vars
 -------------------------------------------------------------------------------]]
 local LibStub = LibStub
+local AceLib = LibStub('Kapresoft-AceLib-2-0')
+local DCFM = LibStub('Kapresoft-DebugChatFrameMixin-2-0')
+local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 
---- @type PreNamespace
-local kns = select(2, ...)
 
+--- @class Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
+--- @field GC GlobalConstants
+--- @field addon string
+--- @field gameVersion GameVersion
+--- @field chatFrame ChatLogFrame
+--- @field O Modules
+--- @field LocaleUtil LocaleUtil
+--- @field fmt LibPrettyPrint_Formatter
+--- @field printer LibPrettyPrint_Printer
+--- @field eventTraceUtil EventTraceUtil
+--- @field logHolder LogHolder
+local ns
 --- @type string
-local addonName = kns.addon
+local addonName
 
---- @type Kapresoft_LibUtil
-local K = kns.Kapresoft_LibUtil
---- @type Kapresoft_LibUtil_Modules
-local KO = K.Objects
+addonName, ns = ...; Mixin(ns, GVM, AceLib, DCFM)
+
+ns.addon = addonName
+ns.O = ns.O or {}
+ns.nameShort = 'DS'
+ns.sformat = string.format
+
+--- @type Kapresoft-ColorFormatter-2-0
+local ColorFormatter__
+
+--@do-not-package@
+function tr(prefix, ...)
+  if not EventTrace then return end; EventTrace:LogEvent('DEVSUITE::' .. prefix, ...)
+end
+--@end-do-not-package@
+
+--- @return Kapresoft-ColorFormatter-2-0
+local function ColorFormatter()
+    if not ColorFormatter__ then ColorFormatter__ = LibStub('Kapresoft-ColorFormatter-2-0') end
+    return ColorFormatter__
+end
 
 --[[-----------------------------------------------------------------------------
 Log Categories
@@ -85,43 +115,32 @@ local M = {
     --- Dev Mode Only
     --- @type LibIconPickerUtil
     LibIconPickerUtil = {},
-}; KO.LibModule.EnrichModules(M)
-
-
---[[-----------------------------------------------------------------------------
-Enrich Namespace
--------------------------------------------------------------------------------]]
---- @class Namespace : PreNamespace, CategoryLoggerMixin
---- @field GC GlobalConstants
---- @field addon string
---- @field gameVersion GameVersion
---- @field chatFrame ChatLogFrame
---- @field O Modules
---- @field LocaleUtil LocaleUtil
---- @field fmt LibPrettyPrint_Formatter
---- @field printer LibPrettyPrint_Printer
---- @field eventTraceUtil EventTraceUtil
---- @field logHolder LogHolder
-local ns = kns
-ns.O = ns.O or {}
-ns.nameShort = 'DS'
+}
+local ModuleUtil = LibStub('Kapresoft-ModuleUtil-2-0')
+ModuleUtil:EnrichModules(M)
 
 --[[-----------------------------------------------------------------------------
 Colors
 -------------------------------------------------------------------------------]]
+--- @see ColorMixin
+--- @see Kapresoft-ColorFormatter-2-0#ColorFn
+---
+--- @param color colorRGBA|HexRGBA|HexRGB|HexRGBA @ RED_THREAT_COLOR | '565656fc' | '565656' | 'fc565656'
+--- @return cfFn        @The color formatter function
+--- @return colorRGBA?  @The color object
+function ns:ColorFn(color) return ColorFormatter():ColorFn(color) end
+
 --- @type Kapresoft-ColorDefinition-2-0
 ns.consoleColors = {
     primary   = CreateColorFromRGBHexString('FF780A'),
     secondary = CreateColorFromRGBHexString('fbeb2d'),
     tertiary  = CreateColorFromRGBHexString('ffffff'),
 }
---ns.ch = ns:NewConsoleHelper(ns.consoleColors)
 
---- Color Formatters
+--- Color Formatters: Use these for values
 ns.f = {
-    --- Use this for values
-    val = K:cf(LIGHTGRAY_FONT_COLOR),
-    debug = K:cf(COMMON_GRAY_COLOR),
+    val = ns:ColorFn(LIGHTGRAY_FONT_COLOR),
+    debug = ns:ColorFn(COMMON_GRAY_COLOR),
 }
 
 --[[-----------------------------------------------------------------------------
@@ -164,14 +183,14 @@ end
 --- @type Modules
 ns.M = M
 
-local function InitLocalLibStub()
-  --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
-  local LocalLibStub = ns:K().Objects.LibStubMixin:New(
-          ns.addon, 1.0,
-          function(name, newLibInstance) ns:Register(name, newLibInstance) end)
-  ns.LibStubAce       = LibStub
-  ns.LibStub          = LocalLibStub
-end
+--local function InitLocalLibStub()
+--  --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
+--  local LocalLibStub = ns:K().Objects.LibStubMixin:New(
+--          ns.addon, 1.0,
+--          function(name, newLibInstance) ns:Register(name, newLibInstance) end)
+--  ns.LibStubAce       = LibStub
+--  ns.LibStub          = LocalLibStub
+--end
 
 -- ###############################################################
 -- Loggers/Tracers:: NoOp in Official Releases
@@ -212,20 +231,12 @@ function ns:Ace() return LibStub('Kapresoft-AceLib-2-0') end
 function ns:Table() return LibStub('Kapresoft-Table-2-0') end
 function ns:String() return LibStub('Kapresoft-String-2-0') end
 function ns:AceConfigUtil() return LibStub('Kapresoft-AceConfigUtil-2-0') end
-function ns:ColorFormatter() return LibStub('Kapresoft-ColorFormatter-2-0') end
+function ns:ColorFormatter() return ColorFormatter() end
+function ns:AddonUtil() return LibStub('Kapresoft-AddonUtil-2-0') end
+function ns:LuaEvaluator() return LibStub('Kapresoft-LuaEvaluator-2-0') end
 
 --- @return table<string, string>
 function ns:GetLocale() return ns:Ace():GetLocale(self.addon, true) end
-
---- @param rgbHex RGBHex|nil    @Optional
---- @return fun(key:string) : string The color formatted key
-function ns.colorFn(rgbHex)
-  return function(text)
-    local c = CreateColorFromRGBHexString(rgbHex)
-    assert(c, ('Invalid RGBHex color: %s'):format(rgbHex))
-    return c:WrapTextInColorCode(text)
-  end
-end
 
 --- @param obj table The library object instance
 function ns:Register(libName, obj)
@@ -300,11 +311,10 @@ end
 ---@param chatFrame ChatLogFrame
 function ns:RegisterChatFrame(chatFrame) self.chatFrame = chatFrame end
 
-InitLocalLibStub()
+--InitLocalLibStub()
 
 --[[-----------------------------------------------------------------------------
 --- Global Settings
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 DevSuite_NS = ns
-if not pf then pf = ns.pformat end
