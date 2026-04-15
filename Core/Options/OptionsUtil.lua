@@ -8,20 +8,20 @@ local ns = select(2, ...)
 New Instance
 -------------------------------------------------------------------------------]]
 local libName = ns.M.OptionsUtil()
---- @class OptionsUtil
+--- @class OptionsUtil : AceEvent-3.0
 --- @field optionsMixin OptionsMixin
-local L = ns:NewLibWithEvent(libName)
+local L = ns:NewAceEvent(); ns:Register(libName, L)
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @param o OptionsUtil | AceEventInterface
+--- @param o OptionsUtil
 local function PropsAndMethods(o)
 
     --- @public
     --- @param optionsMixin OptionsMixin
     --- @return OptionsUtil
-    function o:New(optionsMixin) return ns:K():CreateAndInitFromMixin(o, optionsMixin) end
+    function o:New(optionsMixin) return CreateAndInitFromMixin(o, optionsMixin) end
 
     --- Called Automatically by CreateAndInitFromMixin
     --- @private

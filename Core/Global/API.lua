@@ -3,12 +3,11 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local M = ns.M
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
-local libName = M.API()
+local libName = 'API'
 --- @class API
 local L = {}; ns:Register(libName, L)
 local p, pd, t, tf = ns:log(libName)
@@ -21,7 +20,7 @@ local function PropsAndMethods(o)
 
     function o:IsAddonUsageAvailable()
         return BINDING_HEADER_ADDONUSAGE ~= nil
-                or ns:KO().AddonUtil:IsAddOnEnabled('AddonUsage')
+                or ns:AddonUtil():IsAddOnEnabled('AddonUsage')
     end
 
     function o:GetUIScale()

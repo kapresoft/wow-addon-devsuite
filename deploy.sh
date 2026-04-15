@@ -92,13 +92,9 @@ function _Watch() {
 
   log "Running in watch mode: ./${script_name}" "${passArgs[@]}"
 
-  fswatch -I -o -l 0.2 \
-    -e '.*' \
-    -i '\.toc$' \
-    -i '\.lua$' \
-    -i '\.xml$' \
-    -e '.*/\.git/.*' -e '.*/\.vscode/.*' \
-    -e '.*\.swp$' -e '.*~$' -e '.*\.log$' \
+  fswatch -IE -o -l 0.2 \
+    -e "\.release/.*" -e "\.idea/.*" -e "\.github/.*" -e "\.vscode/.*" \
+    -e "dev/.*" -e "\.(yaml|yml|sh)" -e "_setup\.*" -e "\.emmyrc\.json"\
     . | xargs -n1 -I{} "$script_path" "${passArgs[@]}"
 }
 
