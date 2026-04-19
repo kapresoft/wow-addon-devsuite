@@ -133,5 +133,6 @@ function L:Constructor()
   return dialog
 end
 
+-- todo next: refactor and remove __call
 local mt = { __tostring = function() return libName end, __call = L.Constructor }
 setmetatable(L, mt)

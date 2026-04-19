@@ -19,11 +19,11 @@ Module::PresetFiltersButton
 local libName = 'PresetFiltersButton'
 local p, pd, t, tf = ns:log(libName)
 local Ace = ns:Ace()
---- @class PresetFiltersButtonMixin : Button
---- @field Arrow TextureObj
+--- @class PresetFiltersButtonMixin : CheckButton, AceEvent-3.0, AceHook-3.0
+--- @field Arrow Texture
 local S = ns:AceEmbed({}, ns:AceEvent(), ns:AceHook()); DevSuite_PresetFiltersButtonMixin = S
 --
---- @alias PresetFiltersButton PresetFiltersButtonMixin | CheckButtonObj | AceEvent_3_0 | AceHook_3_0
+--- @class PresetFiltersButton : PresetFiltersButtonMixin
 --
 --[[-------------------------------------------------------------------
 Support Functions
@@ -43,12 +43,11 @@ local function contentFrame() return DevSuite_PresetFiltersContentFrame end
 --[[-----------------------------------------------------------------------------
 Module::PresetFiltersButton (Methods)
 -------------------------------------------------------------------------------]]
---- @type PresetFiltersButtonMixin | PresetFiltersButton
 local o = S
 
 --- EventTrace will auto show on dependency
 function o:OnLoad()
-  self:RegisterMessage(ns.GC.toMsg('PresetFilterClose'), 'OnPresetFilterClose')
+  self:RegisterMessage(GC.toMsg('PresetFilterClose'), 'OnPresetFilterClose')
   self:RegisterMessage(GC.M.OnAfterEnable, 'OnAfterEnable')
 end
 
@@ -70,7 +69,7 @@ function o:OnAfterEnable()
 end
 
 --- @private
-function o:OnPresetFilterClose(evt, src) self:Click() end
+function o:OnPresetFilterClose(evt, src) if self:GetChecked() then self:Click() end end
 
 --- @private
 function o:EventTraceHooks()
@@ -86,7 +85,6 @@ function o:EventTraceHooks()
 end
 
 function o:OnClick()
-  p('OnClick')
   local f = contentFrame()
   if self:GetChecked() then return f:Show() end
   f:Hide()

@@ -31,3 +31,9 @@ BaseLibraryObject_WithAceEvent
 
 --- @type LibIconPicker
 LibIconPicker = {}
+
+--- @type PresetFiltersContentFrame
+DevSuite_PresetFiltersContentFrame = {}
+
+--- @type PresetFiltersButton
+DevSuite_PresetFiltersButton = {}

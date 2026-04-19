@@ -9,7 +9,7 @@ New Instance
 -------------------------------------------------------------------------------]]
 local libName = ns.M.OptionsUtil()
 --- @class OptionsUtil : AceEvent-3.0
---- @field optionsMixin OptionsMixin
+--- @field optionsMixin OptionsDialogMixin
 local L = ns:NewAceEvent(); ns:Register(libName, L)
 
 --[[-----------------------------------------------------------------------------
@@ -19,13 +19,13 @@ Methods
 local function PropsAndMethods(o)
 
     --- @public
-    --- @param optionsMixin OptionsMixin
+    --- @param optionsMixin OptionsDialogMixin
     --- @return OptionsUtil
     function o:New(optionsMixin) return CreateAndInitFromMixin(o, optionsMixin) end
 
     --- Called Automatically by CreateAndInitFromMixin
     --- @private
-    --- @param optionsMixin OptionsMixin
+    --- @param optionsMixin OptionsDialogMixin
     function o:Init(optionsMixin)
         self.optionsMixin = optionsMixin
     end

@@ -48,8 +48,8 @@ function o:OnInitialize()
   self.onHideHooked = false
 
   O.AceDbInitializerMixin:New(self):InitDb()
-  self.Options = O.OptionsMixin:New(self.addon)
-  self.Options:InitOptions()
+  self.OptionsDialog = O.OptionsDialogMixin:New(self.addon)
+  self.OptionsDialog:InitOptions()
   self:SendMessage(GC.M.OnAfterInitialize, self)
   self:RegisterSlashCommands()
   O.DevConsoleModuleMixin:NewModule(self)
