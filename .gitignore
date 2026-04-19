@@ -57,3 +57,5 @@ ThirdParty/Libs/
 
 # Build artifacts
 _setup.*
+# Don't save this
+deployer-config.lua
