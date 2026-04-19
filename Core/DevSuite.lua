@@ -366,6 +366,7 @@ end
 --- TODO: Show Tooltip/Message to press 'Control' to show dialog
 function o.ToggleFrameStack() SlashCmdList["FRAMESTACK"]("false true true") end
 function o.IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTooltip:IsShown() end
+--- @return DevConsoleModule
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
 function o.ns() return DevSuite_NS end
 

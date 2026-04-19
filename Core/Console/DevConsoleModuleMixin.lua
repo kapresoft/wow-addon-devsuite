@@ -1,12 +1,4 @@
 --[[-----------------------------------------------------------------------------
-Classes and Aliases
--------------------------------------------------------------------------------]]
---- @class DevConsoleModule
---
---- @alias DevConsoleModuleInterface DevConsoleModule
---- @alias AddonInterface AceAddon | AceConsole-3.0 | AceEvent-3.0 | AceHook-3.0
-
---[[-----------------------------------------------------------------------------
 Externals
 -------------------------------------------------------------------------------]]
 --- @type DebugChatFrameInterface
@@ -19,36 +11,35 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local sformat = ns.sformat
+local sformat     = ns.sformat
 local O, GC       = ns.O, ns.GC
 local MODULE_NAME = 'DevConsole'
-local LIB_MIXIN   = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceHook-3.0' }
+local LIB_MIXIN   = { 'AceEvent-3.0' }
 local libName     = ns.M.DevConsoleModuleMixin()
 
 --[[-----------------------------------------------------------------------------
 New Mixin
 -------------------------------------------------------------------------------]]
---- @class DevConsoleModuleMixin
+--- @class DevConsoleModuleMixin : AceEvent-3.0
 local L      = ns:NewLib(libName);
 L.moduleName = MODULE_NAME
+
+--- @class DevConsoleModule : DevConsoleModuleMixin
+--
+--
+--- @alias AddonInterface AceAddon | AceConsole-3.0 | AceEvent-3.0 | AceHook-3.0
 
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
----@param self DevConsoleModuleInterface
-function RegisterMessages(self)
-    self:RegisterMessage(GC.M.OnAddOnReady, function() self:OnAddonReady() end)
-end
-
 --- @param addon AddonInterface
---- @return DevConsoleModuleInterface
+--- @return DevConsoleModule
 function L:NewModule(addon)
-    --- @type DevConsoleModuleInterface
-    local module = addon:NewModule(MODULE_NAME, L, unpack(LIB_MIXIN))
-    RegisterMessages(module)
-    return module
+  --- @type DevConsoleModule
+  local module = addon:NewModule(MODULE_NAME, L, unpack(LIB_MIXIN))
+  module:RegisterMessage(GC.M.OnAddOnReady, 'OnAddonReady')
+  return module
 end
-
 
 --[[-----------------------------------------------------------------------------
 Local Vars
@@ -60,7 +51,7 @@ local cfmt = ns:ColorFormatter()
 local c1, c2  = cfmt:ColorFn(primaryColor), cfmt:ColorFn(secondaryColor)
 local c3, c4  = cfmt:ColorFn(ADVENTURES_COMBAT_LOG_BLUE), cfmt:ColorFn(FACTION_GREEN_COLOR)
 local c5  = cfmt:ColorFn(LIGHTGRAY_FONT_COLOR)
-local windowAlpha, windowColor = 0.9, cfmt:ColorFromHex('ff343434')
+local windowAlpha, windowColor = 0.9, cfmt:ColorFromHex('343434')
 
 local p, pd, t, tf = ns:log(libName)
 local pre     = sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
@@ -75,7 +66,7 @@ local function ts() return sformat('[%s]', TimeUtil:NowInHoursMinSeconds()) end
 
 --- @param module Name
 local function _PrintpFn(module, ...)
-    print(ts(), module, ...)
+  print(ts(), module, ...)
 end
 
 --- @param module Name
@@ -92,7 +83,7 @@ end
 --- ```
 --- @param module Name
 --- @return fun(...:any) : void
-function LogFunctions.logp(module) return function(...) _LogpFn(module, ...)  end end
+function LogFunctions.logp(module) return function(...) _LogpFn(module, ...) end end
 
 --- ### Usage
 --- ```
@@ -101,114 +92,109 @@ function LogFunctions.logp(module) return function(...) _LogpFn(module, ...)  en
 --- ```
 --- @param module Name
 --- @return fun(...:any) : void
-function LogFunctions.printp(module) return function(...) _PrintpFn(module, ...)  end end
+function LogFunctions.printp(module) return function(...) _PrintpFn(module, ...) end end
 
-local logp    = LogFunctions.logp(pre)
-local printp  = LogFunctions.printp(pre)
+local logp = LogFunctions.logp(pre)
+local printp = LogFunctions.printp(pre)
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
---- @type DevConsoleModule | DevConsoleModuleInterface
 local d = L
 
 function d:OnAddonReady()
-    self:RegisterMessages()
+  if ns:dbg().enableLogConsole ~= true then return self:Disable() end
 
-    if ns:dbg().enableLogConsole ~= true then return self:Disable() end
-
-    -- give some delay so the Chat Frame UI size isn't wonky on LogIn
-    C_Timer.After(0.5, function()
-        self:InitializeDebugChatFrame()
-        self:Enable()
-    end)
+  -- give some delay so the Chat Frame UI size isn't wonky on LogIn
+  C_Timer.After(0.5, function()
+    self:InitializeDebugChatFrame()
+    self:Enable()
+  end)
 end
 
 function d:RegisterMessages()
-    self:RegisterMessage(GC.M.OnDebugConsoleDefaultChatFrameState, function()
-        self:OnDefaultChatFrameChanged()
-    end)
+  self:RegisterMessage(GC.M.OnDebugConsoleDefaultChatFrameState, 'OnDefaultChatFrameChanged')
 end
 
 function d:OnEnable()
-    if not DefaultChatFrame then self:EnableDebugChatFrame() end
-    O.OptionsDebugConsole:EnableGroup()
-    self:RegisterMessages()
-    logp('Debug console ENABLED')
+  if not DefaultChatFrame then self:EnableDebugChatFrame() end
+  O.OptionsDebugConsole:EnableGroup()
+  self:RegisterMessages()
+  logp('Debug console ENABLED')
 end
 
 function d:OnDisable()
-    if ns:HasChatFrame() then ns:ChatFrame():CloseTab() end
-    O.OptionsDebugConsole:DisableGroup()
-    return p('Debug console DISABLED')
+  if ns:HasChatFrame() then ns:ChatFrame():CloseTab() end
+  O.OptionsDebugConsole:DisableGroup()
+  self:UnregisterAllMessages()
+  return printp('Debug console DISABLED')
 end
 
 function d:GetDefaultChatFrame()
-    local cf = ns:ChatFrame()
-    if cf and ns:dbg().makeDefaultChatFrame == true then
-        return DebugChatFrame:GetChatFrameTabText(cf)
-    end
-    return DebugChatFrame:GetChatFrameTabText(ChatFrame1)
+  local cf = ns:ChatFrame()
+  if cf and ns:dbg().makeDefaultChatFrame == true then
+    return DebugChatFrame:GetChatFrameTabText(cf)
+  end
+  return DebugChatFrame:GetChatFrameTabText(ChatFrame1)
 end
 
 function d:OnDefaultChatFrameChanged()
-    ns:ChatFrame():SetAsDefaultChatFrame(ns:dbg().makeDefaultChatFrame == true)
+  ns:ChatFrame():SetAsDefaultChatFrame(ns:dbg().makeDefaultChatFrame == true)
 end
 
 --- @private
 function d:InitializeDebugChatFrame()
-    if ns:dbg().enableLogConsole ~= true then return end
+  if ns:dbg().enableLogConsole ~= true then return end
 
-    local cf
-    if not DefaultChatFrame then
-        cf = self:EnableDebugChatFrame(); if not cf then return end
-    end
+  local cf
+  if not DefaultChatFrame then
+    cf = self:EnableDebugChatFrame(); if not cf then return end
+  end
 
-    O.OptionsDebugConsole:EnableGroup()
+  O.OptionsDebugConsole:EnableGroup()
 
-    DEVTOOLS_MAX_ENTRY_CUTOFF = ns:dbg().DEVTOOLS_MAX_ENTRY_CUTOFF
-    DEVTOOLS_DEPTH_CUTOFF = ns:dbg().DEVTOOLS_DEPTH_CUTOFF
-    logp('DEVTOOLS_MAX_ENTRY_CUTOFF:', c3(DEVTOOLS_MAX_ENTRY_CUTOFF))
-    logp('DEVTOOLS_DEPTH_CUTOFF:', c3(DEVTOOLS_DEPTH_CUTOFF))
-    logp('DEVTOOLS_LONG_STRING_CUTOFF:', c3(DEVTOOLS_LONG_STRING_CUTOFF), '(String Size)')
+  DEVTOOLS_MAX_ENTRY_CUTOFF = ns:dbg().DEVTOOLS_MAX_ENTRY_CUTOFF
+  DEVTOOLS_DEPTH_CUTOFF = ns:dbg().DEVTOOLS_DEPTH_CUTOFF
+  logp('DEVTOOLS_MAX_ENTRY_CUTOFF:', c3(DEVTOOLS_MAX_ENTRY_CUTOFF))
+  logp('DEVTOOLS_DEPTH_CUTOFF:', c3(DEVTOOLS_DEPTH_CUTOFF))
+  logp('DEVTOOLS_LONG_STRING_CUTOFF:', c3(DEVTOOLS_LONG_STRING_CUTOFF), '(String Size)')
 
-    ns:ChatFrame():InitialTabSelection(ns:dbg().selectLogConsoleTab)
-    --@do-not-package@
-    logp('IsShown():', c3(ns:IsChatFrameTabShown()))
-    logp('Addon Usage avail?', c3(O.API:IsAddonUsageAvailable()))
-    --@end-do-not-package@
-    self:OnDefaultChatFrameChanged()
+  ns:ChatFrame():InitialTabSelection(ns:dbg().selectLogConsoleTab)
+  --@do-not-package@
+  logp('IsShown():', c3(ns:IsChatFrameTabShown()))
+  logp('Addon Usage avail?', c3(O.API:IsAddonUsageAvailable()))
+  --@end-do-not-package@
+  self:OnDefaultChatFrameChanged()
 end
 
 --- @return ChatLogFrame?
 function d:EnableDebugChatFrame()
   if ns:HasChatFrame() then
-      local chatFrame = ns:ChatFrame()
-      chatFrame:RestoreChatFrame(ns:dbg().selectLogConsoleTab)
-      return chatFrame
+    local chatFrame = ns:ChatFrame()
+    chatFrame:RestoreChatFrame(ns:dbg().selectLogConsoleTab)
+    return chatFrame
   end
 
   local function LoadDebugChatFrame()
-      if self.DebugChatFrameNotLoadable == true then return end
+    if self.DebugChatFrameNotLoadable == true then return end
 
-      local addonName = 'DebugChatFrame'
-      local U = ns:AddonUtil()
-      U:LoadOnDemand(addonName, function(loadSuccess, info, errorMsg)
-          local successText = c2(tostring(loadSuccess))
-          if loadSuccess then return
-          else
-              self.DebugChatFrameNotLoadable = true
-          end
-          if ns.IsDev() then
-              p(sformat('DebugChatFrame Loaded OnDemand: %s', successText))
-          end
-          if info and loadSuccess ~= true then
-              p(sformat('DebugChatFrame is not available. [Reason: %s]', info.reason))
-          end
-          if ns.IsDev() then
-              p('Error Message:', errorMsg)
-          end
-      end)
+    local addonName = 'DebugChatFrame'
+    local U = ns:AddonUtil()
+    U:LoadOnDemand(addonName, function(loadSuccess, info, errorMsg)
+      local successText = c2(tostring(loadSuccess))
+
+      if loadSuccess then return
+      else self.DebugChatFrameNotLoadable = true end
+      if ns.IsDev() then
+        p(sformat('DebugChatFrame Loaded OnDemand: %s', successText))
+      end
+      if info and loadSuccess ~= true then
+        p(sformat('DebugChatFrame is not available. [Reason: %s]', info.reason))
+      end
+      if ns.IsDev() then
+        p('Error Message:', errorMsg)
+      end
+    end)
   end; LoadDebugChatFrame()
 
   if not DebugChatFrame then return end
@@ -218,26 +204,25 @@ function d:EnableDebugChatFrame()
 
   --- @type DebugChatFrameOptionsInterface
   local opt = {
-      chatFrameTabName = ns.addon,
-      font = DCF_ConsoleMonoCondensedSemiBoldOutline,
-      fontSize = ns:db().global.console_fontSize,
-      windowAlpha = windowAlpha,
-      maxLines = ns:dbg().maxLogConsoleLines,
+    chatFrameTabName = ns.addon,
+    font = DCF_ConsoleMonoCondensedSemiBoldOutline,
+    fontSize = ns:db().global.console_fontSize,
+    windowAlpha = windowAlpha,
+    maxLines = ns:dbg().maxLogConsoleLines,
   }
 
   --- @param chatFrame ChatLogFrameInterface|ChatLogFrame
   local cf  = dcf:New(opt, function(chatFrame)
-
     chatFrame:SetAlpha(1.0)
-    local r,g,b = windowColor:GetRGB()
+    local r, g, b = windowColor:GetRGB()
     FCF_SetWindowColor(chatFrame, r, g, b)
     FCF_SetWindowAlpha(chatFrame, opt.windowAlpha)
     local xns = ns; xns:RegisterChatFrame(chatFrame)
   end)
 
-    logp(c5('-------------------------------------------'))
-    logp(c1(':: Debug ChatFrame initialized ::'));
-    logp( '  IsDev:', c3(ns.IsDev()), 'GameVersion:', c4(ns.gameVersion))
+  logp(c5('-------------------------------------------'))
+  logp(c1(':: Debug ChatFrame initialized ::'));
+  logp('  IsDev:', c3(ns.IsDev()), 'GameVersion:', c4(ns.gameVersion))
 
   local maxFontLen = 45
   local font, size, flags = cf:GetFont()
@@ -257,8 +242,3 @@ function d:EnableDebugChatFrame()
 
   return ns:ChatFrame()
 end
-
-
-
-
-
