@@ -36,8 +36,8 @@ local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
---- @class OptionsMixin : AceEvent-3.0
-local libName = M.OptionsMixin()
+local libName = M.OptionsDialogMixin()
+--- @class OptionsDialogMixin : AceEvent-3.0
 local o = ns:AceEvent(); ns:Register(libName, o)
 
 --[[-----------------------------------------------------------------------------
@@ -51,9 +51,9 @@ function o:Init(addon)
     self.util = O.OptionsUtil:New(o)
 end
 
---- Usage:  local instance = OptionsMixin:New(addon)
+--- Usage:  local instance = OptionsDialogMixin:New(addon)
 --- @param addon DevSuite
---- @return OptionsMixin
+--- @return OptionsDialogMixin
 function o:New(addon) return CreateAndInitFromMixin(o, addon) end
 
 function o:CreateOptions()

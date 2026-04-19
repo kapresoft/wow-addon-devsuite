@@ -48,7 +48,6 @@ ignore:
   - ThirdParty-Libs/LibPrettyPrint/doc
   - ThirdParty-Libs/LibPrettyPrint/ThirdParty
   - ThirdParty-Libs/LibPrettyPrint/LICENSE
-  - ThirdParty-Libs/LibPrettyPrint/Libs/Developer
 
 # Base path is .release/
 move-folders:

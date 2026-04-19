@@ -8,6 +8,7 @@
       "call-non-callable",
       "iter-variable-reassign",
       "missing-fields",
+      "missing-parameter",
       "need-check-nil",
       "param-type-mismatch",
       "undefined-field",
@@ -61,14 +62,15 @@
   },
   "workspace": {
     "library": [
+      "/Users/tony/sandbox/github/kapresoft/deployer",
       "/Users/tony/sandbox/github/kapresoft/wow/tools/vscode-wow-api-cppcxy/Annotations",
       "/Users/tony/sandbox/github/kapresoft/wow/wow-api-interface-cppcxy/Lib",
-      "${workspace}/ThirdParty/Libs/Kapresoft-LibUtil",
-      "${workspace}/ThirdParty/Libs/LibPrettyPrint/Libs"
+      "ThirdParty/Libs/Kapresoft-LibUtil",
+      "ThirdParty/Libs/LibPrettyPrint/Libs"
     ],
     "ignoreDir": [
       "Lib", "legacy",
-      "build", "dist", "doc", "dev"
+      "build", "dist", "doc"
     ],
     "ignoreGlobs": [
       "**/_*",

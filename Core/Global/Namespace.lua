@@ -103,8 +103,8 @@ local M = {
     DevConsoleModuleMixin = {},
     --- @type EventTraceUtil
     EventTraceUtil = {},
-    --- @type OptionsMixin
-    OptionsMixin = {},
+    --- @type OptionsDialogMixin
+    OptionsDialogMixin = {},
     --- @type OptionsDebugConsole
     OptionsDebugConsole = {},
     --- @type OptionsUtil
@@ -244,17 +244,34 @@ function ns:Register(libName, obj)
   self.O[libName] = obj
 end
 
+--- @generic T
+--- @param libName `T`
+--- @param ... any? @Mixins
+--- @return table|T library
+function ns:NewLib2(libName, ...)
+  assertsafe(type(libName) == 'string', "ns:NewLibSimple(libName): {libName} should be a string.")
+  local newLib = {}
+  local len    = select("#", ...)
+  if len > 0 then newLib = Mixin({}, ...) end
+  newLib.DevSuite_LibName = libName
+  self.O[libName] = newLib
+  return newLib
+end
+
+-- todo next: find out if mt is being used, if not use NewLib2 for NewLib()
 --- Simple Library
 function ns:NewLib(libName, ...)
   assert(libName, "LibName is required")
   local newLib = {}
   local len    = select("#", ...)
   if len > 0 then newLib = Mixin({}, ...) end
-  newLib.mt = { __tostring = function() return 'Lib:' .. libName end }
-  setmetatable(newLib, newLib.mt)
+  local mt = { __tostring = function() return 'Lib:' .. libName end }
+  setmetatable(newLib, mt)
   self.O[libName] = newLib
   return newLib
 end
+
+-- todo next: refactor and use NewLib(libName, 'AceEvent-3.0')
 function ns:NewLibWithEvent(libName, ...)
   assert(libName, "LibName is required")
 

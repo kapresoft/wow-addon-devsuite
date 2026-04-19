@@ -13,6 +13,8 @@ local StaticPopupDialogs, ReloadUI = StaticPopupDialogs, ReloadUI
 local StaticPopup_Visible, StaticPopup_Show = StaticPopup_Visible, StaticPopup_Show
 local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSavedInstanceInfo
 local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetCVarBool, RestartGx
+local C_IsAddOnLoaded = C_AddOns and C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local C_LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 
 --[[-----------------------------------------------------------------------------
 Local Vars
@@ -54,7 +56,6 @@ Event::OnAddOnReady
 -------------------------------------------------------------------------------]]
 
 local function OnAddOnReady()
-  
   local MINIMAL_UI_MODE = true
   -- formation: 0=dev, 1=bottom, 2=top, nil=reset
   local FRAME_FORMATION = 2
@@ -64,21 +65,21 @@ local function OnAddOnReady()
     UIWidgetTopCenterContainerFrame, -- hellfire
   }
   local SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
-  
+
   C_Timer.After(0.2, function()
     --L:ShowIconPicker()
   end)
-  
+
   C_Timer.After(1, function()
-      p('MINIMAL_UI_MODE:', MINIMAL_UI_MODE)
-      p('FRAME_FORMATION:', FRAME_FORMATION)
-      p('DEVS_SHOW_ADDON_LIST_ON_LOGIN:', SHOW_ADDON_LIST_ON_LOGIN)
+    p('MINIMAL_UI_MODE:', MINIMAL_UI_MODE)
+    p('FRAME_FORMATION:', FRAME_FORMATION)
+    p('DEVS_SHOW_ADDON_LIST_ON_LOGIN:', SHOW_ADDON_LIST_ON_LOGIN)
   end)
-  
+
   if SHOW_ADDON_LIST_ON_LOGIN and AddonList then AddonList:Show() end
   -- todo next: add keybind on this feature, add to Options frame
   if MINIMAL_UI_MODE then o:HideFrames(MINIMAL_UI_FRAMES) end
-  
+
   if not ShadowUF and not InCombatLockdown() then
     C_Timer.After(1, function()
       if not FRAME_FORMATION then
@@ -86,16 +87,17 @@ local function OnAddOnReady()
         o:ResetPlayerFrames()
         return
       end
-      
-      if FRAME_FORMATION == 1 then o:FrameFormation1()
-      elseif FRAME_FORMATION == 2 then o:FrameFormation2()
+
+      if FRAME_FORMATION == 1 then
+        o:FrameFormation1()
+      elseif FRAME_FORMATION == 2 then
+        o:FrameFormation2()
       else
         o:FrameFormation0()
         --UIParent_ManageFramePositions()
       end
     end)
   end
-
 end
 
 
@@ -112,7 +114,7 @@ end
 
 local function getLIP()
   if LibIconPicker then return LibIconPicker end
-  
+
   local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn
   local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn
   local libName = 'LibIconPicker'
@@ -128,6 +130,36 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
+local Doc_AddOn1 = 'Blizzard_APIDocumentation'
+local Doc_AddOn = 'Blizzard_APIDocumentationGenerated'
+--- /run dsd:doc('SpellInfo')
+--- /run dsd:doc('SpellIdentifier')
+--- /run dsd:doc('LuaDurationObject')
+function o:doc(name)
+  if not C_IsAddOnLoaded(Doc_AddOn) then C_LoadAddOn(Doc_AddOn) end
+
+  ---- Search for API by name
+  --APIDocumentation:OutputAllAPIMatches("GetSpellInfo")
+  --
+  ---- Find a specific API entry programmatically
+  --local info = APIDocumentation:FindAPIByName("Function", "GetSpellInfo")
+  --
+  ---- Iterate all registered functions
+  --for _, fn in ipairs(APIDocumentation.functions) do
+  --  print(fn.Name)
+  --end
+  local info = APIDocumentation:FindAPIByName("table", name)
+  if not info then
+    p('No info found on:', name)
+    return
+  end
+  p('')
+  p('Structure Info:', name)
+  for _, field in ipairs(info.Fields) do
+      p('doc',field.Name, field.Type, 'nillable=', field.Nilable)
+  end
+end
+
 function o:HideFrames(frames)
   for i, f in ipairs(frames) do
     if f and f.Hide then
@@ -143,7 +175,8 @@ function o:ShowIconPicker(min, max)
   ip:Get(function(lip)
     --- @type LibIconPicker_Options
     local opt = {
-      icon      = 132111, showTextInput = true,
+      icon = 132111,
+      showTextInput = true,
       textInput = {
         label = 'Name:', value = 'My', min = min or 5, max = max or 10 }
     }
@@ -158,18 +191,22 @@ function o:IsScriptErrorsEnabled()
 end
 
 function o:GetProfile() return ns:db().profile end
+
 function o:GetProfileNames() return ns:db():GetProfiles() end
 
 function o:T() self:ToggleWindowed() end
+
 function o:ToggleWindowed()
   local isMaximized = GetCVarBool(GX_MAXIMIZE)
   SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
   RestartGx()
 end
+
 function o:MaxScreen()
   SetCVar(GX_MAXIMIZE, 1);
   RestartGx()
 end
+
 function o:Windowed()
   SetCVar(GX_MAXIMIZE, 0);
   RestartGx()
@@ -221,7 +258,7 @@ end
 
 function o:ResetPlayerFrames()
   local player, target = PlayerFrame, TargetFrame
-  
+
   for _, fr in ipairs({ player, target }) do
     fr:ResetToDefaultPosition()
     fr:SetScale(1.0)
@@ -231,9 +268,9 @@ end
 -- /run d:Formation0()
 function o:FrameFormation0()
   if ShadowUF then return end
-  
+
   local scale = 0.7
-  
+
   --- @type FrameObj
   local pf = PlayerFrame
   pf:SetScale(scale)
@@ -241,24 +278,24 @@ function o:FrameFormation0()
   --- @type FrameObj
   local tf = TargetFrame
   tf:SetScale(scale)
-  
+
   --UIParent_ManageFramePositions()
 end
 
 -- /run d:Formation1()
 function o:FrameFormation1()
   if ShadowUF then return end
-  
+
   local scale = 0.95
   local ofsy = -200
   if ns:IsMists() then ofsy = -120 end
-  
+
   --- @type FrameObj
   local pf = PlayerFrame
   pf:SetScale(scale)
   pf:ClearAllPoints()
   pf:SetPoint("TOPRIGHT", UIParent, "CENTER", -100, ofsy)
-  
+
   --- @type FrameObj
   local tf = TargetFrame
   tf:ClearAllPoints()
@@ -269,17 +306,17 @@ end
 -- /run d:Formation2()
 function o:FrameFormation2()
   if ShadowUF then return end
-  
+
   local scale = 0.95
   local ofsy = -110
   if ns:IsMists() then ofsy = -120 end
-  
+
   --- @type FrameObj
   local pf = PlayerFrame
   pf:SetScale(scale)
   pf:ClearAllPoints()
   pf:SetPoint("TOPRIGHT", UIParent, "TOP", -100, ofsy)
-  
+
   --- @type FrameObj
   local tf = TargetFrame
   tf:ClearAllPoints()
@@ -289,7 +326,6 @@ end
 
 --- Usage: /run d:c('hello', 'world')
 function o:c(...) ns.logp(libNamePretty, ...) end
-
 
 -- TODO: Add this as a feature; a textbox that takes a code to execute on login
 --- @type Frame

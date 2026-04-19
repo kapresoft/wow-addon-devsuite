@@ -19,7 +19,7 @@
     <Script file="Core\Database\AceDbInitializerMixin.lua"/>
 
     <Script file="Core\Options\OptionsUtil.lua" />
-    <Script file="Core\Options\OptionsMixin.lua" />
+    <Script file="Core\Options\OptionsDialogMixin.lua" />
     <Script file="Core\Options\OptionsDebugConsole.lua" />
 
     <Include file="Core\EventTrace\EventTraceUtil.lua"/>

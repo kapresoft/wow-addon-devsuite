@@ -19,8 +19,8 @@ rsync_bin=rsync
 excludeFile="./dev/rsync-excludes.txt"
 
 deployTargets=(
-  # "${WOW_CLASSIC_ANNIV_DEPLOY}/${addon}"
-  "${WOW_CLASSIC_ERA_DEPLOY}/${addon}"
+  "${WOW_CLASSIC_ANNIV_DEPLOY}/${addon}"
+  #"${WOW_CLASSIC_ERA_DEPLOY}/${addon}"
   # "${WOW_CLASSIC_DEPLOY}/${addon}"  # MoP
   # "${WOW_RETAIL_DEPLOY}/${addon}"
 )

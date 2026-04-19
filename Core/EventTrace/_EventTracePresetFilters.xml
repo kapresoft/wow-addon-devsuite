@@ -85,6 +85,20 @@
             </Layer>
         </Layers>
         <PushedTexture file="Interface\Buttons\UI-Listbox-Highlight2" alphaMode="ADD"/>
+        <Frames>
+            <Button parentKey="DeleteButton" inherits="IconButtonTemplate"
+                    registerForClicks="LeftButtonUp">
+                <Anchors>
+                    <Anchor point="RIGHT" relativePoint="RIGHT" x="-8" y="0"/>
+                </Anchors>
+                <KeyValues>
+                    <KeyValue key="icon" value="Interface\Buttons\UI-StopButton"/>
+                    <KeyValue key="iconSize" value="12" type="number"/>
+                    <KeyValue key="iconWidth" value="12" type="number"/>
+                    <KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
+                </KeyValues>
+            </Button>
+        </Frames>
     </Button>
     <Frame name="DevSuite_PresetFiltersContentFrameTemplate" virtual="true" hidden="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG" clampedToScreen="true">
         <Scripts>
@@ -143,11 +157,6 @@
                             <KeyValue key="iconWidth" value="14" type="number"/>
                             <KeyValue key="useIconAsHighlight" value="true" type="boolean"/>
                         </KeyValues>
-                        <Scripts>
-                            <OnClick>
-                                print('AddButton::Clicked()')
-                            </OnClick>
-                        </Scripts>
                     </Button>
                     <Button parentKey="ClearButton" inherits="DevSuite_ClearFilterButtonTemplate">
                         <Size x="70" y="14"/>

@@ -1,26 +1,32 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type CoreNamespace
+--- @type Namespace
 local ns = select(2, ...)
-local Table = LibStub('Kapresoft-Table-2-0')
-local Tbl_DeepCopy = Table.DeepCopy
+local Table = ns:Table()
+local Tbl_DeepCopy, Tbl_IsEmpty = Table.DeepCopy, Table.IsEmpty
 
----@class DevSuite_AceDBObject_3_0 : AceDBObject-3.0
----@field keys table
----@field sv table
----@field defaults AceDB.Schema Cache of defaults
----@field parent table
+local msg_RemovePresetKeyword = 'RemovePresetKeyword(keywordToDelete): {keywordToDelete} should be a string, but type was [%s]'
+
+local libName = 'DatabaseSchema'
+local p, pd, t, tf = ns:log(libName)
 
 --[[-------------------------------------------------------------------
 Type: DatabaseSchema
 ---------------------------------------------------------------------]]
 --- @class DatabaseSchema
-local S = {};
-ns.O.DatabaseSchema = S
+local o = ns:NewLib2(libName)
 
---- @type DatabaseSchema
-local o = S
+--[[-----------------------------------------------------------------------------
+Type: DevSuite_AceDBObject_3_0
+-------------------------------------------------------------------------------]]
+---@class DevSuite_AceDBObject_3_0 : AceDBObject-3.0
+---@field keys table
+---@field sv table
+---@field defaults AceDB.Schema Cache of defaults
+---@field parent table
+--
+--
 
 --[[-----------------------------------------------------------------------------
 Type: Profile_Config_Item
@@ -87,8 +93,8 @@ local function InitDefaultProfile(defaultProfile)
   for i = 3, defaultProfile.debugDialog.maxHistory do
     local name = ns.sformat('Saved #%s', i)
     --- @type Profile_Config_Item
-    local t = { name = name, value = fnN, sortIndex = i, }
-    table.insert(defaultProfile.debugDialog.items, t)
+    local itemData = { name = name, value = fnN, sortIndex = i, }
+    table.insert(defaultProfile.debugDialog.items, itemData)
   end
   ---@param a Profile_Config_Item
   ---@param b Profile_Config_Item
@@ -119,12 +125,18 @@ local DefaultProfileSettings = {
 InitDefaultProfile(DefaultProfileSettings)
 
 --[[-----------------------------------------------------------------------------
+Type: PresetFilterKeywords
+-------------------------------------------------------------------------------]]
+--- @alias PresetFilterKeywords table<string, number>
+--
+
+--[[-----------------------------------------------------------------------------
 Type: TraceConfig
 -------------------------------------------------------------------------------]]
----@class TraceConfig
----@field show_at_startup boolean
----@field preset_keyword string
----@field preset_filter_keywords string[]
+--- @class TraceConfig
+--- @field show_at_startup boolean
+--- @field preset_keyword string
+--- @field preset_filter_keywords PresetFilterKeywords
 
 --[[-----------------------------------------------------------------------------
 Type: Character_Config
@@ -169,11 +181,11 @@ local DefaultAddOnDatabase = {
     --- @type TraceConfig
     trace = {
       show_at_startup      = false,
-      preset_keyword        = '',
+      preset_keyword       = '',
       preset_filter_keywords = {
-        "devsuite", 'abpv2', 'gears',
-        'filter 1a',  'filter 2a',  'filter 3a',  'filter 4a',  'filter 5a',
-        'filter 1b',  'filter 2b',  'filter 3b',  'filter 4b',  'filter 5b',
+        ['player'] = 1,
+        ['spell'] = 2,
+        ['unit'] = 3,
       },
     },
   },
@@ -192,7 +204,67 @@ local DefaultAddOnDatabase = {
 --- @field width number @default 400
 --- @field height number @default 500
 --- @field anchor DevSuite_Anchor_Config
+--[[-----------------------------------------------------------------------------
+Support Functions
+-------------------------------------------------------------------------------]]
+--- @return PresetFilterKeywords
+function GetPresetFilterKeywords() return ns:g().trace.preset_filter_keywords end
+
+--- @param keyword string
+--- @param callbackFn fun(keywords:PresetFilterKeywords, match:string) : void
+local function FindFirstKeyword(keyword, callbackFn)
+  assertsafe(type(keyword) == 'string', 'FindFirstKeyword(keyword): {keyword} should be a string.')
+  local keywords = GetPresetFilterKeywords()
+  local lower = keyword:lower()
+  for kw in pairs(keywords) do
+    if kw:lower() == lower then
+      return callbackFn and callbackFn(keywords, kw)
+    end
+  end
+end
+
+--[[-----------------------------------------------------------------------------
+Methods
+-------------------------------------------------------------------------------]]
+
 
 --- @return AceDBObjectInstance
 function o:GetDatabase() return Tbl_DeepCopy(DefaultAddOnDatabase) end
 
+--- @return string[]
+function o:GetPresetKeywordsAsArray()
+  local keywords = GetPresetFilterKeywords()
+  local ordered = {}
+  for kw, order in pairs(keywords) do
+    table.insert(ordered, { kw = kw, order = order })
+  end
+  table.sort(ordered, function(a, b) return a.order < b.order end)
+  local result = {}
+  for i, entry in ipairs(ordered) do result[i] = entry.kw end
+  return result
+end
+
+
+--- @param newKeyword string
+function o:AddPresetKeyword(newKeyword)
+  assertsafe(type(newKeyword) == 'string', 'AddPresetKeyword(newKeyword): {newKeyword} should be a string.')
+  local keywords = GetPresetFilterKeywords()
+  if Tbl_IsEmpty(keywords) then keywords[newKeyword] = 1; return end
+  local lower = newKeyword:lower()
+  local maxOrder = 0
+  for k, order in pairs(keywords) do
+    if k:lower() == lower then return end
+    if order > maxOrder then maxOrder = order end
+  end
+  keywords[newKeyword] = maxOrder + 1
+end
+
+--- @param keywordToDelete string
+function o:RemovePresetKeyword(keywordToDelete)
+  assertsafe(type(keywordToDelete) == 'string',
+  msg_RemovePresetKeyword, type(keywordToDelete))
+
+  FindFirstKeyword(keywordToDelete, function(keywords, match)
+      keywords[match] = nil
+  end)
+end
