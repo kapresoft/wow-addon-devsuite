@@ -6,7 +6,8 @@ Type: GeneralConfigOptionArgs
 --- @field addonUsage_AutomaticallyShow AceConfigOption
 --- @field specialNoticeText AceConfigOption
 --- @field spacer1 AceConfigOption
---- @field enableDebugConsole boolean
+--- @field enableDebugConsole AceConfigOption
+--- @field showEventTraceAtStartup AceConfigOption
 
 --[[-----------------------------------------------------------------------------
 Type: DebugConsoleOptionArgs
@@ -78,7 +79,7 @@ function o:CreateGeneralOptions()
     local order = self.order
 
     local aULabel = c2(L['Addon Usage: Automatically Show UI'])
-    if not O.API:IsAddonUsageAvailable() then
+    if not API:IsAddonUsageAvailable() then
         aULabel = L['Addon Usage: Automatically Show UI']
     end
 
@@ -93,6 +94,21 @@ function o:CreateGeneralOptions()
     }
     local a = general.args
 
+    -- ShowEventTraceAtStartup
+    local function ShowEventTraceAtStartupGetFn() return ns:g().trace.show_at_startup == true end
+    local function ShowEventTraceAtStartupSetFn(_, v)
+        local val = (v == true)
+        ns:g().trace.show_at_startup = val
+        if val then return ns:traceUtil():ShowUI() end
+        ns:traceUtil():HideUI()
+    end
+    a.showEventTraceAtStartup = ACU:CreateGlobalOption('Show Event Trace At Startup', {
+        type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
+        get  = ShowEventTraceAtStartupGetFn,
+        set  = ShowEventTraceAtStartupSetFn,
+    }); a.showEventTraceAtStartup.name = c2(a.showEventTraceAtStartup.name)
+
+    -- DebugConsole
     local function DebugConsoleGetFn() return ns:dbg().enableLogConsole == true end
     local function DebugConsoleSetFn(_, v)
         local val = (v == true)
@@ -100,7 +116,6 @@ function o:CreateGeneralOptions()
         if val then return ns:DevConsoleModule():Enable() end
         ns:DevConsoleModule():Disable()
     end
-
     a.enableDebugConsole = ACU:CreateGlobalOption('Enable Debug Console', {
         type = 'toggle', order = order:next(), width = 'full', descStyle = 'inline',
         get  = DebugConsoleGetFn,
@@ -171,7 +186,7 @@ function o:InitOptions()
   options.args.profiles = AceDBOptions:GetOptionsTable(ns:db())
 
   ns:AceConfig():RegisterOptionsTable(ns.addon, options, {
-    ns.GC.C.CONSOLE_COMMAND_OPTIONS, GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
+    GC.C.CONSOLE_COMMAND_OPTIONS, GC.C.CONSOLE_COMMAND_OPTIONS_SHORT })
   AceConfigDialog:AddToBlizOptions(ns.addon, ns.addon)
   if API:GetUIScale() > 1.0 then return end
 

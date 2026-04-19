@@ -95,4 +95,6 @@ L['Preset Filters']             = true
 L['Preset Filters::DESC']       = 'Click to show predefined text|nfilters from DevSuite addon.'
 L['Add Preset Filter Keyword']  = true
 L['Clear']                      = true
+L['Show Event Trace At Startup']    = true
+L['Show Event Trace At Startup::Desc'] = 'Shows the Event Trace window automatically when the addon loads'
 

@@ -9,33 +9,27 @@ New Instance
 -------------------------------------------------------------------------------]]
 local libName = 'API'
 --- @class API
-local L = {}; ns:Register(libName, L)
+local o = {}; ns:Register(libName, o)
 local p, pd, t, tf = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
----@param o API
-local function PropsAndMethods(o)
+function o:IsAddonUsageAvailable()
+  return BINDING_HEADER_ADDONUSAGE ~= nil
+      or ns:AddonUtil():IsAddOnEnabled('AddonUsage')
+end
 
-    function o:IsAddonUsageAvailable()
-        return BINDING_HEADER_ADDONUSAGE ~= nil
-                or ns:AddonUtil():IsAddOnEnabled('AddonUsage')
-    end
+function o:GetUIScale()
+  -- This returns "1" if UI scaling is enabled, "0" otherwise.
+  local useUiScale = GetCVar('useUiScale')
+  if useUiScale == "1" then
+    local uiScale = GetCVar('uiScale')
+    return tonumber(uiScale)
+  else
+    -- UI scaling is not enabled, so scale is effectively 1.
+    return 1
+  end
+end
 
-    function o:GetUIScale()
-        -- This returns "1" if UI scaling is enabled, "0" otherwise.
-        local useUiScale = GetCVar('useUiScale')
-        if useUiScale == "1" then
-            local uiScale = GetCVar('uiScale')
-            return tonumber(uiScale)
-        else
-            -- UI scaling is not enabled, so scale is effectively 1.
-            return 1
-        end
-    end
-
-    function o:GetCurrentPlayer() return UnitName('player') end
-
-end; PropsAndMethods(L)
-
+function o:GetCurrentPlayer() return UnitName('player') end
