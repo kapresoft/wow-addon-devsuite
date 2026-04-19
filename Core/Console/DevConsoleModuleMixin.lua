@@ -13,6 +13,7 @@ Local Vars
 local ns = select(2, ...)
 local sformat     = ns.sformat
 local O, GC       = ns.O, ns.GC
+local String = ns:String()
 local MODULE_NAME = 'DevConsole'
 local LIB_MIXIN   = { 'AceEvent-3.0' }
 local libName     = ns.M.DevConsoleModuleMixin()
@@ -228,7 +229,7 @@ function d:EnableDebugChatFrame()
   local font, size, flags = cf:GetFont()
   --- @type string
   local fontText = font
-  if fontText:len() > maxFontLen then fontText = ns:String().TruncateReversed(font, maxFontLen) end
+  if fontText:len() > maxFontLen then fontText = String.TruncateReversed(font, maxFontLen, nil) end
   logp('   Font:', c5(fontText))
   logp('  Flags:', c3(flags), 'Font-Size:', c3(size))
   logp('')
