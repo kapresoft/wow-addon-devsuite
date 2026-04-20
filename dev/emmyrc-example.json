@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/EmmyLuaLs/emmylua-analyzer-rust/refs/heads/main/crates/emmylua_code_analysis/resources/schema.json",
+  "NOTE": "Rename to: .emmyrc.json and place in your project folder",
   "diagnostics": {
     "disable": [
       "access-invisible",
