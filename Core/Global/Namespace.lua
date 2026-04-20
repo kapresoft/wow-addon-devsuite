@@ -307,7 +307,7 @@ end
 function ns:char() return self:db().char end
 
 --- @return DevSuite
-function ns.a() return DEV_SUITE end
+function ns.a() return DevSuite end
 
 --- @return DevConsoleModule
 function ns:DevConsoleModule() return self.a():DevConsole() end

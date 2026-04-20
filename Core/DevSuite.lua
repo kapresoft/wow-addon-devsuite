@@ -22,8 +22,8 @@ DEVS_MF = nil
 NewAddOn
 -------------------------------------------------------------------------------]]
 --- @class DevSuite : AceConsole-3.0, AceEvent-3.0, AceHook-3.0, AceBucket-3.0
---- @field private configDialogWidget AceConfigDialog-3.0
---- @field private onHideHooked boolean
+--- @field private __configDialogWidget AceConfigDialog-3.0
+--- @field private __onHideHooked boolean
 --- @field PopupDialog PopupDebugDialog
 local o = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
 local p, pd, t, tf = ns:log(ns.addon)
@@ -35,40 +35,18 @@ local debugDialog
 
 --[[-----------------------------------------------------------------------------
 Methods
-UIParentLoadAddOn("Blizzard_DebugTools")
-/dump UIParentLoadAddOn("Blizzard_EventTrace")
-/dump IsAddOnLoaded('Blizzard_DebugTools')
-/dump IsAddOnLoaded('Blizzard_EventTrace')
-/dump EventTrace
 -------------------------------------------------------------------------------]]
 
 O.MainController:Init(o)
 
 function o:OnInitialize()
-  self.onHideHooked = false
-
+  self.__onHideHooked = false
   O.AceDbInitializerMixin:New(self):InitDb()
   self.OptionsDialog = O.OptionsDialogMixin:New(self.addon)
   self.OptionsDialog:InitOptions()
   self:SendMessage(GC.M.OnAfterInitialize, self)
   self:RegisterSlashCommands()
   O.DevConsoleModuleMixin:NewModule(self)
-  
-  --local isLoggedIn = IsLoggedIn()
-  --local isPlayerInWorld = IsPlayerInWorld()
-  --C_Timer.After(2, function()
-  --  local tu = ns:traceUtil()
-  --  tu:t('OnInitialize', 'isLoggedIn=', isLoggedIn)
-  --  tu:t('OnInitialize', 'isPlayerInWorld=', isPlayerInWorld)
-  --end)
-  
-  --if not EventTrace then return end
-  --
-  --local trace = ns:g().trace
-  ----trace.show_at_startup = true
-  --ns:SetEventTraceSearchKeyword(trace.preset_keyword)
-  --if EventTrace:IsVisible() and trace.show_at_startup then return end
-  --EventTrace:Hide()
 end
 
 --- #### See Also: [Ace-addon-3-0](https://www.wowace.com/projects/ace3/pages/api/ace-addon-3-0)
@@ -215,10 +193,10 @@ function o:OpenConfig()
   AceConfigDialog:SelectGroup(ns.addon)
   o.DialogGlitchHack();
   PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
-  self.configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
-  if not self.onHideHooked then
-    self:HookScript(self.configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
-    self.onHideHooked = true
+  self.__configDialogWidget = AceConfigDialog.OpenFrames[ns.addon]
+  if not self.__onHideHooked then
+    self:HookScript(self.__configDialogWidget.frame, 'OnHide', 'OnHide_Config_WithSound')
+    self.__onHideHooked = true
   end
 end
 
@@ -301,7 +279,6 @@ end
 --- @param spaceSeparatedArgs string
 function o:SlashCommands(spaceSeparatedArgs)
     local args = ParseSpaceSeparatedVar(spaceSeparatedArgs)
-    --local cmd, qualifier = unpack(args)
     if IsEmptyTable(args) then
         return o.SlashCommand_Help_Handler()
     end
@@ -373,5 +350,5 @@ function o.ns() return DevSuite_NS end
 --[[-------------------------------------------------------------------
 Global Var
 ---------------------------------------------------------------------]]
-DEV_SUITE = o;
+DevSuite = o;
 
