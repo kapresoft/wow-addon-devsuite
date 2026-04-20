@@ -59,3 +59,4 @@ ThirdParty/Libs/
 _setup.*
 # Don't save this
 deployer-config.lua
+.emmyrc.json
