@@ -136,6 +136,7 @@ Type: TraceConfig
 --- @class TraceConfig
 --- @field show_at_startup boolean
 --- @field preset_keyword string
+--- @field preset_filters_initialized boolean
 --- @field preset_filter_keywords PresetFilterKeywords
 
 --[[-----------------------------------------------------------------------------
@@ -182,11 +183,8 @@ local DefaultAddOnDatabase = {
     trace = {
       show_at_startup      = false,
       preset_keyword       = '',
-      preset_filter_keywords = {
-        ['player'] = 1,
-        ['spell'] = 2,
-        ['unit'] = 3,
-      },
+      preset_filter_keywords = {},
+      preset_filters_initialized = false,
     },
   },
   profile                              = DefaultProfileSettings,
@@ -207,8 +205,10 @@ local DefaultAddOnDatabase = {
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
+--- @return TraceConfig
+function GetTraceConfig() return ns:g().trace end
 --- @return PresetFilterKeywords
-function GetPresetFilterKeywords() return ns:g().trace.preset_filter_keywords end
+function GetPresetFilterKeywords() return GetTraceConfig().preset_filter_keywords end
 
 --- @param keyword string
 --- @param callbackFn fun(keywords:PresetFilterKeywords, match:string) : void
@@ -226,14 +226,19 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-
-
 --- @return AceDBObjectInstance
 function o:GetDatabase() return Tbl_DeepCopy(DefaultAddOnDatabase) end
 
 --- @return string[]
 function o:GetPresetKeywordsAsArray()
-  local keywords = GetPresetFilterKeywords()
+  local traceCfg = GetTraceConfig()
+  local keywords = traceCfg.preset_filter_keywords
+
+  if Table.Size(keywords) <= 0 and not traceCfg.preset_filters_initialized then
+    keywords['spell'] = 1
+    traceCfg.preset_filters_initialized = true
+  end
+
   local ordered = {}
   for kw, order in pairs(keywords) do
     table.insert(ordered, { kw = kw, order = order })
