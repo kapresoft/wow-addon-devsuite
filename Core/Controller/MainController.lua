@@ -9,7 +9,7 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
-local E, MSG, AceEvent = GC.E, GC.M, ns:Ace():NewAceEvent()
+local E, MSG, AceEvent = GC.E, GC.M, ns:NewAceEvent()
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -27,8 +27,8 @@ Support Functions
 ---AceEvent:RegisterMessage(MSG.OnAddonReady, function(evt, ...) end
 ---```
 
----@param frame MainControllerFrame
----@param event string The event name
+--- @param frame MainControllerFrame
+--- @param event string The event name
 local function OnPlayerEnteringWorld(frame, event, ...)
   local isLogin, isReload = ...
 

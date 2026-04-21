@@ -1,6 +1,6 @@
 --- @type Namespace
 local ns = select(2, ...)
-local L = LibStub("AceLocale-3.0"):GetLocale(ns.addon)
+local L = ns:GetLocale()
 
 -- General
 DEVS_TITLE                                 = "DevSuite"

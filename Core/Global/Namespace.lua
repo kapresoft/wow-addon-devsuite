@@ -10,7 +10,7 @@ local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 --- @class Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
 --- @field GC GlobalConstants
 --- @field addon string
---- @field gameVersion GameVersion
+--- @field gameVersion Kapresoft-GameVersion-2-0
 --- @field chatFrame ChatLogFrame
 --- @field O Modules
 --- @field LocaleUtil LocaleUtil
@@ -227,7 +227,7 @@ function ns:InitEventTrace()
   self.eventTraceUtil = self.O.EventTraceUtil:New(self.addon, trace.show_at_startup)
   self:traceUtil():SetEventTraceSearchKeyword(trace.preset_keyword)
 end
-function ns:Ace() return LibStub('Kapresoft-AceLib-2-0') end
+
 function ns:Table() return LibStub('Kapresoft-Table-2-0') end
 function ns:String() return LibStub('Kapresoft-String-2-0') end
 function ns:AceConfigUtil() return LibStub('Kapresoft-AceConfigUtil-2-0') end
@@ -236,7 +236,7 @@ function ns:AddonUtil() return LibStub('Kapresoft-AddonUtil-2-0') end
 function ns:LuaEvaluator() return LibStub('Kapresoft-LuaEvaluator-2-0') end
 
 --- @return table<string, string>
-function ns:GetLocale() return ns:Ace():GetLocale(self.addon, true) end
+function ns:GetLocale() return ns:AceLocale():GetLocale(self.addon, true) end
 
 --- @param obj table The library object instance
 function ns:Register(libName, obj)
@@ -276,7 +276,7 @@ function ns:NewLibWithEvent(libName, ...)
   assert(libName, "LibName is required")
 
   local TOSTRING_ADDON_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe}}|r'
-  local newLib = self:Ace():NewAceEvent()
+  local newLib = self:NewAceEvent()
   local len    = select("#", ...)
   if len > 0 then newLib = Mixin(newLib, ...) end
   newLib.mt = { __tostring = function() return string.format(TOSTRING_ADDON_FMT, libName) end }

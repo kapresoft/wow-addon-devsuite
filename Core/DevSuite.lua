@@ -5,9 +5,8 @@ Local Vars
 local ns = select(2, ...)
 
 local O, GC = ns.O, ns.GC
-local AceConfigDialog = ns:Ace():AceConfigDialog()
+local AceConfigDialog = ns:AceConfigDialog()
 
-local AceAddon = ns:Ace():AceAddon()
 local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
 local Table, String = ns:Table(), ns:String()
 local tostring, type = tostring, type
@@ -25,7 +24,7 @@ NewAddOn
 --- @field private __configDialogWidget AceConfigDialog-3.0
 --- @field private __onHideHooked boolean
 --- @field PopupDialog PopupDebugDialog
-local o = AceAddon:NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
+local o = ns:AceAddon():NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
 local p, pd, t, tf = ns:log(ns.addon)
 
 --- @type PopupDebugDialog
@@ -116,6 +115,7 @@ function o:GetMouseFocus()
     },
     val = val
   }
+
   --
   local debugInfo = retVal.debugInfo
   local mouseFocus = debugInfo.mouseFocus
@@ -322,14 +322,14 @@ function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     if ns:HasChatFrame() then ns.chatFrame:Clear() end
 end
 function o.BINDING_DEVS_TOGGLE_DEBUG_CONSOLE()
-    if not ns:HasChatFrame() then return end
-    local module = ns:DevConsoleModule()
-    local val = ns:dbg().enableLogConsole
-    ns:dbg().enableLogConsole = not val
-    if ns:dbg().enableLogConsole == true then
-        return module:Enable()
-    end
-    module:Disable()
+  if not ns:HasChatFrame() then return end
+  local module = ns:DevConsoleModule()
+  local val = ns:dbg().enableLogConsole
+  ns:dbg().enableLogConsole = not val
+  if ns:dbg().enableLogConsole == true then
+    return module:Enable()
+  end
+  module:Disable()
 end
 
 --- @see Interface/AddOns/Blizzard_DebugTools/Blizzard_DebugTools.lua for mod key options

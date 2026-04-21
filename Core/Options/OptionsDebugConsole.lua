@@ -8,27 +8,26 @@ local MSG = GC.M
 local L = ns:GetLocale()
 local ACU = ns:AceConfigUtil():New(ns.addon)
 local NameDescG = ns.LocaleUtil.NameDescGlobal
-local sformat = ns.sformat
+--- spacer
+local sp = '                                                                   '
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
 local libName = ns.M.OptionsDebugConsole()
---- @class OptionsDebugConsole : AceEvent
-local S = ns:NewLibWithEvent(libName)
-
---- spacer
-local sp = '                                                                   '
+--- @class OptionsDebugConsole : AceEvent-3.0
+local o = ns:NewAceEvent(); ns:Register(libName, o)
+local p, pd, t, tf = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
-local function NotifyChange() LibStub("AceConfigRegistry-3.0"):NotifyChange(ns.addon) end
+local function NotifyChange() ns:AceConfigRegistry():NotifyChange(ns.addon) end
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function S:CreateDebugConsoleGroup()
+function o:CreateDebugConsoleGroup()
 
     --- @class DebugConsoleOption : AceConfigOption
     --- @field args DebugConsoleOptionArgs
@@ -45,9 +44,9 @@ function S:CreateDebugConsoleGroup()
     return options
 end
 
-function S:Args() return ns.a().OptionsDialog.options.args end
+function o:Args() return ns.a().OptionsDialog.options.args end
 
-function S:DebugConsoleSection(debugConf, seq)
+function o:DebugConsoleSection(debugConf, seq)
 
     local a = debugConf.args
 
@@ -99,13 +98,13 @@ function S:DebugConsoleSection(debugConf, seq)
     }) a.spacer1e = { type="description", name=sp, width="full", order = seq:next() }
 end
 
-function S:EnableGroup()
+function o:EnableGroup()
     if not DebugChatFrame then return end
     self:Args().debugConsole = self:CreateDebugConsoleGroup()
     NotifyChange(ns.addon)
 end
 
-function S:DisableGroup()
+function o:DisableGroup()
     if not DebugChatFrame then return end
 
     self:Args().debugConsole = nil

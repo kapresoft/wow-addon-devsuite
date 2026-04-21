@@ -3,9 +3,7 @@ Local Vars
 -------------------------------------------------------------------------------]]
 local ns = DevSuite_NS
 local O, GC, M = ns.O, ns.GC, ns.M
-local Ace = ns:Ace()
-local AceEvent = Ace:NewAceEvent()
-local AceDB = Ace:AceDB()
+local AceEvent, AceDB = ns:NewAceEvent(), ns:AceDB()
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
 
@@ -24,24 +22,25 @@ local p, pd, t, tf = ns:log(libName)
 ConfirmAndReload UI
 -------------------------------------------------------------------------------]]
 StaticPopupDialogs[CONFIRM_RELOAD_UI_WITH_MSG] = {
-    text = "Reload UI?", button1 = "Yes", button2 = "No",
-    timeout = 0, whileDead = true, hideOnEscape = true,
-    --- @param messageName Name|nil
-    OnAccept = function(self, messageName)
-        if messageName then AceEvent:SendMessage(messageName, M.AceDbInitializerMixin) end
-        ReloadUI()
-    end,
-    preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+  text = "Reload UI?", button1 = "Yes", button2 = "No",
+  timeout = 0, whileDead = true, hideOnEscape = true,
+  --- @param messageName Name|nil
+  OnAccept = function(self, messageName)
+      if messageName then AceEvent:SendMessage(messageName, M.AceDbInitializerMixin) end
+      ReloadUI()
+  end,
+  preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
 }
 
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
 local function ConfirmAndReload()
-    if StaticPopup_Visible(CONFIRM_RELOAD_UI_WITH_MSG) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_WITH_MSG) end
-    return false
+  if StaticPopup_Visible(CONFIRM_RELOAD_UI_WITH_MSG) == nil then
+    return StaticPopup_Show(CONFIRM_RELOAD_UI_WITH_MSG)
+  end
+  return false
 end
-
 ---@param a DevSuite
 local function AddonCallbackMethods(a)
   function a:OnProfileChanged() t('OnProfileChanged() called..') end
