@@ -18,9 +18,9 @@ Module::PresetFiltersButton
 --- @see NamespaceObjects
 local libName = 'PresetFiltersButton'
 local p, pd, t, tf = ns:log(libName)
-local Ace = ns:Ace()
+
 --- @class PresetFiltersButtonMixin : CheckButton, AceEvent-3.0, AceHook-3.0
---- @field Arrow Texture
+--- @field Arrow Texture @See Core/EventTrace/_EventTracePresetFilters.xml#CheckButton/Arrow
 local S = ns:AceEmbed({}, ns:AceEvent(), ns:AceHook()); DevSuite_PresetFiltersButtonMixin = S
 --
 --- @class PresetFiltersButton : PresetFiltersButtonMixin
@@ -30,12 +30,6 @@ Support Functions
 ---------------------------------------------------------------------]]
 local function activeC(text) return activeColor:WrapTextInColorCode(text) end
 local function ttC(text) return ttColor:WrapTextInColorCode(text) end
-
---- @param ... any
-local function t(...)
-  local evt = ns:evt(); if not evt then return end
-  evt:LogEvent(strupper(ns.addon), libName, ...)
-end
 
 --- @return PresetFiltersContentFrame
 local function contentFrame() return DevSuite_PresetFiltersContentFrame end

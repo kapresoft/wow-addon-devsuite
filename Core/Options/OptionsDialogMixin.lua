@@ -27,9 +27,8 @@ local ns = select(2, ...)
 local O, GC, M = ns.O, ns.GC, ns.M
 local L = ns:GetLocale()
 
-local Ace, API = ns:Ace(), O.API
-local AceConfigDialog, AceDBOptions = Ace:AceConfigDialog(), Ace:AceDBOptions()
-local ACU = ns:AceConfigUtil():New(ns.addon)
+local AceConfigDialog, AceDBOptions = ns:AceConfigDialog(), ns:AceDBOptions()
+local API, ACU = O.API, ns:AceConfigUtil():New(ns.addon)
 local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_FONT_COLOR)
 local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)

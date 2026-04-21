@@ -11,7 +11,7 @@ local O, M = ns.O, ns.M
 local ERROR_STATUS = 'ERROR'
 local ERROR_COLOR = '|cffFF7D83'
 
-local String, AceGUI = ns:String(), ns:Ace():AceGUI()
+local String, AceGUI = ns:String(), ns:AceGUI()
 local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 local EqualsIgnoreCase = String.EqualsIgnoreCase

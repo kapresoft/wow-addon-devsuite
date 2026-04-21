@@ -4,7 +4,7 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 local O, MS = ns.O, ns.GC.M
-local AceConfigDialog = ns:Ace():AceConfigDialog()
+local AceConfigDialog = ns:AceConfigDialog()
 
 --[[-----------------------------------------------------------------------------
 New Instance

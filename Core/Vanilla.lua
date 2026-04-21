@@ -1,4 +1,4 @@
 --- @type Namespace
 local ns = select(2, ...)
 
-ns.gameVersion = 'classic'
+ns.gameVersion ='classic-era'

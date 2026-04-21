@@ -12,7 +12,7 @@ local silent = true
 --@do-not-package@
 if ns.IsDev() then silent = false end
 --@end-do-not-package@
-local L = LibStub('AceLocale-3.0'):NewLocale(ns.addon, 'enUS', true, silent);
+local L = ns:AceLocale():NewLocale(ns.addon, 'enUS', true, silent);
 
 L['BINDING_NAME_DEVS_OPTIONS_DLG']              = 'Options Dialog'
 L['BINDING_NAME_DEVS_DEBUG_DLG']                = 'Debug Dialog'

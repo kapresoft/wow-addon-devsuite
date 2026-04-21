@@ -7,20 +7,14 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type Namespace
 local ns = select(2, ...)
-local Ace = ns:Ace()
-
---- @type AceEvent_3_0
-local AceEvent = Ace:AceEvent()
---- @type AceHook_3_0
-local AceHook = Ace:AceHook()
 
 --[[-----------------------------------------------------------------------------
 Library
 -------------------------------------------------------------------------------]]
---- @class EventTraceUtil : AceEvent_3_0 : AceHook_3_0
+--- @class EventTraceUtil
 --- @field keyword string
 --- @field evt EventTrace
-local S = AceHook:Embed(AceEvent:Embed({})); ns.O.EventTraceUtil = S
+local S = {}; ns.O.EventTraceUtil = S
 S.__index = S
 
 --[[-----------------------------------------------------------------------------
@@ -48,7 +42,9 @@ local c_base = ns:ColorFn('88ff88')
 --- @param showAtStartup boolean
 --- @param predicateFn PredicateFn|nil  | "function() return true end"
 function o:Init(addon, showAtStartup, predicateFn)
-  assert(addon, "The param addon is required.")
+  assertsafe(type(addon) == 'string',
+    "Init(addon, showAtStartup, predicateFn):: The param addon should be a string, but was [%s].",
+    type(addon))
   
   self.logName     = addon
   self.eventBase   = upperc(c_base(addon))
@@ -95,7 +91,7 @@ end
 
 --- /dump UIParentLoadAddOn("Blizzard_EventTrace")
 --- @param showAtStartup boolean
---- @return EventTrace
+--- @return EventTrace?
 function o:LoadEventTrace(showAtStartup)
   if self.evt then return self.evt end
   
@@ -105,10 +101,12 @@ function o:LoadEventTrace(showAtStartup)
 
   local success, reason = UIParentLoadAddOn(addOnName)
   if not success then
-    return print(('%s:: Failed to load [%s], reason=%s'):format(
-            self.logName, addOnName, reason))
+    print(('%s:: Failed to load [%s], reason=%s')
+      :format( self.logName, addOnName, reason))
+    return nil
   end
-  assert(EventTrace, ('%s:: Failed to load [%s].'):format(self.logName or ns.addon, addOnName))
+  assertsafe(EventTrace, '%s:: Failed to load [%s].',
+    self.logName or ns.addon, addOnName)
   self.evt = EventTrace
   if not showAtStartup then self.evt:Hide() end
   return self.evt
