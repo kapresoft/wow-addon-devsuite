@@ -15,27 +15,12 @@ local function resolveModuleName(moduleName)
   return nil
 end
 
-local function DelayedCall(delay, fn)
-  assert(type(delay) == 'number' and delay > 0)
-  
-  return function(moduleName)
-    local printer = fn(moduleName)
-    return function(...)
-      local args = { ... }
-      C_Timer.After(delay, function()
-        printer(unpack(args))
-      end)
-    end
-  end
-end
-
 --- @param moduleName Name
 local function printerFn1(moduleName)
   local _ns = ns
   local m = resolveModuleName(moduleName)
   local pr = _ns.printer
   if m and #m > 0 then pr = _ns.printer:WithSubPrefix(m) end
-  --print('xx moduleName=', m, 'pr=', pr); pr('Module', 'hello')
   return pr
 end
 

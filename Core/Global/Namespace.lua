@@ -34,7 +34,9 @@ local ColorFormatter__
 
 --@do-not-package@
 function tr(prefix, ...)
-  if not EventTrace then return end; EventTrace:LogEvent('DEVSUITE::' .. prefix, ...)
+  local c = CreateColorFromHexString('466EFFff')
+  local identifier = c:WrapTextInColorCode('DEVSUITE') .. '::'
+  if not EventTrace then return end; EventTrace:LogEvent(identifier .. prefix, ...)
 end
 --@end-do-not-package@
 
