@@ -79,11 +79,17 @@ function o:OnAddonReady(msg) self:InitializeState() end
 
 --- @private
 function o:InitializeState()
+  self:OnShowEventTrace()
   -- AddonUsage is the "Addon Usage" global var
   C_Timer.After(3, function()
     self:OnToggleFrameRate()
     self:InitAddonUsage()
   end)
+end
+
+function o:OnShowEventTrace()
+  local m = ns:g().trace.show_at_startup and 'ShowUI' or 'HideUI'
+  local tu = ns:traceUtil(); tu[m](tu)
 end
 
 function o:OnToggleFrameRate() L:ShowFPS(ns:db().global.show_fps) end
