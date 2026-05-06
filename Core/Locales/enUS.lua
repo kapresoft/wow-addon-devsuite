@@ -21,6 +21,7 @@ L['BINDING_NAME_DEVS_TOGGLE_WINDOWED']          = 'Toggle Windowed Mode'
 L['BINDING_NAME_DEVS_TOGGLE_FRAMESTACK']        = 'Toggle Frame Stack'
 L['BINDING_NAME_DEVS_CLEAR_DEBUG_CONSOLE']      = 'Clear Debug Console'
 L['BINDING_NAME_DEVS_TOGGLE_DEBUG_CONSOLE']     = 'Toggle Debug Console'
+L['BINDING_NAME_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP'] = 'Toggle Show Event Trace At Startup'
 
 L['Version']           = true
 L['Curse-Forge']       = true
@@ -95,6 +96,5 @@ L['Preset Filters']             = true
 L['Preset Filters::DESC']       = 'Click to show predefined text|nfilters from DevSuite addon.'
 L['Add Preset Filter Keyword']  = true
 L['Clear']                      = true
-L['Show Event Trace At Startup']    = true
-L['Show Event Trace At Startup::Desc'] = 'Shows the Event Trace window automatically when the addon loads'
-
+L['Show Event Trace At Startup']        = true
+L['Show Event Trace At Startup::Desc']  = 'Shows the Event Trace window automatically when the addon loads'
