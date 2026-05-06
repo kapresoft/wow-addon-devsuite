@@ -20,4 +20,7 @@
     <Binding name="DEVS_TOGGLE_DEBUG_CONSOLE" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_TOGGLE_DEBUG_CONSOLE();
     </Binding>
+    <Binding name="DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP" category="DEVS_CATEGORY">
+        DevSuite.BINDING_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP();
+    </Binding>
 </Bindings>

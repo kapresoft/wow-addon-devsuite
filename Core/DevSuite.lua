@@ -12,6 +12,7 @@ local Table, String = ns:Table(), ns:String()
 local tostring, type = tostring, type
 local IsAnyOf, IsEmptyTable = String.IsAnyOf, Table.IsEmpty
 local DebugDialog = O.DebugDialog
+local L = ns:GetLocale()
 
 local c1 = ns:ColorFormatter():ColorFn(BLUE_FONT_COLOR)
 --- @type any
@@ -330,6 +331,20 @@ function o.BINDING_DEVS_TOGGLE_DEBUG_CONSOLE()
     return module:Enable()
   end
   module:Disable()
+end
+function o.BINDING_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP()
+  local traceSettings = ns:g().trace
+  local msg = L['Show Event Trace At Startup'] .. ': ' .. YES
+  if traceSettings.show_at_startup then
+    ns:traceUtil():HideUI()
+    traceSettings.show_at_startup = false
+    msg = L['Show Event Trace At Startup'] .. ': ' .. NO
+  else
+    ns:traceUtil():ShowUI()
+    traceSettings.show_at_startup = true
+  end
+
+  RaidNotice_AddMessage(RaidWarningFrame, msg, ChatTypeInfo["RAID_WARNING"])
 end
 
 --- @see Interface/AddOns/Blizzard_DebugTools/Blizzard_DebugTools.lua for mod key options
