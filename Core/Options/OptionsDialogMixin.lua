@@ -139,7 +139,7 @@ function o:CreateGeneralOptions()
     }); a.showFPS.name = c2(a.showFPS.name)
 
     a.addonUsage_AutomaticallyShow = {
-        disabled  = not O.API:IsAddonUsageAvailable(),
+        disabled  = not API:IsAddonUsageAvailable(),
         order     = order:next(),
         width     = 'full',
         name      = aULabel,
@@ -163,7 +163,7 @@ function o:CreateGeneralOptions()
         end)
     }
 
-    local showSpecialNotice = ns:db().global.show_AddonManagerHasMovedNotice
+    local showSpecialNotice = ns:g().show_AddonManagerHasMovedNotice
     if showSpecialNotice then
         a.spacer1 = { type = "description", name = '\n\n  ', width = "full", order = order:next() }
         a.specialNoticeText = {

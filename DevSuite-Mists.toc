@@ -1,4 +1,4 @@
-## Interface: 50503
+## Interface: 50504
 ## Version: @project-version@
 ## Title: |TInterface/AddOns/DevSuite/Core/Assets/DebugChatFrame-Logo-1-50px:18:18|t Dev|cff4DBEFFSuite|r
 

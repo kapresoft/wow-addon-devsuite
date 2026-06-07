@@ -6,23 +6,23 @@ local AceLib = LibStub('Kapresoft-AceLib-2-0')
 local DCFM = LibStub('Kapresoft-DebugChatFrameMixin-2-0')
 local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 
+addonName, xns = ...;
 
 --- @class Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
 --- @field GC GlobalConstants
 --- @field addon string
 --- @field gameVersion Kapresoft-GameVersion-2-0
---- @field chatFrame ChatLogFrame
+--- @field chatFrame ChatFrame
 --- @field O Modules
 --- @field LocaleUtil LocaleUtil
 --- @field fmt LibPrettyPrint_Formatter
 --- @field printer LibPrettyPrint_Printer
 --- @field eventTraceUtil EventTraceUtil
 --- @field logHolder LogHolder
-local ns
---- @type string
-local addonName
+--- @field mountID MountID The displayed Mount ID :: Dump Cursor Info feature
+local ns = xns
 
-addonName, ns = ...; Mixin(ns, GVM, AceLib, DCFM)
+Mixin(ns, GVM, AceLib, DCFM)
 
 ns.addon = addonName
 ns.O = ns.O or {}
@@ -47,32 +47,6 @@ local function ColorFormatter()
 end
 
 --[[-----------------------------------------------------------------------------
-Log Categories
-todo: remove LogCategories
--------------------------------------------------------------------------------]]
---- @class LogCategories
-local LogCategories = {
-    --- @type Kapresoft_LogCategory
-    DEFAULT = 'DEFAULT',
-    --- @type Kapresoft_LogCategory
-    API = "AP",
-    --- @type Kapresoft_LogCategory
-    OPTIONS = "OP",
-    --- @type Kapresoft_LogCategory
-    EVENT = "EV",
-    --- @type Kapresoft_LogCategory
-    FRAME = "FR",
-    --- @type Kapresoft_LogCategory
-    MESSAGE = "MS",
-    --- @type Kapresoft_LogCategory
-    PROFILE = "PR",
-    --- @type Kapresoft_LogCategory
-    DB = "DB",
-    --- @type Kapresoft_LogCategory
-    DEV = "DV",
-}
-
---[[-----------------------------------------------------------------------------
 Type: Module
 -------------------------------------------------------------------------------]]
 --- @class Module
@@ -93,8 +67,6 @@ local M = {
     DebugDialog = {},
     --- @type DebuggingSettingsGroup
     DebuggingSettingsGroup = {},
-    --- @type CategoryLoggerMixin
-    CategoryLoggerMixin = {},
     --- @type ConfigDialogController
     ConfigDialogController = {},
     --- @type MainController
@@ -111,9 +83,11 @@ local M = {
     OptionsDebugConsole = {},
     --- @type OptionsUtil
     OptionsUtil = {},
+    --- @type PickupHooks
+    PickupHooks = {},
     --- @type PopupDebugDialog
     PopupDebugDialog = {},
-    
+
     --- Dev Mode Only
     --- @type LibIconPickerUtil
     LibIconPickerUtil = {},
@@ -295,10 +269,10 @@ function ns:SetAddOnFn(dbfn) self.addonDbFn = dbfn end
 function ns:db() return self.addonDbFn() end
 
 --- @return DevSuite_Global_Config
-function ns:g() return self:db().global end
+function ns:g() return self:db()['global'] end
 
 --- @return DebugSettingsFlag_Config
-function ns:dbg() return self:db().global.debug end
+function ns:dbg() return self:g().debug end
 
 --- @return Profile_Config
 function ns:profile()
@@ -327,7 +301,7 @@ function ns.GameTooltip_DefaultAnchor()
   GameTooltip:SetPoint('BOTTOMRIGHT', UIParent, 'BOTTOMRIGHT', -10, 70)
 end
 
----@param chatFrame ChatLogFrame
+---@param chatFrame ChatFrame
 function ns:RegisterChatFrame(chatFrame) self.chatFrame = chatFrame end
 
 --InitLocalLibStub()
