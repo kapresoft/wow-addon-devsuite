@@ -23,4 +23,7 @@
     <Binding name="DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP();
     </Binding>
+    <Binding name="DEVS_DUMP_CURSOR_INFO" category="DEVS_CATEGORY">
+        DevSuite.BINDING_DEVS_DUMP_CURSOR_INFO();
+    </Binding>
 </Bindings>

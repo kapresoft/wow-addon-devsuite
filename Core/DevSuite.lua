@@ -26,6 +26,8 @@ NewAddOn
 --- @field private __onHideHooked boolean
 --- @field PopupDialog PopupDebugDialog
 local o = ns:AceAddon():NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
+DevSuite = o -- Global Var
+
 local p, pd, t, tf = ns:log(ns.addon)
 
 --- @type PopupDebugDialog
@@ -347,6 +349,58 @@ function o.BINDING_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP()
   RaidNotice_AddMessage(RaidWarningFrame, msg, ChatTypeInfo["RAID_WARNING"])
 end
 
+local function __GetSpellName(spellID)
+  if C_Spell and C_Spell.GetSpellName then
+    return C_Spell.GetSpellName(spellID)
+  else
+    local sp = C_Spell.GetSpellInfo(spellID)
+    if sp and sp.name then return name end
+  end
+end
+
+function o.BINDING_DEVS_DUMP_CURSOR_INFO()
+  if not GetCursorInfo() then return end
+  local all = SafePack(GetCursorInfo())
+  local useDefault = true
+  local typ, id, info, extra = GetCursorInfo()
+  local spellFmt = 'spellID=%s (%s)'
+  local extraInfo = {}
+  if typ == 'spell' then
+    local spellID = extra
+    if spellID then
+      local spName = __GetSpellName(spellID)
+      table.insert(extraInfo, spellFmt:format(spellID, tostring(spName)))
+    end
+  elseif typ == 'macro' then
+    local macroFmt = 'macroIndex=%s (%s)'
+    local macroIndex = id
+    local name = C_Macro.GetMacroName(macroIndex)
+    table.insert(extraInfo, macroFmt:format(macroIndex, tostring(name)))
+  elseif typ == 'companion' or typ == 'mount' then
+    local mountID = ns.mountID
+    if mountID then
+      local name, spellID = C_MountJournal.GetMountInfoByID(mountID)
+      local spellInfo
+      if name and spellID then
+        table.insert(extraInfo, spellFmt:format(name, spellID))
+        useDefault = false
+      end
+    end
+  end
+  local varName = 'DevSuite_GetCursorInfo'; _G[varName] = all
+  all.n = nil
+  if #extraInfo > 0 then
+    tr('GetCursorInfo', fmt(all), SafeUnpack(extraInfo))
+    for i,v in ipairs(extraInfo) do
+      all['info_' .. i] = v
+    end
+    DevTools_DumpCommand(varName)
+    return
+  end
+  tr('GetCursorInfo', fmt(all))
+  DevTools_DumpCommand(varName)
+end
+
 --- @see Interface/AddOns/Blizzard_DebugTools/Blizzard_DebugTools.lua for mod key options
 --- Option Key - go up in the UI tree
 --- Control Key - inspect current
@@ -361,9 +415,3 @@ function o.IsFrameStackToolEnabled() return FrameStackTooltip and FrameStackTool
 --- @return DevConsoleModule
 function o:DevConsole() return self:GetModule(O.DevConsoleModuleMixin.moduleName, false) end
 function o.ns() return DevSuite_NS end
-
---[[-------------------------------------------------------------------
-Global Var
----------------------------------------------------------------------]]
-DevSuite = o;
-

@@ -30,6 +30,7 @@
     <Script file="Core\Dialog\DialogWidgetMixin.lua"/>
     <Script file="Core\Dialog\DebugDialog.lua"/>
     <Script file="Core\Dialog\PopupDebugDialog.lua"/>
+    <Script file="Core\Hooks\PickupHooks.lua" />
 
     <Script file="Core\DevSuite.lua"/>
 

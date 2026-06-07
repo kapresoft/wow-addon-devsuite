@@ -207,7 +207,7 @@ function d:EnableDebugChatFrame()
   local opt = {
     chatFrameTabName = ns.addon,
     font = DCF_ConsoleMonoCondensedSemiBoldOutline,
-    fontSize = ns:db().global.console_fontSize,
+    fontSize = ns:g().console_fontSize,
     windowAlpha = windowAlpha,
     maxLines = ns:dbg().maxLogConsoleLines,
   }
