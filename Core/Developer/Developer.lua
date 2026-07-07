@@ -58,7 +58,8 @@ Event::OnAddOnReady
 local function OnAddOnReady()
   local MINIMAL_UI_MODE = true
   -- formation: 0=dev, 1=bottom, 2=top, nil=reset
-  local FRAME_FORMATION = 2
+  local DISABLE_FRAME_FORMATION = true
+  local FRAME_FORMATION = nil
   local MINIMAL_UI_FRAMES = {
     --MinimapCluster,
     --BuffFrame,
@@ -80,10 +81,10 @@ local function OnAddOnReady()
   -- todo next: add keybind on this feature, add to Options frame
   if MINIMAL_UI_MODE then o:HideFrames(MINIMAL_UI_FRAMES) end
 
-  if not ShadowUF and not InCombatLockdown() then
+  if not ShadowUF and not InCombatLockdown() and DISABLE_FRAME_FORMATION ~= true then
     C_Timer.After(1, function()
       if not FRAME_FORMATION then
-        p:vv('Player and Target Frames have been reset to default.')
+        p('Player and Target Frames have been reset to default.')
         o:ResetPlayerFrames()
         return
       end
