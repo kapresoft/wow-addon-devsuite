@@ -163,13 +163,14 @@ jobs:
       - name: Create a draft release
         id: create_draft_release
         if: ${{ env.createDraftRelease != 'false' }}
-        uses: release-drafter/release-drafter@v6
+        uses: release-drafter/release-drafter@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ env.refName }}
           name: ${{ env.refName }}
           version: ${{ env.refName }}
+          commitish: ${{ github.sha }}
           prerelease: false
           footer: |
             <br><br>
