@@ -223,7 +223,7 @@ function d:EnableDebugChatFrame()
 
   logp(c5('-------------------------------------------'))
   logp(c1(':: Debug ChatFrame initialized ::'));
-  logp('  IsDev:', c3(ns.IsDev()), 'GameVersion:', c4(ns.gameVersion))
+  logp('  IsDev:', c3(ns.IsDev()))
 
   local maxFontLen = 45
   local font, size, flags = cf:GetFont()
