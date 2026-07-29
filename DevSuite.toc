@@ -1,4 +1,4 @@
-## Interface: 120007
+## Interface: 11509, 20506, 30403, 40402, 50504, 120007
 ## Version: @project-version@
 ## Title: Dev|cff4DBEFFSuite|r
 ## IconTexture: Interface/AddOns/DevSuite/Core/Assets/DebugChatFrame-Logo-1-50px
@@ -36,6 +36,5 @@
 ## X-Github-Project-Version: @project-version@
 
 ThirdParty\ThirdParty.xml
-Core\Retail.lua
 DevSuite.xml
 

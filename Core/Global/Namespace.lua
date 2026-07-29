@@ -11,7 +11,6 @@ addonName, xns = ...;
 --- @class Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
 --- @field GC GlobalConstants
 --- @field addon string
---- @field gameVersion Kapresoft-GameVersion-2-0
 --- @field chatFrame ChatFrame
 --- @field O Modules
 --- @field LocaleUtil LocaleUtil
