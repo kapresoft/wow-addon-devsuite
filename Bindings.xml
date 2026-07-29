@@ -8,9 +8,6 @@
     <Binding name="DEVS_GET_DETAILS_ON_MOUSEOVER" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER();
     </Binding>
-    <Binding name="DEVS_TOGGLE_WINDOWED" category="DEVS_CATEGORY">
-        DevSuite.BINDING_DEVS_TOGGLE_WINDOWED();
-    </Binding>
     <Binding name="DEVS_TOGGLE_FRAMESTACK" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_TOGGLE_FRAMESTACK();
     </Binding>

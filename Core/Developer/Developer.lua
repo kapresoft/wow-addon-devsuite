@@ -195,14 +195,6 @@ function o:GetProfile() return ns:db().profile end
 
 function o:GetProfileNames() return ns:db():GetProfiles() end
 
-function o:T() self:ToggleWindowed() end
-
-function o:ToggleWindowed()
-  local isMaximized = GetCVarBool(GX_MAXIMIZE)
-  SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
-  RestartGx()
-end
-
 function o:MaxScreen()
   SetCVar(GX_MAXIMIZE, 1);
   RestartGx()

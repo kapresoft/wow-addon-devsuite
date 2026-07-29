@@ -302,16 +302,6 @@ function o:SlashCommands(spaceSeparatedArgs)
     o.SlashCommand_Help_Handler(); return
 end
 
-local GX_MAXIMIZE, SetCVar, GetCVarBool, RestartGx = 'gxMaximize', SetCVar, GetCVarBool, RestartGx
-function o.ToggleWindowed()
-    local isMaximized = GetCVarBool(GX_MAXIMIZE)
-    SetCVar(GX_MAXIMIZE, isMaximized and 0 or 1)
-    RaidNotice_AddMessage(RaidWarningFrame, "Toggling Window Mode!", ChatTypeInfo["RAID_WARNING"])
-    C_Timer.After(1, function()
-        RestartGx()
-    end)
-end
-
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
 -- ## -------------------------------------------------------------------------
@@ -319,7 +309,6 @@ end
 function o.BINDING_DEVS_OPTIONS_DLG() o:OpenConfig() end
 function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
 function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
-function o.BINDING_DEVS_TOGGLE_WINDOWED() o.ToggleWindowed() end
 function o.BINDING_DEVS_TOGGLE_FRAMESTACK() o.ToggleFrameStack() end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
     if ns:HasChatFrame() then ns.chatFrame:Clear() end
