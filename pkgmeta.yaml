@@ -14,7 +14,6 @@ embedded-libraries:
 
 tools-used:
   - DevSuite
-  - Addon-Usage
   - Bugsack
   - Bug-Grabber
 
