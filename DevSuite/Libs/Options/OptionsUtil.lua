@@ -36,19 +36,19 @@ end
 
 --- @param propKey string
 --- @param defVal any
-function o:GetGlobalValue(propKey, defVal) return ns:db().global[propKey] or defVal end
+function o:GetGlobalValue(propKey, defVal) return ns:g()[propKey] or defVal end
 
 --- @param propKey string
 --- @param val any
-function o:SetGlobalValue(propKey, val) ns:db().global[propKey] = val end
+function o:SetGlobalValue(propKey, val) ns:g()[propKey] = val end
 
 --- @param propKey string
 --- @param defVal any
-function o:GetValue(propKey, defVal) return ns:db().profile[propKey] or defVal end
+function o:GetValue(propKey, defVal) return ns:profile()[propKey] or defVal end
 
 --- @param propKey string
 --- @param val any
-function o:SetValue(propKey, val) ns:db().profile[propKey] = val end
+function o:SetValue(propKey, val) ns:profile()[propKey] = val end
 
 
 --[[-------------------------------------------------------
