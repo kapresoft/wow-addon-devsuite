@@ -16,7 +16,7 @@ New Instance
 -------------------------------------------------------------------------------]]
 local libName = ns.M.MainController()
 --- @class MainController
-local L = ns:NewAceEvent(); ns:Register(libName, L)
+local o = ns:NewAceEvent(); ns:Register(libName, o)
 local p, pd, t, tf = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
@@ -53,7 +53,6 @@ end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-local o = L
 
 --- Init Method: Called by DevSuite.lua
 --- @private
@@ -92,7 +91,7 @@ function o:OnShowEventTrace()
   local tu = ns:traceUtil(); tu[m](tu)
 end
 
-function o:OnToggleFrameRate() L:ShowFPS(ns:db().global.show_fps) end
+function o:OnToggleFrameRate() self:ShowFPS(ns:g().show_fps) end
 
 --- @private
 function o:RegisterOnPlayerEnteringWorld()
@@ -120,10 +119,9 @@ function o:ShowFPS(val)
 end
 
 function o:InitAddonUsage()
-  local g = ns:db().global
   --- @type Frame
   local au = AddonUsage
-  local autoShowUI = au and g.addon_addonUsage_auto_show_ui == true
+  local autoShowUI = au and ns:g().addon_addonUsage_auto_show_ui == true
   if not autoShowUI then return end
 
   -- TODO: Add "compact" option
@@ -159,5 +157,5 @@ function o:CreateEventFrame()
 end
 
 AceEvent:RegisterMessage(MSG.OnToggleFrameRate, function(msg, source, ...)
-  L:OnToggleFrameRate()
+  o:OnToggleFrameRate()
 end)

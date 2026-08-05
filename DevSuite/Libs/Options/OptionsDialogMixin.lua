@@ -186,18 +186,6 @@ function o:CreateGeneralOptions()
       function(_, val) ns:SetChatFrameFontSize(val) end
     ),
   }
-
-  local showSpecialNotice = ns:g().show_AddonManagerHasMovedNotice
-  if showSpecialNotice then
-    a.spacer1 = { type = 'description', name = '\n\n  ', width = 'full', order = order:next() }
-    a.specialNoticeText = {
-      name = c1(L['Addon Manager Special Notice']),
-      type = 'description',
-      fontSize = 'medium',
-      order = order:next(),
-    }
-  end
-
   return general
 end
 
