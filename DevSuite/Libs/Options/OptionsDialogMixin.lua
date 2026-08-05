@@ -35,13 +35,17 @@ local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_FONT_COLOR)
 local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)
 
+--- @type AceConfigOption, string
+local __edc, __edc_desc_dcfEnabled
+
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
 local libName = M.OptionsDialogMixin()
 --- @class OptionsDialogMixin : AceEvent-3.0
-local o = ns:AceEvent(); ns:Register(libName, o)
+local o = ns:Register(libName, ns:NewAceEvent())
 
+local p, pd, t, tf = ns:log(libName)
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
@@ -89,6 +93,13 @@ function o:CreateOptions()
   return options
 end
 
+--- Updates the description once DebugChatFrame becomes the default chat frame.
+--- @see DevConsoleModuleMixin#EnableDebugChatFrame
+function o:OnEnabledDefaultChatFrame()
+  if not __edc then return end; __edc.desc = __edc_desc_dcfEnabled
+end
+
+--- @return GeneralConfigOption
 function o:CreateGeneralOptions()
   local order = self.order
 
@@ -142,12 +153,11 @@ function o:CreateGeneralOptions()
   })
   a.enableDebugConsole.name = c2(a.enableDebugConsole.name)
   local edc = a.enableDebugConsole
+  __edc, __edc_desc_dcfEnabled = edc, edc.desc
+  
   if not DebugChatFrame then
-    --a.enableDebugConsole.name = a.enableDebugConsole.name .. '( Requires DebugChatFrame AddOn Library)'
-    --a.enableDebugConsole.descStyle = 'inline'
     ns:dbg().enableLogConsole = false
     edc.desc = 'Requires ' .. c1('DebugChatFrame') .. ' AddOn'
-    edc.disabled = true
   end
 
   a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
@@ -205,3 +215,5 @@ function o:InitOptions()
 
   AceConfigDialog:SetDefaultSize(ns.addon, 950, 600)
 end
+
+o:RegisterMessage(GC.toMsg('OnEnabledDefaultChatFrame'), 'OnEnabledDefaultChatFrame')

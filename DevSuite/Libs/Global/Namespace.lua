@@ -217,6 +217,7 @@ function ns:GetLocale() return ns:AceLocale():GetLocale(self.addon, true) end
 function ns:Register(libName, obj)
   if not (libName or obj) then return end
   self.O[libName] = obj
+  return obj
 end
 
 --- @generic T
