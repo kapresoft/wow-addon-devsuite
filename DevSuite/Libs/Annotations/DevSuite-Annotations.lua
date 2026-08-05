@@ -4,6 +4,9 @@ Global Vars
 --- @type fun(o:any, ...) : void
 pformat = {}
 
+--- @type DebugChatFrameInterface
+DebugChatFrame = {}
+
 --[[-----------------------------------------------------------------------------
 Aliases and Callbacks
 -------------------------------------------------------------------------------]]

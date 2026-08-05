@@ -1,8 +1,6 @@
 --[[-----------------------------------------------------------------------------
 Externals
 -------------------------------------------------------------------------------]]
---- @type DebugChatFrameInterface
-local DebugChatFrame = DebugChatFrame
 --- @type ChatFrame
 local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME
 
@@ -25,7 +23,7 @@ New Mixin
 local L      = ns:NewLib(libName);
 L.moduleName = MODULE_NAME
 
---- @class DevConsoleModule : DevConsoleModuleMixin
+--- @class DevConsoleModule : AceEvent-3.0, AceModule
 --
 --
 --- @alias AddonInterface AceAddon | AceConsole-3.0 | AceEvent-3.0 | AceHook-3.0
@@ -121,14 +119,12 @@ function d:OnEnable()
   if not DefaultChatFrame then self:EnableDebugChatFrame() end
   O.OptionsDebugConsole:EnableGroup()
   self:RegisterMessages()
-  logp('Debug console ENABLED')
 end
 
 function d:OnDisable()
   if ns:HasChatFrame() then ns:ChatFrame():CloseTab() end
   O.OptionsDebugConsole:DisableGroup()
   self:UnregisterAllMessages()
-  return printp('Debug console DISABLED')
 end
 
 function d:GetDefaultChatFrame()
@@ -183,24 +179,20 @@ function d:EnableDebugChatFrame()
     local U = ns:AddonUtil()
     U:LoadOnDemand(addonName, function(loadSuccess, info, errorMsg)
       local successText = c2(tostring(loadSuccess))
-
-      if loadSuccess then return
-      else self.DebugChatFrameNotLoadable = true end
-      if ns.IsDev() then
-        p(sformat('DebugChatFrame Loaded OnDemand: %s', successText))
-      end
-      if info and loadSuccess ~= true then
-        p(sformat('DebugChatFrame is not available. [Reason: %s]', info.reason))
-      end
-      if ns.IsDev() then
-        p('Error Message:', errorMsg)
+      if loadSuccess then
+        t('LoadDebugChatFrame::OnDemand', 'DebugChatFrame=', DebugChatFrame)
+        self:SendMessage(GC.toMsg('OnEnabledDefaultChatFrame'), libName)
+      else
+        self.DebugChatFrameNotLoadable = true
+        if info then
+          t('DebugChatFrame is not available. Reason=', info.reason, 'Error=', errorMsg)
+        end
       end
     end)
   end; LoadDebugChatFrame()
 
   if not DebugChatFrame then return end
 
-  --- @type DebugChatFrameInterface
   local dcf = DebugChatFrame
 
   --- @type DebugChatFrameOptionsInterface
@@ -212,7 +204,7 @@ function d:EnableDebugChatFrame()
     maxLines = ns:dbg().maxLogConsoleLines,
   }
 
-  --- @param chatFrame ChatLogFrameInterface|ChatLogFrame
+  --- @param chatFrame ChatLogFrameInterface
   local cf  = dcf:New(opt, function(chatFrame)
     chatFrame:SetAlpha(1.0)
     local r, g, b = windowColor:GetRGB()
