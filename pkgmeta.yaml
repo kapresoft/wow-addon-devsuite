@@ -11,6 +11,8 @@ required-dependencies:
 embedded-libraries:
   - LibStub
   - Ace3
+  - LibUtil
+  - LibPrettyPrint
 
 tools-used:
   - DevSuite

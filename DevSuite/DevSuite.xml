@@ -1,0 +1,41 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Script file="Libs\Global\Namespace.lua"/>
+    <Script file="Libs\Global\GlobalConstants.lua"/>
+
+    <!--@do-not-package@-->
+    <Include file="Libs\Developer\DeveloperSetup.lua"/>
+    <Include file="Libs\Developer\DeveloperNamespace.lua"/>
+    <!--@end-do-not-package@-->
+
+    <Include file="Libs\Locales\_Locales.xml"/>
+
+    <Script file="Libs\Global\API.lua"/>
+    <Script file="Libs\Controller\ConfigDialogController.lua" />
+    <Script file="Libs\Controller\MainController.lua" />
+
+    <Script file="Libs\Database\DatabaseSchema.lua"/>
+    <Script file="Libs\Database\AceDbInitializerMixin.lua"/>
+
+    <Script file="Libs\Options\OptionsUtil.lua" />
+    <Script file="Libs\Options\OptionsDialogMixin.lua" />
+    <Script file="Libs\Options\OptionsDebugConsole.lua" />
+
+    <Include file="Libs\EventTrace\EventTraceUtil.lua"/>
+    <Include file="Libs\EventTrace\_EventTracePresetFilters.xml"/>
+
+    <Script file="Libs\Console\DevConsoleModuleMixin.lua"/>
+
+    <Script file="Libs\Dialog\DialogWidgetMixin.lua"/>
+    <Script file="Libs\Dialog\DebugDialog.lua"/>
+    <Script file="Libs\Dialog\PopupDebugDialog.lua"/>
+    <Script file="Libs\Hooks\PickupHooks.lua" />
+
+    <Script file="DevSuite.lua"/>
+
+    <!--@do-not-package@-->
+    <Script file="Libs\Developer\Developer.lua"/>
+    <!--@end-do-not-package@-->
+
+</Ui>

@@ -53,7 +53,7 @@ luac.out
 # Ignore Saved Variables folder with symlinks
 /_SV
 
-ThirdParty/Libs/
+*/ThirdParty/Libs/
 
 # Build artifacts
 _setup.*
