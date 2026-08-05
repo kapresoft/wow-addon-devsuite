@@ -61,7 +61,6 @@ Type: Profile_DB_ProfileKeys
 Type: Profile_Global_Config
 -------------------------------------------------------------------------------]]
 --- @class DevSuite_Global_Config
---- @field show_AddonManagerHasMovedNotice boolean
 --- @field debug DebugSettingsFlag_Config
 --- @field debug_dialog DebugDialog_Config
 --- @field trace TraceConfig
@@ -160,7 +159,6 @@ local DefaultAddOnDatabase = {
     show_fps                           = true,
     prompt_for_reload_to_enable_addons = true,
     addon_addonUsage_auto_show_ui      = true,
-    show_AddonManagerHasMovedNotice    = true,
     console_fontSize                   = 14,
     --- @type DebugSettingsFlag_Config
     debug = {
