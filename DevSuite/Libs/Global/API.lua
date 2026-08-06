@@ -15,11 +15,6 @@ local p, pd, t, tf = ns:log(libName)
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function o:IsAddonUsageAvailable()
-  return BINDING_HEADER_ADDONUSAGE ~= nil
-      or ns:AddonUtil():IsAddOnEnabled('AddonUsage')
-end
-
 function o:GetUIScale()
   -- This returns "1" if UI scaling is enabled, "0" otherwise.
   local useUiScale = GetCVar('useUiScale')

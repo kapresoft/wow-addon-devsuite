@@ -36,8 +36,6 @@ L['Debugging::Category::Enable All::Button']        = 'Enable All'
 L['Debugging::Category::Enable All::Button::Desc']  = 'Enables all log categories below. Note that the default category (not shown here) will always be active.'
 L['Debugging::Category::Disable All::Button']       = 'Disable All'
 L['Debugging::Category::Disable All::Button::Desc'] = 'Disables all log categories below. Note that the default category (not shown here) will always be active.'
-L['Addon Usage: Automatically Show UI']             = true
-L['Addon Usage: Automatically Show UI::Desc']       = 'If enabled, this will automatically show the [Addon Usage] UI after player login.'
 
 L['Global Setting']          = 'Global Setting'
 L['Character Setting']       = 'Character Setting'

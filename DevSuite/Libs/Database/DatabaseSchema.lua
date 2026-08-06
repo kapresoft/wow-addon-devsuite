@@ -65,7 +65,6 @@ Type: Profile_Global_Config
 --- @field debug_dialog DebugDialog_Config
 --- @field trace TraceConfig
 --- @field show_fps boolean
---- @field addon_addonUsage_auto_show_ui boolean
 --- @field prompt_for_reload_to_enable_addons boolean
 --- @field auto_loaded_addons AutoLoadedAddons
 --- @field console_fontSize number
@@ -158,7 +157,6 @@ local DefaultAddOnDatabase = {
   ['global'] = {
     show_fps                           = true,
     prompt_for_reload_to_enable_addons = true,
-    addon_addonUsage_auto_show_ui      = true,
     console_fontSize                   = 14,
     --- @type DebugSettingsFlag_Config
     debug = {
