@@ -18,6 +18,7 @@ usage() {
   print -- "Usage:"
   print -- "  release-clean.sh [options]"
   print -- "Options:"
+  print -- "  -c, --clean             Clean existing .release/ build dir"
   print -- "  -h, --help              Show this help and exit"
   print
 }
@@ -25,28 +26,33 @@ usage() {
 _Main() {
   emulate -L zsh
   local -a help_opt
+  local -a clean_opt
 
   zparseopts -D -E \
+    c=clean_opt -clean=clean_opt \
     h=help_opt -help=help_opt || {
-      usage
-      return 1
+      usage; return 1
     }
 
   if (( ${#help_opt} )); then
-    usage
-    return 0
+    usage; return 0
   fi
 
   local -a cmd
-  if [[ -d $rel_dir ]]; then
-    cmd=(rm -rf -- "$rel_dir")
-    p "Existing .release found."
-    p "Executing: ${cmd[*]}"
-    if "${cmd[@]}"; then
-      p "Done: ${cmd[*]}"
-    else
-      p "Failed: ${cmd[*]}"
-      return 1
+
+  # Check if options were set
+  if (( ${#clean_opt[@]} > 0 )); then
+    p "Clean option detected"
+    if [[ -d $rel_dir ]]; then
+      cmd=(rm -rf -- "$rel_dir")
+      p "Existing .release found."
+      p "Executing: ${cmd[*]}"
+      if "${cmd[@]}"; then
+        p "Done: ${cmd[*]}"
+      else
+        p "Failed: ${cmd[*]}"
+        return 1
+      fi
     fi
   fi
 
@@ -56,7 +62,7 @@ _Main() {
     echo "  $_ls_out"
     return 1
   fi
-  cmd=(./dev/release.sh -dz)
+  cmd=(~/bin/release.sh -dz)
   p "Executing: ${cmd[*]}"
   if "${cmd[@]}"; then
     p "Done: ${cmd[*]}"
