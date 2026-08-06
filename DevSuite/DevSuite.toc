@@ -1,7 +1,7 @@
 ## Interface: 11509, 20506, 30403, 40402, 50504, 120007
 ## Version: @project-version@
 ## Title: Dev|cff4DBEFFSuite|r
-## IconTexture: Interface/AddOns/DevSuite/Core/Assets/DebugChatFrame-Logo-1-50px
+## IconTexture: interface/addons/devsuite/libs/assets/devsuite-icontexture
 
 ## Author: Antonio W. Lagnada (kapresoft@gmail.com)
 ## Notes: DevSuite is a dev toolkit tailored for World of Warcraft developers. |cff1784d1This addon is provided 'as is' without any warranties. All rights reserved. Redistribution or modification is not permitted.|r

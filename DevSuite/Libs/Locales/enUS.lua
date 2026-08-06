@@ -96,3 +96,5 @@ L['Add Preset Filter Keyword']  = true
 L['Clear']                      = true
 L['Show Event Trace At Startup']        = true
 L['Show Event Trace At Startup::Desc']  = 'Shows the Event Trace window automatically when the addon loads'
+
+L['Showing variable value for']         = true
