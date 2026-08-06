@@ -129,7 +129,7 @@
                 </FontString>
 
                 <Texture parentKey="HeaderIconLeft" alpha="1"
-                         file="Interface\AddOns\DevSuite\Core\Assets\DebugChatFrame-Logo-1-50px">
+                         file="interface/addons/devsuite/libs/assets/devsuite-icontexture">
                     <Size x="22" y="22"/>
                     <Anchors>
                         <Anchor point="TOPLEFT" relativeTo="$parentHeaderBackground"

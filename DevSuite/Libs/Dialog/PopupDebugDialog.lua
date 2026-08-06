@@ -13,12 +13,14 @@ Local Vars
 --- @type Namespace
 local ns = select(2, ...)
 
+local L = ns:GetLocale()
+
 local AceGUI = ns:AceGUI()
 local LuaEvaluator = ns:LuaEvaluator()
 
 local libName = ns.M.PopupDebugDialog()
 --- @class PopupDebugDialog : PopupDebugDialogFrame
-local L = {}; ns:Register(libName, L)
+local o = {}; ns:Register(libName, o)
 
 local FRAME_NAME = ns.addon .. 'DebugDialog'
 local FRAME_TITLE = ns.addon .. ' Dialog'
@@ -114,7 +116,7 @@ local function CreateDialog()
     local strVal = fmt(o)
     objectName = objectName or tostring(o)
     self:SetTextContent(strVal)
-    self:SetStatusText(sformat('xxShowing variable value for [%s]', objectName))
+    self:SetStatusText(sformat(L['Showing variable value for'] .. ' [%s]', objectName))
     self:Show()
   end
 
@@ -123,16 +125,16 @@ local function CreateDialog()
 end
 
 --- @return PopupDebugDialog
-function L:Constructor()
+function o:Constructor()
   --- @see AceGUIContainer
   local frameWidget = CreateDialog()
 
   --- @type PopupDebugDialog
-  local dialog = CreateFromMixins(L, frameWidget)
+  local dialog = CreateFromMixins(o, frameWidget)
 
   return dialog
 end
 
 -- todo next: refactor and remove __call
-local mt = { __tostring = function() return libName end, __call = L.Constructor }
-setmetatable(L, mt)
+local mt = { __tostring = function() return libName end, __call = o.Constructor }
+setmetatable(o, mt)
