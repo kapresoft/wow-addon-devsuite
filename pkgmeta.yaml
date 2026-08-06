@@ -1,10 +1,8 @@
 package-as: DevSuite
 # --------------------------
-license-output: LICENSE.txt
-# --------------------------
 enable-nolib-creation: no
-enable-toc-creation: no
-# --------------------------
+license-output: LICENSE.txt
+
 required-dependencies:
   - DebugChatFrame
 
@@ -20,35 +18,51 @@ tools-used:
   - Bug-Grabber
 
 externals:
-  ThirdParty/Libs/Ace3: https://github.com/WoWUIDev/Ace3
-  ThirdParty/Libs/LibPrettyPrint: https://github.com/kapresoft/wow-addon-LibPrettyPrint
-  ThirdParty/Libs/Kapresoft-LibUtil: https://github.com/kapresoft/wow-lib-util
+  DevSuite/ThirdParty/Libs/Ace3:
+    url: https://github.com/WoWUIDev/Ace3
+    tag: latest
+  DevSuite/ThirdParty/Libs/LibPrettyPrint:
+    url: https://github.com/kapresoft/wow-addon-LibPrettyPrint
+    tag: latest
+  DevSuite/ThirdParty/Libs/Kapresoft-LibUtil:
+    url: https://github.com/kapresoft/wow-lib-util
+    tag: latest
 
 ignore:
   - "*.sh"
   - "*.md"
   - "*.yaml"
-  - "*.yml"
+  - "*.toml"
   - dev
   - doc
   - scripts
-  - ThirdParty/Libs/Kapresoft-LibUtil/LICENSE
-  - ThirdParty/Libs/Kapresoft-LibUtil/Kapresoft-LibUtil.toc
-  - ThirdParty/Libs/Kapresoft-LibUtil/External
-  - ThirdParty/Libs/Kapresoft-LibUtil/*.sh
-  - ThirdParty/Libs/Kapresoft-LibUtil/dev
-  - ThirdParty/Libs/Kapresoft-LibUtil/dev
-  - ThirdParty/Libs/Kapresoft-LibUtil/doc
-  - ThirdParty/Libs/Kapresoft-LibUtil/Lib
-  - ThirdParty/Libs/Kapresoft-LibUtil/_Lib.xml
-  - ThirdParty/Libs/LibPrettyPrint/*.sh
-  - ThirdParty/Libs/LibPrettyPrint/LibPrettyPrint.xml
-  - ThirdParty/Libs/LibPrettyPrint/Assets
-  - ThirdParty/Libs/LibPrettyPrint/dev
-  - ThirdParty/Libs/LibPrettyPrint/doc
-  - ThirdParty/Libs/LibPrettyPrint/ThirdParty
-  - ThirdParty/Libs/LibPrettyPrint/LICENSE
-  - ThirdParty/Libs/LibPrettyPrint/Libs/Developer
+  - DevSuite/ThirdParty/Libs/Ace3/changelog.txt
+  - DevSuite/ThirdParty/Libs/Ace3/Ace3.lua
+  - DevSuite/ThirdParty/Libs/Ace3/Ace3.toc
+  - DevSuite/ThirdParty/Libs/Ace3/tests
+  - DevSuite/ThirdParty/Libs/Ace3/Bindings.xml
+  - ActionbarPlus-Core/ThirdParty/Libs/Ace3/README.md
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/dev
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/*.md
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/*.yaml
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/*.sh
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-1-0
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/*.toc
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.lua
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.xml
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/Assets
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
+  - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/Annotations
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/dev
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/doc
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/Assets
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/ThirdParty
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/LibPrettyPrint.xml
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/Libs/Developer/*.xml
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/Libs/Developer/Developer*.lua
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/Libs/Annotations
+  - DevSuite/ThirdParty/Libs/LibPrettyPrint/*.toc
+
 ## Potentially helpful libraries
 ## - https://www.wowace.com/projects/libactionbutton-1-0
 
@@ -66,5 +80,5 @@ ignore:
 #
 # ⚠️ Do not change unless you also change the repo/addon layout.
 # Base path is .release/
-#move-folders:
-#  DevSuite/DevSuite: LibIconPicker
+move-folders:
+  DevSuite/DevSuite: DevSuite
