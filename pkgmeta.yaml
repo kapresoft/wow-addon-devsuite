@@ -41,7 +41,7 @@ ignore:
   - DevSuite/ThirdParty/Libs/Ace3/Ace3.toc
   - DevSuite/ThirdParty/Libs/Ace3/tests
   - DevSuite/ThirdParty/Libs/Ace3/Bindings.xml
-  - ActionbarPlus-Core/ThirdParty/Libs/Ace3/README.md
+  - DevSuite/ThirdParty/Libs/Ace3/README.md
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/dev
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/*.md
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/*.yaml
@@ -63,8 +63,6 @@ ignore:
   - DevSuite/ThirdParty/Libs/LibPrettyPrint/Libs/Annotations
   - DevSuite/ThirdParty/Libs/LibPrettyPrint/*.toc
 
-## Potentially helpful libraries
-## - https://www.wowace.com/projects/libactionbutton-1-0
 
 # REQUIRED for CurseForge packager (non-obvious):
 # The LEFT side MUST be <repo-folder>/<addon-folder>
