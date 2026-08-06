@@ -79,10 +79,8 @@ function o:OnAddonReady(msg) self:InitializeState() end
 --- @private
 function o:InitializeState()
   self:OnShowEventTrace()
-  -- AddonUsage is the "Addon Usage" global var
   C_Timer.After(3, function()
     self:OnToggleFrameRate()
-    self:InitAddonUsage()
   end)
 end
 
@@ -116,22 +114,6 @@ function o:ShowFPS(val)
   end
   if true == frameShown then return val == false and toggleFn() end
   return val == true and toggleFn()
-end
-
-function o:InitAddonUsage()
-  --- @type Frame
-  local au = AddonUsage
-  local autoShowUI = au and ns:g().addon_addonUsage_auto_show_ui == true
-  if not autoShowUI then return end
-
-  -- TODO: Add "compact" option
-  au:SetSize(385, 200)
-  if ChatFrame1Tab then
-    -- TODO: Add "align" option
-    au:ClearAllPoints()
-    au:SetPoint("BOTTOM", ChatFrame1Tab, "TOP", 155, 0)
-  end
-  au:Show();
 end
 
 --- @param eventFrame MainControllerFrame

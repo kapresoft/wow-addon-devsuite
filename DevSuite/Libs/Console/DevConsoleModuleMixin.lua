@@ -159,7 +159,6 @@ function d:InitializeDebugChatFrame()
   ns:ChatFrame():InitialTabSelection(ns:dbg().selectLogConsoleTab)
   --@do-not-package@
   logp('IsShown():', c3(ns:IsChatFrameTabShown()))
-  logp('Addon Usage avail?', c3(O.API:IsAddonUsageAvailable()))
   --@end-do-not-package@
   self:OnDefaultChatFrameChanged()
 end

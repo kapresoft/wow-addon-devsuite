@@ -3,7 +3,6 @@ Type: GeneralConfigOptionArgs
 -------------------------------------------------------------------------------]]
 --- @class GeneralConfigOptionArgs : AceConfigOption
 --- @field showFPS AceConfigOption
---- @field addonUsage_AutomaticallyShow AceConfigOption
 --- @field specialNoticeText AceConfigOption
 --- @field spacer1 AceConfigOption
 --- @field enableDebugConsole AceConfigOption
@@ -103,9 +102,6 @@ end
 function o:CreateGeneralOptions()
   local order = self.order
 
-  local aULabel = c2(L['Addon Usage: Automatically Show UI'])
-  if not API:IsAddonUsageAvailable() then aULabel = L['Addon Usage: Automatically Show UI'] end
-
   --- @class GeneralConfigOption : AceConfigOption
   --- @field args GeneralConfigOptionArgs
   local general = {
@@ -170,17 +166,6 @@ function o:CreateGeneralOptions()
   })
   a.showFPS.name = c2(a.showFPS.name)
 
-  a.addonUsage_AutomaticallyShow = {
-    disabled = not API:IsAddonUsageAvailable(),
-    order = order:next(),
-    width = 'full',
-    name = aULabel,
-    desc = ns.LocaleUtil.G('Addon Usage: Automatically Show UI::Desc'),
-    descStyle = 'inline',
-    type = 'toggle',
-    get = self.util:GlobalGet('addon_addonUsage_auto_show_ui'),
-    set = self.util:GlobalSet('addon_addonUsage_auto_show_ui'),
-  }
   a.fontSize = {
     name = c2(L['Console Font Size']),
     desc = ns.LocaleUtil.G('Choose a Console Font Size'),
