@@ -158,15 +158,6 @@ end
 --- @type Modules
 ns.M = M
 
---local function InitLocalLibStub()
---  --- @class LocalLibStub : Kapresoft_LibUtil_LibStubMixin
---  local LocalLibStub = ns:K().Objects.LibStubMixin:New(
---          ns.addon, 1.0,
---          function(name, newLibInstance) ns:Register(name, newLibInstance) end)
---  ns.LibStubAce       = LibStub
---  ns.LibStub          = LocalLibStub
---end
-
 -- ###############################################################
 -- Loggers/Tracers:: NoOp in Official Releases
 -- ###############################################################
