@@ -6,7 +6,7 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 
 local consoleCommand = "devsuite"
@@ -134,7 +134,7 @@ function o:ConfirmAndReload()
   if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME) end
   return false
 end
---- @type Namespace
+--- @type DevSuite_Namespace
 local xns = ns
 
 xns.GC = L

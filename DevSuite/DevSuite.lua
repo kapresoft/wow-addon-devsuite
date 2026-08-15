@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 
 local O, GC = ns.O, ns.GC
@@ -28,7 +28,7 @@ NewAddOn
 local o = ns:AceAddon():NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
 DevSuite = o -- Global Var
 
-local p, pd, t, tf = ns:log(ns.addon)
+local p, t, fmt = ns:log(ns.addon)
 
 --- @type PopupDebugDialog
 o.PopupDialog = nil

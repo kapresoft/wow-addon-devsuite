@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
 local MSG = GC.M
@@ -17,7 +17,7 @@ New Instance
 local libName = ns.M.OptionsDebugConsole()
 --- @class OptionsDebugConsole : AceEvent-3.0
 local o = ns:NewAceEvent(); ns:Register(libName, o)
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions

@@ -4,7 +4,7 @@ Lua Vars
 local loadstring = loadstring
 local tinsert = table.insert
 
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, M = ns.O, ns.M
 

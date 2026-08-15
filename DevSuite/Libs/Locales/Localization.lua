@@ -1,4 +1,4 @@
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local L = ns:GetLocale()
 

@@ -13,7 +13,7 @@ New Instance
 local libName = M.AceDbInitializerMixin()
 --- @class AceDbInitializerMixin : AceEvent-3.0
 local S = ns:NewAceEvent(); ns:Register(libName, S)
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 --
 --- @class AceDbInitializer : AceDbInitializerMixin
 --

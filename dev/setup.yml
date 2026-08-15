@@ -5,7 +5,7 @@
 # Note: This will build in ./.release/_setup directory
 package-as: _setup
 # --------------------------
-no-changelog: true
+manual-changelog: dev/changelog-empty.txt
 
 # Use GitHub because svn repos are slower
 # basepath is ${package-as}
@@ -19,6 +19,9 @@ externals:
     tag: latest
   ThirdParty-Libs/LibPrettyPrint:
     url: https://github.com/kapresoft/wow-addon-LibPrettyPrint
+    tag: latest
+  ThirdParty-Libs/LibTraceKit:
+    url: https://github.com/kapresoft/wow-addon-LibTraceKit
     tag: latest
   ThirdParty-Libs/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util
@@ -43,13 +46,6 @@ ignore:
   - ThirdParty-Libs/Ace3/Bindings.xml
   - ThirdParty-Libs/Ace3/Ace3.lua
   - ThirdParty-Libs/Ace3/*.txt
-  - ThirdParty-Libs/Kapresoft-LibUtil/dev
-  - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
-  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-1-0
-  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/Assets
-  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
-  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.lua
-  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.xml
   - ThirdParty-Libs/LibPrettyPrint/*.sh
   - ThirdParty-Libs/LibPrettyPrint/LibPrettyPrint.xml
   - ThirdParty-Libs/LibPrettyPrint/Assets
@@ -58,6 +54,19 @@ ignore:
   - ThirdParty-Libs/LibPrettyPrint/ThirdParty
   - ThirdParty-Libs/LibPrettyPrint/LICENSE
   - ThirdParty-Libs/LibPrettyPrint/Libs/Developer
+  - ThirdParty-Libs/LibTraceKit/dev
+  - ThirdParty-Libs/LibTraceKit/doc
+  - ThirdParty-Libs/LibTraceKit/Libs/Assets
+  - ThirdParty-Libs/LibTraceKit/Libs/Developer.lua
+  - ThirdParty-Libs/LibTraceKit/ThirdParty
+  - ThirdParty-Libs/Kapresoft-LibUtil/dev
+  - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-1-0
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/Assets
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.lua
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.xml
+
 
 # Base path is .release/
 move-folders:

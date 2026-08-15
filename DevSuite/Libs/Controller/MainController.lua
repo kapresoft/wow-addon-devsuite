@@ -6,7 +6,7 @@ local CreateFrame = CreateFrame
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
 local E, MSG, AceEvent = GC.E, GC.M, ns:NewAceEvent()
@@ -17,7 +17,7 @@ New Instance
 local libName = ns.M.MainController()
 --- @class MainController
 local o = ns:NewAceEvent(); ns:Register(libName, o)
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Support Functions

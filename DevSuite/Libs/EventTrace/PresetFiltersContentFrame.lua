@@ -1,4 +1,4 @@
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, GC, M = ns.O, ns.GC, ns.M
 local Str_IsBlank, Tbl_IsEmpty = ns:String().IsBlank, ns:Table().IsEmpty
@@ -8,7 +8,7 @@ local keywordFrameHeight = 24
 local DEVSUITE_CREATE_KEYWORD = 'DEVSUITE_CREATE_KEYWORD'
 local enterTimer
 
-local p, pd, t, tf = ns:log('PresetFiltersContentFrameMixin')
+local p, t, fmt = ns:log('PresetFiltersContentFrameMixin')
 
 --- @class ButtonsContainerFrame : Frame
 --- @field ScrollChild FrameObj
