@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 
 local C_GetDisplayedMountID = C_MountJournal and C_MountJournal.GetDisplayedMountID
@@ -13,7 +13,7 @@ Module::
 local libName = ns.M.PickupHooks()
 --- @class PickupHooks
 local o = {}; ns:Register(libName, o)
-local p, _, t = ns:log(libName)
+local p, t = ns:log(libName)
 
 --[[-----------------------------------------------------------------------------
 Module::(Methods)

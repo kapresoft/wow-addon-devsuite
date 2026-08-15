@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, MS = ns.O, ns.GC.M
 local AceConfigDialog = ns:AceConfigDialog()

@@ -10,6 +10,7 @@
     <Script file="Libs\LibPrettyPrint\Libs\Formatter.lua"/>
     <Script file="Libs\LibPrettyPrint\Libs\Printer.lua"/>
     <Script file="Libs\LibPrettyPrint\Libs\LibPrettyPrint.lua"/>
+    <Script file="Libs\LibTraceKit\LibTraceKit.lua"/>
 
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\AceConfigUtil.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\AceLib.lua"/>

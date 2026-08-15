@@ -1,8 +1,12 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
+--- @type LibTraceKit-1.0
+local LibTraceKit = LibStub('LibTraceKit-1.0')
+assertsafe(type(LibTraceKit) ~= nil, 'Failed to reference LibTraceKit-1.0')
+
 
 --[[-------------------------------------------------------------------
 Support Functions
@@ -25,7 +29,7 @@ local function printerFn1(moduleName)
 end
 
 --- @param moduleName Name
-local function printerFn2(moduleName)
+local function printerFn(moduleName)
   local _ns = ns
   local m = resolveModuleName(moduleName)
   
@@ -39,33 +43,23 @@ local function printerFn2(moduleName)
   end
 end
 
---- @param prefix string|any
---- @return TraceFn @Printer function that outputs plain values to Blizzard Trace UI (like print)
-local function traceFn1(prefix)
-  if type(prefix) ~= 'string' then return function(...) return ns.tracer and ns.tracer:td(...) end end
-  return function(...) return ns:traceUtil() and ns:traceUtil():t(strtrim(prefix), ...) end
-end
-
---- With auto formatting of objects
---- @param prefix string|nil
---- @return TraceFnFormatted @Printer function that outputs formatted values to Blizzard Trace UI (like print)
-local function traceFn2(prefix)
-  if type(prefix) ~= 'string' then return function(...) return ns.tracer and ns.tracer:tdf(...) end end
-  return function(...) return ns:traceUtil() and ns:traceUtil():tf(strtrim(prefix), ...) end
+--- @param prefix string?
+--- @return TraceFunction
+local function traceFn(prefix)
+  local t = LibTraceKit:New(ns.addon, prefix)
+  return t --[[@as TraceFunction ]]
 end
 
 --[[-----------------------------------------------------------------------------
 Core:: Namespace Override for Dev Namespace
 -------------------------------------------------------------------------------]]
 do
-  local h = ns.logHolder
-  h.printer1 = printerFn1
-  h.printer2 = printerFn2
-  h.tracer1 = traceFn1
-  h.tracer2 = traceFn2
+  local h = ns.logHolder; h.printer = printerFn; h.tracer = traceFn
 end
 
 --[[-------------------------------------------------------------------
 Verbose Logging in Dev Mode
 ---------------------------------------------------------------------]]
-local _, _, t = ns:log('DeveloperNamespace')
+local t = select(2, ns:log('DeveloperNamespace'))
+t('DevNamespace', 'Loaded...')
+

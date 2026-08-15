@@ -2,7 +2,7 @@
 This is a utility loader for LibIconPicker
 ---------------------------------------------------------------------]]
 
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 
 --[[-------------------------------------------------------------------
@@ -21,9 +21,7 @@ New Library
 local libName = 'LibIconPickerUtil'
 --- @class LibIconPickerUtil
 local S = {}; ns:Register(libName, S)
-
-local libName = 'LibIconPickerUtil'
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 --- @type LibIconPickerUtil
 local o = S;

@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local Table = ns:Table()
 local Tbl_DeepCopy, Tbl_IsEmpty = Table.DeepCopy, Table.IsEmpty
@@ -9,7 +9,7 @@ local Tbl_DeepCopy, Tbl_IsEmpty = Table.DeepCopy, Table.IsEmpty
 local msg_RemovePresetKeyword = 'RemovePresetKeyword(keywordToDelete): {keywordToDelete} should be a string, but type was [%s]'
 
 local libName = 'DatabaseSchema'
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 --[[-------------------------------------------------------------------
 Type: DatabaseSchema

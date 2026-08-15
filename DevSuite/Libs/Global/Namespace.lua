@@ -8,7 +8,7 @@ local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 
 addonName, xns = ...;
 
---- @class Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
+--- @class DevSuite_Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
 --- @field GC GlobalConstants
 --- @field addon string
 --- @field chatFrame ChatFrame
@@ -144,15 +144,12 @@ ns.printer = LibPrettyPrint:Printer({
 }, predicateFn)
 
 --- @class LogHolder
---- @field printer1 fun(moduleName:Name) : LibPrettyPrint_PrintFn A simple printer
---- @field printer2 fun(moduleName:Name) : LibPrettyPrint_PrintFn A delayed printer
---- @field tracer1 fun(moduleName:Name) : TraceFn A simple tracer
---- @field tracer2 fun(moduleName:Name) : TraceFnFormatted A tracer with auto formatting of variables
+--- @field printer fun(moduleName:Name) : PrinterFunction A simple printer
+--- @field tracer fun(moduleName:Name) : TraceFunction
 
 ns.logHolder = {}; do
   local h = ns.logHolder; local noop = function(_moduleName) return function() end end
-  h.printer1 = noop; h.printer2 = noop
-  h.tracer1 = noop; h.tracer2 = noop
+  h.printer = noop; h.tracer = noop
 end
 
 --- @type Modules
@@ -162,18 +159,26 @@ ns.M = M
 -- Loggers/Tracers:: NoOp in Official Releases
 -- ###############################################################
 
---- @alias TraceFn fun(...: any) : void @Printer function that outputs plain values to Blizzard Trace UI (like print)
---- @alias TraceFnFormatted fun(...: any) : void @Printer function that outputs formatted values to Blizzard Trace UI (like print)
-
 --- Returns the print, delayed-print, tracer, formatted-tracer functions
 --- ```
---- local p, pd, t, tf = ns:log('EventHandler')
+--- local p, t, fmt = ns:log('EventHandler')
 --- ```
 --- @param moduleName Name
---- @return LibPrettyPrint_PrintFn, LibPrettyPrint_PrintFn, TraceFn, TraceFnFormatted
+--- @return PrinterFunction, TraceFunction, LibPrettyPrint_Formatter
 function ns:log(moduleName)
   local h = self.logHolder
-  return h.printer1(moduleName), h.printer2(moduleName), h.tracer1(moduleName), h.tracer2(moduleName)
+  return h.printer(moduleName), h.tracer(moduleName), ns.fmt
+end
+
+--- Returns the tracer and formatter
+--- ```
+--- local p, t, fmt = ns:log('EventHandler')
+--- ```
+--- @param moduleName Name
+--- @return TraceFunction, LibPrettyPrint_Formatter
+function ns:trace(moduleName)
+  local _, t, fmt = self:log(moduleName)
+  return t, fmt
 end
 
 local SequenceMixin = LibStub('Kapresoft-SequenceMixin-2-0')
@@ -300,5 +305,5 @@ function ns:RegisterChatFrame(chatFrame) self.chatFrame = chatFrame end
 --[[-----------------------------------------------------------------------------
 --- Global Settings
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 DevSuite_NS = ns

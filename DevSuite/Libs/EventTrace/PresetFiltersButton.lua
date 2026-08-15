@@ -1,7 +1,7 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local GC, L = ns.GC, ns:GetLocale()
 local strupper, strlower = strupper, strlower
@@ -17,7 +17,7 @@ Module::PresetFiltersButton
 -------------------------------------------------------------------------------]]
 --- @see NamespaceObjects
 local libName = 'PresetFiltersButton'
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 --- @class PresetFiltersButtonMixin : CheckButton, AceEvent-3.0, AceHook-3.0
 --- @field Arrow Texture @See Core/EventTrace/_EventTracePresetFilters.xml#CheckButton/Arrow

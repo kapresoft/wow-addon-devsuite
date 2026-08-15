@@ -19,12 +19,12 @@ local C_LoadAddOn = C_AddOns and C_AddOns.LoadAddOn or LoadAddOn
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = DevSuite_NS
 local ip = ns.O.LibIconPickerUtil
 
 local libName = 'Developer'
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 
 -- Settings
 -- /run DEVS_SHOW_ADDON_LIST_ON_LOGIN = true

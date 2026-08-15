@@ -4,7 +4,7 @@
     The contents of this file will be generated automatically.
     
 ]]--
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local c1 = ns:ColorFn(HEIRLOOM_BLUE_COLOR)
 

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="deploy" type="ShConfigurationType" focusToolWindowBeforeRun="true">
-    <option name="SCRIPT_TEXT" value="w-deployer --config ./dev/deployer-config.lua -v" />
+    <option name="SCRIPT_TEXT" value="w-deployer-default" />
     <option name="INDEPENDENT_SCRIPT_PATH" value="true" />
     <option name="SCRIPT_PATH" value="$PROJECT_DIR$/dev/legacy/deploy.sh" />
     <option name="SCRIPT_OPTIONS" value="-w" />

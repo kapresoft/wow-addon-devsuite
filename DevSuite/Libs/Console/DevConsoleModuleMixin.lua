@@ -7,7 +7,7 @@ local DEFAULT_CHAT_FRAME = DEFAULT_CHAT_FRAME
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local sformat     = ns.sformat
 local O, GC       = ns.O, ns.GC
@@ -52,7 +52,7 @@ local c3, c4  = cfmt:ColorFn(ADVENTURES_COMBAT_LOG_BLUE), cfmt:ColorFn(FACTION_G
 local c5  = cfmt:ColorFn(LIGHTGRAY_FONT_COLOR)
 local windowAlpha, windowColor = 0.9, cfmt:ColorFromHex('343434')
 
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 local pre     = sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
 local pre_dev = sformat('{{%s::%s}}:', ns.f.debug(nameShort), c2(MODULE_NAME))
 

@@ -21,7 +21,7 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local O, GC, M = ns.O, ns.GC, ns.M
 local L = ns:GetLocale()
@@ -44,7 +44,7 @@ local libName = M.OptionsDialogMixin()
 --- @class OptionsDialogMixin : AceEvent-3.0
 local o = ns:Register(libName, ns:NewAceEvent())
 
-local p, pd, t, tf = ns:log(libName)
+local p, t, fmt = ns:log(libName)
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]

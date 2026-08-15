@@ -5,7 +5,7 @@ todo next: This file is longer being used. To be deleted.
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
---- @type Namespace
+--- @type DevSuite_Namespace
 local ns = select(2, ...)
 local MSG, sformat = ns.GC.M, ns.sformat
 local NameDescG = ns.LocaleUtil.NameDescGlobal
