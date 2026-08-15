@@ -34,6 +34,8 @@ ns.sformat = string.format
 --- @type Kapresoft-ColorFormatter-2-0
 local ColorFormatter__
 
+--- @param prefix string @The prefix or tag name
+--- @param ... any
 function tr(prefix, ...)
   local c = CreateColorFromHexString('466EFFff')
   local identifier = c:WrapTextInColorCode(strupper(ns.addon)) .. '::'
