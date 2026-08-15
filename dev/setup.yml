@@ -34,15 +34,15 @@ ignore:
   - "*.yml"
   - "*.toc"
   - "*.toml"
-  - ThirdParty/Ace3.xml
-  - ThirdParty/ThirdParty.xml
   - dev
-  - doc
   - LICENSE
   - CHANGELOG.md
-  - Core
-  - Bindings.xml
-  - DevSuite.xml
+  - DevSuite/Libs
+  - DevSuite/Bindings.xml
+  - DevSuite/DevSuite.lua
+  - DevSuite/DevSuite.xml
+  - DevSuite/ThirdParty/Ace3.xml
+  - DevSuite/ThirdParty/ThirdParty.xml
   - ThirdParty-Libs/Ace3/Bindings.xml
   - ThirdParty-Libs/Ace3/Ace3.lua
   - ThirdParty-Libs/Ace3/*.txt

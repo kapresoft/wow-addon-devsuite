@@ -6,6 +6,8 @@ local AceLib = LibStub('Kapresoft-AceLib-2-0')
 local DCFM = LibStub('Kapresoft-DebugChatFrameMixin-2-0')
 local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 
+local strupper = strupper or string.upper
+
 addonName, xns = ...;
 
 --- @class DevSuite_Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
@@ -26,18 +28,17 @@ Mixin(ns, GVM, AceLib, DCFM)
 ns.addon = addonName
 ns.O = ns.O or {}
 ns.nameShort = 'DS'
+ns.traceName = strupper(ns.addon)
 ns.sformat = string.format
 
 --- @type Kapresoft-ColorFormatter-2-0
 local ColorFormatter__
 
---@do-not-package@
 function tr(prefix, ...)
   local c = CreateColorFromHexString('466EFFff')
-  local identifier = c:WrapTextInColorCode('DEVSUITE') .. '::'
+  local identifier = c:WrapTextInColorCode(strupper(ns.addon)) .. '::'
   if not EventTrace then return end; EventTrace:LogEvent(identifier .. prefix, ...)
 end
---@end-do-not-package@
 
 --- @return Kapresoft-ColorFormatter-2-0
 local function ColorFormatter()
