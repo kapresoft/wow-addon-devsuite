@@ -1,3 +1,6 @@
+--- @alias PrinterFunction fun(...:any):void
+--- @alias TracerFunction fun(...:any):void
+
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -34,12 +37,16 @@ ns.sformat = string.format
 --- @type Kapresoft-ColorFormatter-2-0
 local ColorFormatter__
 
+--- Expose globally for devs to use.
 --- @param prefix string @The prefix or tag name
 --- @param ... any
 function tr(prefix, ...)
   local c = CreateColorFromHexString('466EFFff')
-  local identifier = c:WrapTextInColorCode(strupper(ns.addon)) .. '::'
-  if not EventTrace then return end; EventTrace:LogEvent(identifier .. prefix, ...)
+  local tag = c:WrapTextInColorCode(ns.traceName)
+  if type(prefix) == 'string' then
+    tag = c:WrapTextInColorCode(('%s_%s'):format(ns.traceName, strupper(prefix)))
+  end
+  if not EventTrace then return end; EventTrace:LogEvent(tag, ...)
 end
 
 --- @return Kapresoft-ColorFormatter-2-0
@@ -148,7 +155,7 @@ ns.printer = LibPrettyPrint:Printer({
 
 --- @class LogHolder
 --- @field printer fun(moduleName:Name) : PrinterFunction A simple printer
---- @field tracer fun(moduleName:Name) : TraceFunction
+--- @field tracer fun(moduleName:Name) : TracerFunction
 
 ns.logHolder = {}; do
   local h = ns.logHolder; local noop = function(_moduleName) return function() end end
@@ -167,7 +174,7 @@ ns.M = M
 --- local p, t, fmt = ns:log('EventHandler')
 --- ```
 --- @param moduleName Name
---- @return PrinterFunction, TraceFunction, LibPrettyPrint_Formatter
+--- @return PrinterFunction, TracerFunction, LibPrettyPrint_Formatter
 function ns:log(moduleName)
   local h = self.logHolder
   return h.printer(moduleName), h.tracer(moduleName), ns.fmt
@@ -178,7 +185,7 @@ end
 --- local p, t, fmt = ns:log('EventHandler')
 --- ```
 --- @param moduleName Name
---- @return TraceFunction, LibPrettyPrint_Formatter
+--- @return TracerFunction, LibPrettyPrint_Formatter
 function ns:trace(moduleName)
   local _, t, fmt = self:log(moduleName)
   return t, fmt

@@ -44,10 +44,10 @@ local function printerFn(moduleName)
 end
 
 --- @param prefix string?
---- @return TraceFunction
+--- @return TracerFunction
 local function traceFn(prefix)
-  local t = LibTraceKit:New(ns.addon, prefix)
-  return t --[[@as TraceFunction ]]
+  local t = LibTraceKit:New(ns.addon, prefix):WithDelimiter('_')
+  return t --[[@as TracerFunction ]]
 end
 
 --[[-----------------------------------------------------------------------------
@@ -62,4 +62,3 @@ Verbose Logging in Dev Mode
 ---------------------------------------------------------------------]]
 local t = select(2, ns:log('DeveloperNamespace'))
 t('DevNamespace', 'Loaded...')
-
