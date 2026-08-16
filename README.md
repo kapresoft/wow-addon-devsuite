@@ -5,59 +5,102 @@ DevSuite
 
 ### Description
 
-DevSuite is a powerful toolkit tailored for World of Warcraft developers, offering an extensive range of features to streamline the development process. With its intuitive debug dialog UI, developers gain easy access to advanced debugging capabilities and the ability to evaluate and save custom debugging code.
+DevSuite is a toolkit for World of Warcraft addon developers, offering an intuitive debug dialog UI, event tracing, frame inspection, and other tools to streamline debugging and optimize your add-on development workflow.
 
-DevSuite is the ultimate companion for World of Warcraft developers, providing indispensable tools to enhance productivity, streamline debugging, and optimize add-on development.
+## Highlights
+
+-   In-game Lua eval dialog — test snippets and inspect return values without leaving WoW.
+-   Global `tr(...)` tracing function (via LibTraceKit) plus `/etrace` event tracing — see what's firing, when.
+-   "Get Details on Mouse Over" — inspect any UI frame/widget just by hovering.
+-   Toggle Blizzard's Frame Stack tool via keybind — no more typing `/fstack`.
+-   Ready-made preset filters for `/etrace` — cut through event noise fast.
+-   Save and switch between up to 15 debugging sessions effortlessly.
+-   Automated FPS display for performance monitoring.
+-   Dedicated Debug Chat Frame tab (via DebugChatFrame) for a clean, filterable log console.
+-   `/devsuite` slash commands for quick access to the debug dialog, config, and console.
+-   `Dump Cursor Info` keybind for inspecting spells, macros, and mounts under your cursor.
+-   Ace3 profile support for per-character/per-spec dev settings.
+-   Key actions (Debug Dialog, Get Details On Mouse Over, Toggle Frame Stack, and more) can be bound to keys via WoW's native Key Bindings UI.
 
 ### Key Features
 
-#### Debug UI Evaluation Tool 
-Enhance your debugging workflow with a versatile tool that allows you to evaluate Lua variables and create custom functions with sophisticated logic. This empowers you to fine-tune your Lua scripting and accelerate your development process.
+#### Debug UI Evaluation Tool
+
+Evaluate Lua on the fly and save the snippets you use often. Switch between up to 15 saved debugging sessions, so you're not rewriting the same throwaway code every time you reload.
+
+#### Tracing with LibTraceKit
+
+Call the global `tr(...)` function anywhere in your code to emit tagged trace output to the trace UI — no need to wire up your own logging.
+
+```
+Syntax: tr('<tag-name>', ...)
+```
+
+Example:
+
+```
+tr('EventListener', 'var1=', var1, 'tableVal=', fmt({ 1, 2, 3 }))
+```
+
+Open the trace UI (`/etrace`) and filter for `DEVSUITE` to see the trace line:
+
+```
+DEVSUITE_EVENTLISTENER "var1=" "<value>", etc...
+```
+
+![DevSuite LibTraceKit Event Logs](doc/media/devsuite-event-log.png)
+
+#### Preset Filters for `/etrace`
+
+Filter WoW's event stream with ready-made presets instead of typing event names by hand. Jump straight to the events you care about and cut out the noise when watching `/etrace` output.
+
+![DevSuite Preset Filters](doc/media/devsuite-preset-filters.png)
 
 #### Get Frame On Mouse Over
 
-Identify the frame directly beneath the mouse cursor with this convenient tool. It provides invaluable assistance in pinpointing specific UI elements, allowing for precise targeting and troubleshooting.
+Hover over any UI element to identify the exact frame beneath the cursor, with its details surfaced instantly. No more guessing frame names or digging through `/fstack` output by hand.
 
-#### Auto-Load Add-Ons
+#### Toggle Frame Stack
 
-Simplify your development environment by enabling automatic loading of add-ons essential for your development tasks. DevSuite takes care of loading the necessary add-ons, ensuring a seamless workflow without the need for manual intervention.
+Bind a key to instantly bring up Blizzard's Frame Stack tool — no more typing `/fstack` every time you need it. Frame Stack shows you the full frame hierarchy under your cursor, including frame names, sizes, and layers, which makes it invaluable for tracking down anchor issues, taint sources, and z-order/click-through problems while you iterate.
 
-#### Auto-Show/Activate UI Components
+#### Debug Chat Frame
 
-Customize your development experience by automatically displaying or activating specific UI components, such as "Frames Per Second" or add-on-specific elements like the "Addon Usage" UI. This saves time and enables you to focus on critical aspects of your development workflow.
+Enable a dedicated Debug Chat Frame tab (requires the optional [DebugChatFrame](https://www.curseforge.com/wow/addons/debugchatframe) addon) to keep debug/trace output separate from your regular chat log. Configurable font size, max line count, and can be set as your default chat frame.
 
-#### Global or Per Character Add-On Control
+#### FPS Display
 
-Enjoy flexible control over add-ons with the ability to manage them globally or on a per-character basis. DevSuite empowers you to fine-tune your add-on configuration and tailor it to your specific needs.
+An always-available FPS readout for quick performance checks while you iterate.
 
-### Docs
-- [Getting Started](https://github.com/kapresoft/wow-addon-devsuite/wiki/Getting-Started)
+#### Slash Commands
 
-&nbsp;
+```
+/devsuite (or /ds) [option]
+  config    - Shows the config UI
+  dialog    - Toggles the debug dialog UI
+  clear     - Clears the debug console (aliases: cls, clr)
+  info      - Prints additional info about the addon
+  help      - Shows this help
 
-![pixel-line-500px](https://user-images.githubusercontent.com/1599306/209889477-315aa4bb-1e92-4e5f-b684-7d5296427ada.png)
+/devsuite-options (or /ds-options) - Opens the Ace3 config command line options
+```
 
-### Author Notes
-- Please submit bugs and feature requests at [Github/DevSuite/issues](https://github.com/kapresoft/wow-addon-devsuite/issues)
-- [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones)
-- [Releases](https://github.com/kapresoft/wow-addon-devsuite/releases)
-- [About the Author (Tony Lagnada)](https://tony.resume.lagnada.com/)
+#### Dump Cursor Info
+
+Bind a key to `Dump Cursor Info` to inspect whatever's currently on your cursor — spell, macro, mount, or companion — and dump its details straight to your chat log. Handy for grabbing spell IDs and macro indices while you work.
+
+#### Ace3 Profile Support
+
+Your DevSuite settings follow Ace3 profiles, so per-character or per-spec configurations switch automatically with your profile.
 
 ### Donations
 
-As a software engineer, I am passionate about this project and have dedicated a significant amount of time and effort to creating a high-quality product. If you enjoy using this World of Warcraft add-on, please consider supporting me through a donation via [Paypal&trade;](https://www.paypal.com/donate/?hosted_button_id=AX58YP3GSGXVU) or the Bitcoin Address provided below. Your support is greatly appreciated. Thank you in advance for your generosity.
+If DevSuite has made your addon development easier, consider supporting its development:
 
 - **[Paypal&trade; Donation](https://www.paypal.com/donate/?hosted_button_id=AX58YP3GSGXVU)**
 - **[Bitcoin Donation](https://www.blockchain.com/btc/address/3QQVAwJGkKHMM2oq6CLVWYgfx83TFVwp39)**
 
-&nbsp;
+## About
 
-![pixel-line-500px](https://user-images.githubusercontent.com/1599306/209889477-315aa4bb-1e92-4e5f-b684-7d5296427ada.png)
-
-### Try My Other Addons
-- [ActionbarPlus](https://www.curseforge.com/wow/addons/actionbarplus)
-- [ActionbarPlus-M6](https://www.curseforge.com/wow/addons/actionbarplus-m6)
-- [Saved Dungeons &amp; Raids](https://www.curseforge.com/wow/addons/saved-dungeons-raids)
-- [Addon Template](https://www.curseforge.com/wow/addons/addon-template)
-- [AddonSuite](https://www.curseforge.com/wow/addons/addon-suite)
-
+- About the Author [(Tony Lagnada)](https://tony.resume.lagnada.com/)
+- My AddOn Portfolio Can Be Found Here [Curse Forge/Kapresoft](https://www.curseforge.com/members/kapresoft/projects)
