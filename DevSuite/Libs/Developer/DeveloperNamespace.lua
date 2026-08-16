@@ -44,10 +44,10 @@ local function printerFn(moduleName)
 end
 
 --- @param prefix string?
---- @return TracerFunction
+--- @return TraceFn
 local function traceFn(prefix)
   local t = LibTraceKit:New(ns.addon, prefix):WithDelimiter('_')
-  return t --[[@as TracerFunction ]]
+  return t --[[@as TraceFn ]]
 end
 
 --[[-----------------------------------------------------------------------------
