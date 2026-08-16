@@ -1,6 +1,3 @@
---- @alias PrinterFunction fun(...:any):void
---- @alias TracerFunction fun(...:any):void
-
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -154,8 +151,8 @@ ns.printer = LibPrettyPrint:Printer({
 }, predicateFn)
 
 --- @class LogHolder
---- @field printer fun(moduleName:Name) : PrinterFunction A simple printer
---- @field tracer fun(moduleName:Name) : TracerFunction
+--- @field printer fun(moduleName:Name) : PrintFn A simple printer
+--- @field tracer fun(moduleName:Name) : TraceFn
 
 ns.logHolder = {}; do
   local h = ns.logHolder; local noop = function(_moduleName) return function() end end
@@ -174,7 +171,7 @@ ns.M = M
 --- local p, t, fmt = ns:log('EventHandler')
 --- ```
 --- @param moduleName Name
---- @return PrinterFunction, TracerFunction, LibPrettyPrint_Formatter
+--- @return PrintFn, TraceFn, LibPrettyPrint_Formatter
 function ns:log(moduleName)
   local h = self.logHolder
   return h.printer(moduleName), h.tracer(moduleName), ns.fmt
@@ -185,7 +182,7 @@ end
 --- local p, t, fmt = ns:log('EventHandler')
 --- ```
 --- @param moduleName Name
---- @return TracerFunction, LibPrettyPrint_Formatter
+--- @return TraceFn, LibPrettyPrint_Formatter
 function ns:trace(moduleName)
   local _, t, fmt = self:log(moduleName)
   return t, fmt
