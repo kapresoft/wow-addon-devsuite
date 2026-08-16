@@ -1,7 +1,7 @@
-DevSuite
-==================
+# DevSuite
+> ▶︎ _The developer tool your WoW addons deserve._
 
-[Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Milestones](https://github.com/kapresoft/wow-addon-devsuite/milestones) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues) | [CurseForge](https://legacy.curseforge.com/wow/addons/devsuite/files)
+[Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues) | [CurseForge](https://curseforge.com/wow/addons/devsuite/files)
 
 ### Description
 
