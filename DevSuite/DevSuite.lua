@@ -150,14 +150,14 @@ function o:GetMouseFocus()
   local children = val.GetChildren and val:GetChildren()
   if type(children) == 'table' then
     local cL = debugInfo.children
-    for _, c in pairs(children) do
-      if type(c) == 'table' then
-        local d = {}
-        if c and c.GetParentKey then
-          local n = c:GetParentKey()
-          local dbgn = c.GetDebugName and c:GetDebugName()
-          d[n] = dbgn
-          table.insert(cL, d)
+    if cL then
+      for _, c in pairs(children) do
+        if type(c) == 'table' then
+          if c and c.GetParentKey then
+            local n = c:GetParentKey()
+            local dbgn = c.GetDebugName and c:GetDebugName()
+            if n and dbgn then table.insert(cL, { [n] = dbgn }) end
+          end
         end
       end
     end
