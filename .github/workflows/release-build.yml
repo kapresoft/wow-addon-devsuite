@@ -60,11 +60,15 @@ jobs:
           echo uploadCurseForge="${{ inputs.uploadCurseForge }}" >> $GITHUB_ENV
           echo uploadWowInterface="${{ inputs.uploadWowInterface }}" >> $GITHUB_ENV
       ## ------------------------------------------------ ##
-      - name: "Set ENV Var Option to Skip Uploads on Branch Builds and refName"
+      - name: "Set refName for Branch Builds"
         if: ${{ github.ref_type == 'branch' }}
         run: |
-          echo packagerOptions="-d" >> $GITHUB_ENV
           echo refName="${GITHUB_SHA_SHORT}" >> $GITHUB_ENV
+      ## ------------------------------------------------ ##
+      - name: "Set ENV Var Option to Skip Uploads on Branch Builds unless an upload was requested"
+        if: ${{ github.ref_type == 'branch' && env.uploadCurseForge == 'false' && env.uploadWowInterface == 'false' }}
+        run: |
+          echo packagerOptions="-d" >> $GITHUB_ENV
       ## ------------------------------------------------ ##
       - name: "Set ENV Variable: buildBasePath & buildArtifactFilename"
         run: |
@@ -115,6 +119,29 @@ jobs:
       ## ------------------------------------------------ ##
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v7
+      ## ------------------------------------------------ ##
+      # Dry-run the release notes so the same text can be handed to CurseForge
+      # via pkgmeta.yaml's manual-changelog before the packager uploads.
+      - name: "Draft release notes (dry-run, for CurseForge changelog)"
+        id: draft_notes_dry_run
+        if: ${{ env.uploadCurseForge != 'false' }}
+        uses: release-drafter/release-drafter@v7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ env.refName }}
+          name: ${{ env.refName }}
+          version: ${{ env.refName }}
+          commitish: ${{ github.sha }}
+          prerelease: false
+          dry-run: true
+      ## ------------------------------------------------ ##
+      - name: "Write CurseForge changelog file"
+        if: ${{ env.uploadCurseForge != 'false' }}
+        env:
+          RELEASE_BODY: ${{ steps.draft_notes_dry_run.outputs.body }}
+        run: |
+          printf '%s\n' "$RELEASE_BODY" > dev/changelog-release.md
       ## ------------------------------------------------ ##
       ## see: https://github.com/marketplace/actions/wow-packager
       - uses: BigWigsMods/packager@v2
@@ -174,6 +201,7 @@ jobs:
           prerelease: false
           footer: |
             <br><br>
+            <!-- spacer -->
             #### ${{ env.buildArtifactFilename }}
             ```text
             sha256:${{ env.buildArtifactChecksum }}

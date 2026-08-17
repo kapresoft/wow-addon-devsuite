@@ -2,6 +2,9 @@ package-as: DevSuite
 # --------------------------
 enable-nolib-creation: no
 license-output: LICENSE.txt
+manual-changelog:
+  filename: dev/changelog-release.md
+  markup-type: markdown
 
 required-dependencies:
   - DebugChatFrame
@@ -39,7 +42,6 @@ ignore:
   - "*.toml"
   - dev
   - doc
-  - scripts
   - DevSuite/ThirdParty/Libs/Ace3/changelog.txt
   - DevSuite/ThirdParty/Libs/Ace3/Ace3.lua
   - DevSuite/ThirdParty/Libs/Ace3/Ace3.toc
