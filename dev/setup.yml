@@ -5,7 +5,12 @@
 # Note: This will build in ./.release/_setup directory
 package-as: _setup
 # --------------------------
-manual-changelog: dev/changelog-empty.txt
+# Reuses dev/changelog-release.md. release-build.yml overwrites it at
+# release time for the packager to read, but never commits that change back,
+# so the tracked copy here always stays blank.
+manual-changelog:
+  filename: dev/changelog-release.md
+  markup-type: markdown
 
 # Use GitHub because svn repos are slower
 # basepath is ${package-as}
@@ -35,6 +40,7 @@ ignore:
   - "*.toc"
   - "*.toml"
   - dev
+  - doc
   - LICENSE
   - CHANGELOG.md
   - DevSuite/Libs
