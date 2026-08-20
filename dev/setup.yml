@@ -49,8 +49,8 @@ ignore:
   - DevSuite/DevSuite.xml
   - DevSuite/ThirdParty/Ace3.xml
   - DevSuite/ThirdParty/ThirdParty.xml
-  - ThirdParty-Libs/Ace3/Bindings.xml
   - ThirdParty-Libs/Ace3/Ace3.lua
+  - ThirdParty-Libs/Ace3/Bindings.xml
   - ThirdParty-Libs/Ace3/*.txt
   - ThirdParty-Libs/LibPrettyPrint/*.sh
   - ThirdParty-Libs/LibPrettyPrint/LibPrettyPrint.xml
