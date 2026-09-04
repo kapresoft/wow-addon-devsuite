@@ -56,7 +56,7 @@ Event::OnAddOnReady
 -------------------------------------------------------------------------------]]
 
 local function OnAddOnReady()
-  local MINIMAL_UI_MODE = true
+  local MINIMAL_UI_MODE = false
   -- formation: 0=dev, 1=bottom, 2=top, nil=reset
   local DISABLE_FRAME_FORMATION = true
   local FRAME_FORMATION = nil

@@ -4,23 +4,18 @@ about: New Story Template
 title: 'Story: [Title]'
 labels: ''
 assignees: ''
-
 ---
 
 ## Story
-As a World of Warcraft player, I would like to [details]
+As a World of Warcraft addon developer, I would like to [details]
 so that [fill in the blanks]
 
 ## Details
 [describe additional items here]
 
-## Story
-As a World of Warcraft player, I would like to [details]
-so that [fill in the blanks]
+## Acceptance Criteria
+- [ ] [Observable behavior in-game that confirms this works]
+- [ ] [Edge case or condition that must hold]
 
-## Details
-[describe additional items here]
-
-## Others
-- [ ] Trivial
-- [ ] Requires Feedback :+1:  or :-1:  from users
+## Screenshots (optional)
+[attach screenshots or gifs here, if helpful]
