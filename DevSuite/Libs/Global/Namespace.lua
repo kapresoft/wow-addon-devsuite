@@ -213,6 +213,12 @@ function ns:ColorFormatter() return ColorFormatter() end
 function ns:AddonUtil() return LibStub('Kapresoft-AddonUtil-2-0') end
 function ns:LuaEvaluator() return LibStub('Kapresoft-LuaEvaluator-2-0') end
 
+--- Registers a non-default locale. Always isDefault=false, silent=true.
+--- @see AceLocale-3.0.NewLocale
+--- @param locale string Name of the locale to register, e.g. 'deDE', 'frFR', etc.
+--- @return table<string, boolean|string>? locale Locale table to add localizations to, or nil if the current locale is not required.
+function ns:NewLocale(locale) return ns:AceLocale():NewLocale(self.addon, locale, false, true) end
+
 --- @return table<string, string>
 function ns:GetLocale() return ns:AceLocale():GetLocale(self.addon, true) end
 
