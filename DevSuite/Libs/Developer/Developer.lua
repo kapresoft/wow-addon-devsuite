@@ -341,7 +341,13 @@ f:SetScript('OnEvent', function(self, event, ...)
   end)
 end)
 
+--- @type DevSuite_CodeEditorDialogMixin
+local dlg = DevSuite_CodeEditorDialog
 
-if DevSuite_CodeEditorDialog then
-    DevSuite_CodeEditorDialog:Show()
+if dlg then
+    dlg:Configure({ fontFamily = 'SourceCodePro', wrapText = true } --[[@as DevSuite_CodeEditorOptions ]])
+    dlg:SetOnConfigChanged(function(self, options)
+        tr(ns.addon, 'Developer', 'options=', fmt(options))
+    end)
+    dlg:Show()
 end
