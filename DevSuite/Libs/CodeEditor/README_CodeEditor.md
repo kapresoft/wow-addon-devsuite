@@ -171,3 +171,36 @@ snaps to the nearest supported size (`NearestFontSize`).
   `notify` argument -- `true` fires `OnConfigChanged` (used by the
   dropdown/checkbox handlers), omitted for internal/initial sets (`OnLoad`,
   `Configure`).
+
+## Standalone library extraction
+
+This prototype has proven out per #90's acceptance criteria (line numbers
+stay correct with no-wrap, gutter sync holds up, font/size/wrap are
+user-configurable). Next step: extract it into its own repo, mirroring
+`LibIconPicker`'s structure (`LibStub:NewLibrary`, own `.toc`, `pkgmeta.yaml`,
+`dev/deployer-config.lua`).
+
+The final library covers two jobs, not just editing:
+
+- **Edit or view code** -- everything this prototype already does (gutter,
+  no-wrap/scroll, font/size/wrap switching)
+- **Evaluate code** -- running the buffer's contents, the way the Debug
+  Dialog's eval popup does today
+
+Candidate names, evaluated on how well they signal *both* jobs rather than
+reading as a plain text-editing widget:
+
+1. **`LibCodeConsole`** (favored) -- "console" implies an edit-then-run loop
+   (like a REPL or dev console), capturing edit *and* eval in one word
+   without overpromising either way.
+2. **`LibLuaConsole`** -- same framing as #1, names the language explicitly.
+   Slightly narrows scope (Lua-only) but reads more concretely from a repo
+   list.
+3. **`LibCodeEditor`** -- the working name from #90. Accurate for edit/view,
+   silent on eval; undersells the eval half given it's a first-class
+   capability, not an add-on.
+4. **`LibEvalPad`** -- "pad" implies a lightweight edit surface, "eval"
+   front-loads the run capability. Shorter, more casual tone than the others.
+5. **`LibDevPad`** -- generic dev-scratchpad framing, doesn't name "code" or
+   "eval" specifically. Least descriptive, but most open-ended if scope grows
+   beyond edit+eval later (e.g. FAIAP.lua-style syntax highlighting).

@@ -106,19 +106,41 @@
                 </Anchors>
                 <Frames>
                     <!-- Absolute names (not $parent-relative): TopBar itself has no
-                         name, only a parentKey, so $parent expansion would break here. -->
+                         name, only a parentKey, so $parent expansion would break here.
+
+                         Both dropdowns below are hidden: only their menu machinery
+                         (UIDropDownMenu_Initialize/ToggleDropDownMenu/UIDropDownMenu_SetText)
+                         is used. The visible triggers are FontButton/FontSizeButton,
+                         mirroring WowLua's icon-button pattern (a plain Button that opens
+                         an otherwise-invisible UIDropDownMenuTemplate frame). -->
                     <Frame name="DevSuite_CodeEditorFontDropdown" parentKey="FontDropdown"
-                           inherits="UIDropDownMenuTemplate">
+                           inherits="UIDropDownMenuTemplate" hidden="true">
                         <Anchors>
                             <Anchor point="RIGHT" x="-6" y="0"/>
                         </Anchors>
                     </Frame>
-                    <Frame name="DevSuite_CodeEditorFontSizeDropdown" parentKey="FontSizeDropdown"
-                           inherits="UIDropDownMenuTemplate">
+                    <Button name="DevSuite_CodeEditorFontButton" parentKey="FontButton">
+                        <Size x="20" y="20"/>
                         <Anchors>
-                            <Anchor point="RIGHT" relativeKey="$parent.FontDropdown" relativePoint="LEFT" x="10" y="0"/>
+                            <Anchor point="RIGHT" relativeKey="$parent.FontDropdown" relativePoint="RIGHT" x="-4" y="0"/>
+                        </Anchors>
+                        <NormalTexture file="Interface\Icons\INV_Misc_Note_01"/>
+                        <HighlightTexture file="Interface\Icons\INV_Misc_Note_01" alphaMode="ADD"/>
+                    </Button>
+                    <Frame name="DevSuite_CodeEditorFontSizeDropdown" parentKey="FontSizeDropdown"
+                           inherits="UIDropDownMenuTemplate" hidden="true">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeKey="$parent.FontButton" relativePoint="LEFT" x="10" y="0"/>
                         </Anchors>
                     </Frame>
+                    <Button name="DevSuite_CodeEditorFontSizeButton" parentKey="FontSizeButton">
+                        <Size x="20" y="20"/>
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeKey="$parent.FontButton" relativePoint="LEFT" x="-4" y="0"/>
+                        </Anchors>
+                        <NormalTexture file="Interface\Icons\INV_Misc_Gear_08"/>
+                        <HighlightTexture file="Interface\Icons\INV_Misc_Gear_08" alphaMode="ADD"/>
+                    </Button>
                 </Frames>
             </Frame>
 

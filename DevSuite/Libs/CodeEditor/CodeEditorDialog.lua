@@ -287,13 +287,25 @@ function o:OnLoad()
 
   self.HeaderTitle:SetText('Code Editor (Prototype)')
 
-  -- parentKey="FontDropdown"/"FontSizeDropdown" resolve onto TopBar (their
-  -- immediate XML parent), not this dialog frame -- alias them here, same as
-  -- CodeEditBox above.
+  -- parentKey="FontDropdown"/"FontButton"/"FontSizeDropdown"/"FontSizeButton"
+  -- resolve onto TopBar (their immediate XML parent), not this dialog frame --
+  -- alias them here, same as CodeEditBox above.
   self.FontDropdown = self.TopBar.FontDropdown
+  self.FontButton = self.TopBar.FontButton
   self.FontSizeDropdown = self.TopBar.FontSizeDropdown
+  self.FontSizeButton = self.TopBar.FontSizeButton
   InitFontDropdown(self.FontDropdown, self)
   InitFontSizeDropdown(self.FontSizeDropdown, self)
+  -- Icon-button triggers for FontDropdown/FontSizeDropdown, mirroring WowLua's
+  -- Button_Config pattern: a plain Button opens an otherwise-invisible
+  -- UIDropDownMenuTemplate frame, instead of the dropdown's own visible
+  -- text+arrow chrome.
+  self.FontButton:SetScript('OnClick', function(button)
+    ToggleDropDownMenu(1, nil, self.FontDropdown, button:GetName(), 0, 0)
+  end)
+  self.FontSizeButton:SetScript('OnClick', function(button)
+    ToggleDropDownMenu(1, nil, self.FontSizeDropdown, button:GetName(), 0, 0)
+  end)
   self.fontSize = DEFAULTS.fontSize
   self:SetCodeFont(DEFAULTS.fontFamily)
 
