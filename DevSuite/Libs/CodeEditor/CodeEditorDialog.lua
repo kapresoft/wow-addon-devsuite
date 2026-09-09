@@ -25,13 +25,33 @@ local BACKDROP_TOAST_12_12_NO_EDGE = {
   insets = BACKDROP_TOAST_12_12.insets,
 }
 
--- Font choices for the dropdown: label -> global font object. "Default"
--- points at the DevSuite_CodeEditorFont alias (see CodeEditorDialog.xml),
--- kept first so it matches the box's font on first open.
+-- Font choices for the dropdown: stable key + label -> global font object.
+-- "key" is the identifier used in options.fontFamily (Configure/callbacks),
+-- kept independent of "label" (display text) so relabeling doesn't break
+-- persisted config. First entry matches the box's font on first open.
 local FONT_CHOICES = {
-  { label = 'Ubuntu Mono', font = DevSuite_CodeEditorFont_UbuntuMono },
-  { label = 'JetBrains Mono', font = DevSuite_CodeEditorFont_JetBrainsMono },
-  { label = 'Source Code Pro', font = DevSuite_CodeEditorFont_SourceCodePro },
+  { key = 'UbuntuMono', label = 'Ubuntu Mono', font = DevSuite_CodeEditorFont_UbuntuMono },
+  { key = 'JetBrainsMono', label = 'JetBrains Mono', font = DevSuite_CodeEditorFont_JetBrainsMono },
+  { key = 'SourceCodePro', label = 'Source Code Pro', font = DevSuite_CodeEditorFont_SourceCodePro },
+}
+
+--- @param key string
+--- @return table|nil
+local function FindFontChoice(key)
+  for _, choice in ipairs(FONT_CHOICES) do
+    if choice.key == key then return choice end
+  end
+  return nil
+end
+
+-- Configure() defaults, and the shape of the snapshot passed to the
+-- OnConfigChanged callback. fontSize is accepted/echoed but not yet applied --
+-- Fonts.xml hardcodes a fixed height per font object; there is no live
+-- font-size mechanism today.
+local DEFAULTS = {
+  fontFamily = FONT_CHOICES[1].key,
+  fontSize = 13,
+  wrapText = false,
 }
 
 -- Sample text long enough to force scrolling, for testing gutter/scroll sync.
@@ -87,13 +107,21 @@ Types
 --- @class DevSuite_CodeEditorWrapMeasure : Frame
 --- @field Text FontString Hidden; same font/wrap as CodeEditBox, used to count wrapped rows
 
+--- @class DevSuite_CodeEditorOptions
+--- @field fontFamily string Key into FONT_CHOICES, e.g. 'UbuntuMono'
+--- @field fontSize number Accepted/echoed only -- not yet applied (see DEFAULTS)
+--- @field wrapText boolean
+
 --- @class DevSuite_CodeEditorDialogMixin : Frame
 --- @field TopBar Frame Reserved space for future toolbar/controls
 --- @field FontDropdown Frame The font-choice UIDropDownMenu, anchored inside TopBar
---- @field codeFont Font Currently applied font object (index into FONT_CHOICES)
+--- @field codeFont Font Currently applied font object
+--- @field fontFamily string Key of the currently applied font (see FONT_CHOICES)
+--- @field fontSize number Current fontSize option (not yet applied to rendering)
 --- @field BottomBar DevSuite_CodeEditorBottomBar
 --- @field WrapMeasure DevSuite_CodeEditorWrapMeasure
 --- @field wrapText boolean Current wrap-mode state
+--- @field onConfigChanged fun(self: DevSuite_CodeEditorDialog, options: DevSuite_CodeEditorOptions)|nil
 --- @field GutterBackdrop Frame Draws the gutter's border; Gutter is inset inside it
 --- @field Gutter DevSuite_CodeEditorGutter
 --- @field CodeBackdrop Frame Draws the code area's border; ScrollFrame is inset inside it
@@ -163,8 +191,9 @@ local function InitFontDropdown(dropdown, self)
     for _, choice in ipairs(FONT_CHOICES) do
       local info = UIDropDownMenu_CreateInfo()
       info.text = choice.label
-      info.checked = (self.codeFont == choice.font)
-      info.func = function() self:SetCodeFont(choice.font, choice.label) end
+      info.checked = (self.fontFamily == choice.key)
+      -- User-driven change (dropdown click) -- notify listeners.
+      info.func = function() self:SetCodeFont(choice.key, true) end
       UIDropDownMenu_AddButton(info, level)
     end
   end)
@@ -207,11 +236,10 @@ function o:OnLoad()
   -- above.
   self.FontDropdown = self.TopBar.FontDropdown
   InitFontDropdown(self.FontDropdown, self)
-  self:SetCodeFont(FONT_CHOICES[1].font, FONT_CHOICES[1].label)
+  self.fontSize = DEFAULTS.fontSize
+  self:SetCodeFont(DEFAULTS.fontFamily)
 
-  local wrapCheck = self.BottomBar.WrapCheckButton
-  wrapCheck.text:SetText('Wrap Text')
-  wrapCheck:SetChecked(false)
+  self.BottomBar.WrapCheckButton.text:SetText('Wrap Text')
 
   -- Default is no-wrap: the EditBox is fixed-width and wider than the scroll
   -- viewport, so lines never reach a wrap boundary and logical line count
@@ -220,7 +248,7 @@ function o:OnLoad()
   -- is typed; RefreshGutter grows it from here as needed.
   self.CodeEditBox:SetHeight(self.ScrollFrame:GetHeight())
   self.CodeEditBox:SetAutoFocus(false)
-  self:SetWrapText(false)
+  self:SetWrapText(DEFAULTS.wrapText)
   -- Horizontal text padding: EditBox insets are the actual API for this --
   -- the frame's own anchors position the whole (4000px-wide, no-wrap) hit
   -- region, not the glyphs within it, so nudging those anchors doesn't pad
@@ -263,32 +291,40 @@ function o:OnCodeEditBoxSizeChanged()
   self:RefreshGutter()
 end
 
+--- User-driven change (checkbox click) -- notify listeners.
 --- @param checked boolean
-function o:OnWrapToggled(checked) self:SetWrapText(checked) end
+function o:OnWrapToggled(checked) self:SetWrapText(checked, true) end
 
---- Applies a font to the code box, the gutter numbers, and the hidden wrap
---- measuring string together -- inherits="..." in XML only binds once at
---- load, so switching fonts at runtime needs SetFontObject on all three.
---- @param font Font
---- @param label string|nil For the dropdown's UIDropDownMenu_SetText
-function o:SetCodeFont(font, label)
-  self.codeFont = font
+--- Applies a font (by FONT_CHOICES key) to the code box, the gutter numbers,
+--- and the hidden wrap measuring string together -- inherits="..." in XML
+--- only binds once at load, so switching fonts at runtime needs
+--- SetFontObject on all three.
+--- @param fontFamily string Key into FONT_CHOICES
+--- @param notify boolean|nil Fire OnConfigChanged (user-driven change); omit for internal/initial sets
+function o:SetCodeFont(fontFamily, notify)
+  local choice = FindFontChoice(fontFamily)
+  if not choice then return end
+  self.fontFamily = choice.key
+  self.codeFont = choice.font
   -- EditBox:GetFontString() does not exist -- EditBox has its own direct
   -- SetFontObject/SetFont/GetFont API (confirmed against Blizzard's real
   -- EditBox API docs), no need to reach into a child FontString for this.
-  self.CodeEditBox:SetFontObject(font)
-  self.Gutter.ScrollChild.Numbers:SetFontObject(font)
-  self.WrapMeasure.Text:SetFontObject(font)
-  if label then UIDropDownMenu_SetText(self.FontDropdown, label) end
+  self.CodeEditBox:SetFontObject(choice.font)
+  self.Gutter.ScrollChild.Numbers:SetFontObject(choice.font)
+  self.WrapMeasure.Text:SetFontObject(choice.font)
+  UIDropDownMenu_SetText(self.FontDropdown, choice.label)
   self:RefreshGutter()
+  if notify then self:FireConfigChanged() end
 end
 
 --- Toggles wrap mode. In no-wrap mode the EditBox is oversized (4000px) so
 --- lines never wrap; in wrap mode it is pinned to the viewport width so the
 --- text engine wraps at the visible edge.
 --- @param enabled boolean
-function o:SetWrapText(enabled)
+--- @param notify boolean|nil Fire OnConfigChanged (user-driven change); omit for internal/initial sets
+function o:SetWrapText(enabled, notify)
   self.wrapText = enabled and true or false
+  self.BottomBar.WrapCheckButton:SetChecked(self.wrapText)
   local editBox = self.CodeEditBox
   if self.wrapText then
     editBox:SetWidth(self.ScrollFrame:GetWidth())
@@ -297,6 +333,45 @@ function o:SetWrapText(enabled)
     editBox:SetWidth(4000)
   end
   self:RefreshGutter()
+  if notify then self:FireConfigChanged() end
+end
+
+--- @return DevSuite_CodeEditorOptions Current settings, regardless of what (if anything) just changed
+function o:GetOptions()
+  return {
+    fontFamily = self.fontFamily,
+    fontSize = self.fontSize,
+    wrapText = self.wrapText,
+  }
+end
+
+--- Registers the callback fired after any user-driven config change (font
+--- dropdown pick, wrap checkbox click). Called with a full snapshot of
+--- current options every time, not just the changed field -- callers that
+--- want to persist can just do `DB.profile.codeEditor = options` with no
+--- merge logic of their own.
+--- @param callback fun(self: DevSuite_CodeEditorDialog, options: DevSuite_CodeEditorOptions)|nil
+function o:SetOnConfigChanged(callback) self.onConfigChanged = callback end
+
+function o:FireConfigChanged()
+  if self.onConfigChanged then self.onConfigChanged(self, self:GetOptions()) end
+end
+
+--- Applies initial/programmatic settings, merged over current values (so a
+--- partial table only touches the fields it names). Does not fire
+--- OnConfigChanged -- the caller already knows what it just configured.
+--- fontSize is stored but not yet applied to rendering (see DEFAULTS).
+--- @param options DevSuite_CodeEditorOptions|table|nil Partial table; omitted fields keep their current value
+function o:Configure(options)
+  options = options or {}
+  local fontFamily = options.fontFamily or self.fontFamily or DEFAULTS.fontFamily
+  local wrapText = options.wrapText
+  if wrapText == nil then wrapText = self.wrapText end
+  if wrapText == nil then wrapText = DEFAULTS.wrapText end
+  self.fontSize = options.fontSize or self.fontSize or DEFAULTS.fontSize
+
+  self:SetCodeFont(fontFamily)
+  self:SetWrapText(wrapText)
 end
 
 --- Rebuilds the gutter's "1..N" text and sizes both columns to the content.

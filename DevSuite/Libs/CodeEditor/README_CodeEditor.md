@@ -122,6 +122,32 @@ emits that line's number followed by `(rows - 1)` blank lines. This keeps the
 gutter's row count matching the code's *visual* row count rather than its
 logical line count, so numbers still land next to the correct wrapped text.
 
+## Configuration
+
+The dialog is designed to be usable as a future standalone library, before
+any settings source (SavedVariables DB, AceConfig, etc.) exists. It never
+reaches into one itself -- the host addon owns reading/writing settings and
+just calls into these two methods:
+
+- **`o:Configure(options)`** -- applies initial or programmatic settings.
+  `options` is a partial table (`fontFamily`, `fontSize`, `wrapText`); any
+  omitted field keeps its current value, merged over `DEFAULTS` on first
+  call. Safe to call before or after `:Show()`. Does **not** fire
+  `OnConfigChanged` -- the caller already knows what it just set.
+- **`o:SetOnConfigChanged(callback)`** -- registers `callback(self, options)`,
+  fired once per *user-driven* change (font dropdown pick, wrap checkbox
+  click). `options` is always a **full snapshot** of `GetOptions()` --
+  `fontFamily`, `fontSize`, and `wrapText` together, regardless of which one
+  the user actually changed. Callers that persist settings can just do
+  `DB.profile.codeEditor = options` with no merge logic of their own.
+
+`fontFamily` is a stable key into `FONT_CHOICES` (e.g. `'UbuntuMono'`),
+independent of the dropdown's display label so relabeling a font later won't
+break persisted config. `fontSize` is accepted and echoed through `Configure`/
+`GetOptions`/the callback, but not yet applied to rendering -- `Fonts.xml`
+hardcodes a fixed height per font object today, with no live font-size API
+wired in.
+
 ## Behavior notes
 
 - **No-wrap mode** (default): `CodeEditBox` is fixed at 4000px wide, wider than
@@ -131,3 +157,6 @@ logical line count, so numbers still land next to the correct wrapped text.
 - **Fonts**: switching the dropdown calls `SetFontObject` on `CodeEditBox`,
   `Gutter.ScrollChild.Numbers`, and `WrapMeasure.Text` together, since
   `inherits="..."` in XML only binds once at load.
+- **Notify flag**: `SetCodeFont`/`SetWrapText` take an optional `notify`
+  argument -- `true` fires `OnConfigChanged` (used by the dropdown/checkbox
+  handlers), omitted for internal/initial sets (`OnLoad`, `Configure`).
