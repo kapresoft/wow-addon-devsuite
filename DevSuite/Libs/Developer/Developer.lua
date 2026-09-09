@@ -341,13 +341,30 @@ f:SetScript('OnEvent', function(self, event, ...)
   end)
 end)
 
------ @type DevSuite_CodeEditorDialogMixin
---local dlg = DevSuite_CodeEditorDialog
---
---if dlg then
---    dlg:Configure({ fontFamily = 'SourceCodePro', wrapText = true } --[[@as DevSuite_CodeEditorOptions ]])
---    dlg:SetOnConfigChanged(function(self, options)
---        tr(ns.addon, 'Developer', 'options=', fmt(options))
---    end)
---    dlg:Show()
---end
+--[[--- @type DevSuite_CodeEditorDialogMixin
+local dlg = DevSuite_CodeEditorDialog
+
+if dlg then
+    dlg:Configure({ fontFamily = 'SourceCodePro', wrapText = true } ]]--[[@as DevSuite_CodeEditorOptions ]]--[[)
+    dlg:SetOnConfigChanged(function(self, options)
+        tr(ns.addon, 'Developer', 'options=', fmt(options))
+    end)
+    dlg:Show()
+end]]
+
+--[[
+-- WowLua Editor
+-- Steps
+WowLuaFrame:Show()
+  -- entry: untitled:boolean, name:text, content:text
+  -- num:number
+  local entry, num = WowLua:CreateNewPage()   -- pushes new page, sets currentPage
+  WowLua:SavePage(num, myCode)                -- persist content into that entry
+  WowLua:GoToPage(num)                        -- switches UI to it: SelectPage + SetText + UpdateButtons + SetTitle
+  WowLuaFrame:Show()
+
+  -- Example:
+  WowLua:SavePage(6, 'local x = {1,2,3}')
+  /dump (function() WowLua:GoToPage(6) WowLuaFrame:Show() end)()
+
+]]
