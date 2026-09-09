@@ -1,0 +1,244 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Include file="Fonts.xml"/>
+    <Script file="CodeEditBoxMixin.lua"/>
+    <Script file="CodeEditorDialog.lua"/>
+
+    <Frame name="DevSuite_CodeEditorDialogTemplate" virtual="true"
+           mixin="DevSuite_CodeEditorDialogMixin"
+           hidden="true" movable="true" resizable="true" enableMouse="true"
+           frameStrata="DIALOG" clampedToScreen="true">
+
+        <Size x="600" y="400"/>
+        <Anchors>
+            <Anchor point="CENTER" x="0" y="0"/>
+        </Anchors>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+
+        <Layers>
+            <Layer>
+                <Texture name="$parentTitleFrameHeader" parentKey="TitleFrameHeader"
+                         file="Interface\DialogFrame\UI-DialogBox-Header">
+                    <Size x="320" y="64"/>
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="TOP" x="0" y="12"/>
+                    </Anchors>
+                    <Scripts>
+                        <OnMouseDown>
+                            if button == "LeftButton" then
+                            self:GetParent():StartMoving()
+                            end
+                        </OnMouseDown>
+                        <OnMouseUp>
+                            self:GetParent():StopMovingOrSizing()
+                        </OnMouseUp>
+                    </Scripts>
+                </Texture>
+                <FontString name="$parentDialogTitle" parentKey="HeaderTitle"
+                            inherits="GameFontNormalSmall">
+                    <Size>
+                        <AbsDimension x="185" y="12"/>
+                    </Size>
+                    <Anchors>
+                        <Anchor point="TOP" relativePoint="TOP" x="0" y="-2"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+                <Anchors>
+                    <Anchor point="TOPRIGHT" x="-5" y="-7"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>
+                        self:GetParent():OnClickClose()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- Bottom-right resize grip, styled like AceGUI's Frame widget sizer_se -->
+            <Frame parentKey="SizerSE" enableMouse="true">
+                <Size x="25" y="25"/>
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT"/>
+                </Anchors>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <!-- Diagonal tex-coords set in Lua OnLoad (SetTexCoord's 8-value quad form isn't expressible in XML) -->
+                        <Texture parentKey="Line1" file="Interface\Tooltips\UI-Tooltip-Border">
+                            <Size x="14" y="14"/>
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+                            </Anchors>
+                        </Texture>
+                        <Texture parentKey="Line2" file="Interface\Tooltips\UI-Tooltip-Border">
+                            <Size x="8" y="8"/>
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT" x="-8" y="8"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+                <Scripts>
+                    <OnMouseDown>
+                        self:GetParent():StartSizing("BOTTOMRIGHT")
+                    </OnMouseDown>
+                    <OnMouseUp>
+                        self:GetParent():StopMovingOrSizing()
+                    </OnMouseUp>
+                </Scripts>
+            </Frame>
+
+            <!-- Reserved space for future toolbar/controls (e.g. Accept/Run buttons) -->
+            <Frame parentKey="TopBar" inherits="BackdropTemplate">
+                <Size y="50"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeTo="$parent" x="0" y="-30"/>
+                    <Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="-30"/>
+                </Anchors>
+            </Frame>
+
+            <!-- Status/action bar -->
+            <Frame parentKey="BottomBar" inherits="BackdropTemplate">
+                <Size y="30"/>
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="$parent" x="0" y="16"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="$parent" x="0" y="16"/>
+                </Anchors>
+                <Frames>
+                    <CheckButton parentKey="WrapCheckButton" inherits="UICheckButtonTemplate">
+                        <Size x="24" y="24"/>
+                        <Anchors>
+                            <Anchor point="LEFT" x="14" y="0"/>
+                        </Anchors>
+                        <Scripts>
+                            <OnClick>
+                                self:GetParent():GetParent():OnWrapToggled(self:GetChecked())
+                            </OnClick>
+                        </Scripts>
+                    </CheckButton>
+                </Frames>
+            </Frame>
+
+            <!-- Hidden measuring string for wrap mode: same font and wrap settings as
+                 CodeEditBox, width matched to its text area, so GetNumLines() reports
+                 how many visual rows a given logical line will occupy. -->
+            <Frame parentKey="WrapMeasure" hidden="true">
+                <Size x="1" y="1"/>
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Text" inherits="DevSuite_CodeEditorFont"
+                                    justifyH="LEFT" justifyV="TOP" wordwrap="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+
+            <!-- Borders live on separate backing frames: a ScrollFrame clips at its
+                 outer rect, but a backdrop edge is drawn *inside* that rect, so
+                 content scrolled under the border band. Each ScrollFrame is inset
+                 5px (BACKDROP_TOAST_12_12's own inset) inside its backing frame so
+                 the clip edge lands just inside the border line. Gutter and code
+                 share the same top inset so line rows stay aligned. -->
+            <Frame parentKey="GutterBackdrop" inherits="BackdropTemplate">
+                <Size x="34" y="1"/>
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.TopBar" relativePoint="BOTTOMLEFT" x="16" y="0"/>
+                    <Anchor point="BOTTOMLEFT" relativeKey="$parent.BottomBar" relativePoint="TOPLEFT" x="16" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- Gutter: line-number column, a real ScrollFrame so its content clips like
+                 the code area does; vertical scroll is driven in lockstep with it (see
+                 OnCodeEditBoxScroll) rather than by direct user interaction. -->
+            <ScrollFrame parentKey="Gutter">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.GutterBackdrop" relativePoint="TOPLEFT" x="5" y="-5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.GutterBackdrop" relativePoint="BOTTOMRIGHT" x="-5" y="5"/>
+                </Anchors>
+                <ScrollChild>
+                    <!-- Size is set from Lua (RefreshGutter): scroll children keep their
+                         explicit size over right-side anchors, so a fixed width here
+                         would not follow the Gutter's inset width. -->
+                    <Frame parentKey="ScrollChild">
+                        <Size x="1" y="1"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                        </Anchors>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <!-- One FontString holding "1\n2\n...\nN" in the SAME font as
+                                     CodeEditBox, so both columns get identical line pitch from
+                                     the text engine: no per-line positioning math. -->
+                                <FontString parentKey="Numbers" inherits="DevSuite_CodeEditorFont"
+                                            justifyH="RIGHT" justifyV="TOP">
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT"/>
+                                        <Anchor point="TOPRIGHT" x="-4"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                </ScrollChild>
+            </ScrollFrame>
+
+            <Frame parentKey="CodeBackdrop" inherits="BackdropTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.GutterBackdrop" relativePoint="TOPRIGHT" x="4" y="0"/>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomBar" relativePoint="TOPRIGHT" x="-28" y="0"/>
+                </Anchors>
+            </Frame>
+
+            <!-- Code area: no-wrap EditBox inside a scroll frame (vertical scrollbar via UIPanelScrollFrameTemplate) -->
+            <ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.CodeBackdrop" relativePoint="TOPLEFT" x="5" y="-5"/>
+                    <Anchor point="BOTTOMRIGHT" relativeKey="$parent.CodeBackdrop" relativePoint="BOTTOMRIGHT" x="-5" y="5"/>
+                </Anchors>
+                <Scripts>
+                    <OnLoad>
+                        self:SetScript("OnVerticalScroll", function(sf, offset)
+                            self:GetParent():OnCodeEditBoxScroll(offset)
+                        end)
+                        -- viewport resize (SizerSE drag) moves wrap points in wrap mode
+                        self:SetScript("OnSizeChanged", function(sf)
+                            self:GetParent():OnCodeEditBoxSizeChanged()
+                        end)
+                    </OnLoad>
+                </Scripts>
+                <ScrollChild>
+                    <EditBox parentKey="CodeEditBox" mixin="DevSuite_CodeEditBoxMixin"
+                             multiLine="true" autoFocus="false" letters="0">
+                        <Size x="4000" y="1"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT"/>
+                            <Anchor point="TOPRIGHT"/>
+                        </Anchors>
+                        <FontString parentKey="FontString" inherits="DevSuite_CodeEditorFont"/>
+                        <Scripts>
+                            <OnLoad method="OnLoad"/>
+                            <OnEscapePressed method="OnEscapePressed"/>
+                            <OnTextChanged method="OnTextChanged"/>
+                            <OnCursorChanged method="OnCursorChanged"/>
+                            <OnSizeChanged method="OnSizeChanged"/>
+                        </Scripts>
+                    </EditBox>
+                </ScrollChild>
+            </ScrollFrame>
+        </Frames>
+    </Frame>
+
+    <Frame name="DevSuite_CodeEditorDialog" hidden="true" movable="true" enableMouse="true"
+           inherits="BackdropTemplate, DevSuite_CodeEditorDialogTemplate">
+    </Frame>
+</Ui>

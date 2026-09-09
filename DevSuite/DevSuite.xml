@@ -7,6 +7,7 @@
     <!--@do-not-package@-->
     <Include file="Libs\Developer\DeveloperSetup.lua"/>
     <Include file="Libs\Developer\DeveloperNamespace.lua"/>
+    <Include file="Libs\CodeEditor\CodeEditorDialog.xml"/>
     <!--@end-do-not-package@-->
 
     <Include file="Libs\Locales\_Locales.xml"/>
