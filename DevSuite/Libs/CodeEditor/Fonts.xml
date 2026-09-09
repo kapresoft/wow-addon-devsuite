@@ -5,7 +5,7 @@
           height="13" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
-    <Font name="DevSuite_CodeEditorFont_SourceCodePro" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-variablefont_wght.ttf"
+    <Font name="DevSuite_CodeEditorFont_SourceCodePro" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-medium.ttf"
           height="13" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
