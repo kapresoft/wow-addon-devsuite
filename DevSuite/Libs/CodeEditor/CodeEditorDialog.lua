@@ -25,14 +25,44 @@ local BACKDROP_TOAST_12_12_NO_EDGE = {
   insets = BACKDROP_TOAST_12_12.insets,
 }
 
--- Font choices for the dropdown: stable key + label -> global font object.
--- "key" is the identifier used in options.fontFamily (Configure/callbacks),
--- kept independent of "label" (display text) so relabeling doesn't break
--- persisted config. First entry matches the box's font on first open.
+-- Sizes supported by Fonts.xml: one font object per family per size (no
+-- runtime CreateFont/SetFont -- picking a size is the same SetFontObject
+-- swap as picking a family).
+local FONT_SIZES = { 10, 12, 14 }
+
+-- Font choices for the dropdown: stable key + label -> one global font object
+-- per supported size. "key" is the identifier used in options.fontFamily
+-- (Configure/callbacks), kept independent of "label" (display text) so
+-- relabeling doesn't break persisted config. First entry matches the box's
+-- font on first open.
 local FONT_CHOICES = {
-  { key = 'UbuntuMono', label = 'Ubuntu Mono', font = DevSuite_CodeEditorFont_UbuntuMono },
-  { key = 'JetBrainsMono', label = 'JetBrains Mono', font = DevSuite_CodeEditorFont_JetBrainsMono },
-  { key = 'SourceCodePro', label = 'Source Code Pro', font = DevSuite_CodeEditorFont_SourceCodePro },
+  {
+    key = 'UbuntuMono',
+    label = 'Ubuntu Mono',
+    bySize = {
+      [10] = DevSuite_CodeEditorFont_UbuntuMono_10,
+      [12] = DevSuite_CodeEditorFont_UbuntuMono_12,
+      [14] = DevSuite_CodeEditorFont_UbuntuMono_14,
+    },
+  },
+  {
+    key = 'JetBrainsMono',
+    label = 'JetBrains Mono',
+    bySize = {
+      [10] = DevSuite_CodeEditorFont_JetBrainsMono_10,
+      [12] = DevSuite_CodeEditorFont_JetBrainsMono_12,
+      [14] = DevSuite_CodeEditorFont_JetBrainsMono_14,
+    },
+  },
+  {
+    key = 'SourceCodePro',
+    label = 'Source Code Pro',
+    bySize = {
+      [10] = DevSuite_CodeEditorFont_SourceCodePro_10,
+      [12] = DevSuite_CodeEditorFont_SourceCodePro_12,
+      [14] = DevSuite_CodeEditorFont_SourceCodePro_14,
+    },
+  },
 }
 
 --- @param key string
@@ -44,13 +74,22 @@ local function FindFontChoice(key)
   return nil
 end
 
+--- Nearest supported size (Fonts.xml only declares 10/12/14 per family).
+--- @param fontSize number
+--- @return number
+local function NearestFontSize(fontSize)
+  local nearest = FONT_SIZES[1]
+  for _, size in ipairs(FONT_SIZES) do
+    if math.abs(size - fontSize) < math.abs(nearest - fontSize) then nearest = size end
+  end
+  return nearest
+end
+
 -- Configure() defaults, and the shape of the snapshot passed to the
--- OnConfigChanged callback. fontSize is accepted/echoed but not yet applied --
--- Fonts.xml hardcodes a fixed height per font object; there is no live
--- font-size mechanism today.
+-- OnConfigChanged callback.
 local DEFAULTS = {
   fontFamily = FONT_CHOICES[1].key,
-  fontSize = 13,
+  fontSize = 14,
   wrapText = false,
 }
 
@@ -109,15 +148,16 @@ Types
 
 --- @class DevSuite_CodeEditorOptions
 --- @field fontFamily string Key into FONT_CHOICES, e.g. 'UbuntuMono'
---- @field fontSize number Accepted/echoed only -- not yet applied (see DEFAULTS)
+--- @field fontSize number One of FONT_SIZES (10/12/14); other values snap to nearest
 --- @field wrapText boolean
 
 --- @class DevSuite_CodeEditorDialogMixin : Frame
 --- @field TopBar Frame Reserved space for future toolbar/controls
 --- @field FontDropdown Frame The font-choice UIDropDownMenu, anchored inside TopBar
+--- @field FontSizeDropdown Frame The font-size UIDropDownMenu, anchored inside TopBar
 --- @field codeFont Font Currently applied font object
 --- @field fontFamily string Key of the currently applied font (see FONT_CHOICES)
---- @field fontSize number Current fontSize option (not yet applied to rendering)
+--- @field fontSize number Current fontSize option, applied to rendering (snapped to FONT_SIZES)
 --- @field BottomBar DevSuite_CodeEditorBottomBar
 --- @field WrapMeasure DevSuite_CodeEditorWrapMeasure
 --- @field wrapText boolean Current wrap-mode state
@@ -199,6 +239,22 @@ local function InitFontDropdown(dropdown, self)
   end)
 end
 
+--- @param dropdown Frame
+--- @param self DevSuite_CodeEditorDialog
+local function InitFontSizeDropdown(dropdown, self)
+  UIDropDownMenu_SetWidth(dropdown, 70)
+  UIDropDownMenu_Initialize(dropdown, function(_, level)
+    for _, size in ipairs(FONT_SIZES) do
+      local info = UIDropDownMenu_CreateInfo()
+      info.text = tostring(size)
+      info.checked = (self.fontSize == size)
+      -- User-driven change (dropdown click) -- notify listeners.
+      info.func = function() self:SetFontSize(size, true) end
+      UIDropDownMenu_AddButton(info, level)
+    end
+  end)
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -231,11 +287,13 @@ function o:OnLoad()
 
   self.HeaderTitle:SetText('Code Editor (Prototype)')
 
-  -- parentKey="FontDropdown" resolves onto TopBar (its immediate XML
-  -- parent), not this dialog frame -- alias it here, same as CodeEditBox
-  -- above.
+  -- parentKey="FontDropdown"/"FontSizeDropdown" resolve onto TopBar (their
+  -- immediate XML parent), not this dialog frame -- alias them here, same as
+  -- CodeEditBox above.
   self.FontDropdown = self.TopBar.FontDropdown
+  self.FontSizeDropdown = self.TopBar.FontSizeDropdown
   InitFontDropdown(self.FontDropdown, self)
+  InitFontSizeDropdown(self.FontSizeDropdown, self)
   self.fontSize = DEFAULTS.fontSize
   self:SetCodeFont(DEFAULTS.fontFamily)
 
@@ -295,26 +353,47 @@ end
 --- @param checked boolean
 function o:OnWrapToggled(checked) self:SetWrapText(checked, true) end
 
---- Applies a font (by FONT_CHOICES key) to the code box, the gutter numbers,
---- and the hidden wrap measuring string together -- inherits="..." in XML
---- only binds once at load, so switching fonts at runtime needs
---- SetFontObject on all three.
+--- Applies a font (by FONT_CHOICES key, at the current fontSize) to the code
+--- box, the gutter numbers, and the hidden wrap measuring string together --
+--- inherits="..." in XML only binds once at load, so switching fonts at
+--- runtime needs SetFontObject on all three.
 --- @param fontFamily string Key into FONT_CHOICES
 --- @param notify boolean|nil Fire OnConfigChanged (user-driven change); omit for internal/initial sets
 function o:SetCodeFont(fontFamily, notify)
   local choice = FindFontChoice(fontFamily)
   if not choice then return end
   self.fontFamily = choice.key
-  self.codeFont = choice.font
+  self:ApplyCodeFont(notify)
+end
+
+--- Re-resolves and applies the font object for the current fontFamily +
+--- fontSize pair. Shared by SetCodeFont and SetFontSize -- both change one
+--- half of the same (family, size) lookup into FONT_CHOICES[].bySize.
+--- @param notify boolean|nil Fire OnConfigChanged (user-driven change); omit for internal/initial sets
+function o:ApplyCodeFont(notify)
+  local choice = FindFontChoice(self.fontFamily)
+  if not choice then return end
+  local font = choice.bySize[self.fontSize] or choice.bySize[DEFAULTS.fontSize]
+  self.codeFont = font
   -- EditBox:GetFontString() does not exist -- EditBox has its own direct
   -- SetFontObject/SetFont/GetFont API (confirmed against Blizzard's real
   -- EditBox API docs), no need to reach into a child FontString for this.
-  self.CodeEditBox:SetFontObject(choice.font)
-  self.Gutter.ScrollChild.Numbers:SetFontObject(choice.font)
-  self.WrapMeasure.Text:SetFontObject(choice.font)
+  self.CodeEditBox:SetFontObject(font)
+  self.Gutter.ScrollChild.Numbers:SetFontObject(font)
+  self.WrapMeasure.Text:SetFontObject(font)
   UIDropDownMenu_SetText(self.FontDropdown, choice.label)
+  UIDropDownMenu_SetText(self.FontSizeDropdown, tostring(self.fontSize))
   self:RefreshGutter()
   if notify then self:FireConfigChanged() end
+end
+
+--- Sets the font size (snapped to the nearest of FONT_SIZES) and re-applies
+--- the current font family at that size.
+--- @param fontSize number
+--- @param notify boolean|nil Fire OnConfigChanged (user-driven change); omit for internal/initial sets
+function o:SetFontSize(fontSize, notify)
+  self.fontSize = NearestFontSize(fontSize)
+  self:ApplyCodeFont(notify)
 end
 
 --- Toggles wrap mode. In no-wrap mode the EditBox is oversized (4000px) so
@@ -360,17 +439,17 @@ end
 --- Applies initial/programmatic settings, merged over current values (so a
 --- partial table only touches the fields it names). Does not fire
 --- OnConfigChanged -- the caller already knows what it just configured.
---- fontSize is stored but not yet applied to rendering (see DEFAULTS).
+--- fontSize snaps to the nearest of FONT_SIZES (10/12/14).
 --- @param options DevSuite_CodeEditorOptions|table|nil Partial table; omitted fields keep their current value
 function o:Configure(options)
   options = options or {}
-  local fontFamily = options.fontFamily or self.fontFamily or DEFAULTS.fontFamily
+  self.fontFamily = options.fontFamily or self.fontFamily or DEFAULTS.fontFamily
+  self.fontSize = NearestFontSize(options.fontSize or self.fontSize or DEFAULTS.fontSize)
   local wrapText = options.wrapText
   if wrapText == nil then wrapText = self.wrapText end
   if wrapText == nil then wrapText = DEFAULTS.wrapText end
-  self.fontSize = options.fontSize or self.fontSize or DEFAULTS.fontSize
 
-  self:SetCodeFont(fontFamily)
+  self:ApplyCodeFont()
   self:SetWrapText(wrapText)
 end
 

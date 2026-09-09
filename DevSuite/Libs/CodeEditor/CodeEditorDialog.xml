@@ -3,7 +3,7 @@
 
     <Include file="Fonts.xml"/>
 
-    <Font name="DevSuite_CodeEditorFont" inherits="DevSuite_CodeEditorFont_UbuntuMono"/>
+    <Font name="DevSuite_CodeEditorFont" inherits="DevSuite_CodeEditorFont_UbuntuMono_14"/>
     <Script file="CodeEditBoxMixin.lua"/>
     <Script file="CodeEditorDialog.lua"/>
 
@@ -105,12 +105,18 @@
                     <Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="-30"/>
                 </Anchors>
                 <Frames>
-                    <!-- Absolute name (not $parent-relative): TopBar itself has no
+                    <!-- Absolute names (not $parent-relative): TopBar itself has no
                          name, only a parentKey, so $parent expansion would break here. -->
                     <Frame name="DevSuite_CodeEditorFontDropdown" parentKey="FontDropdown"
                            inherits="UIDropDownMenuTemplate">
                         <Anchors>
                             <Anchor point="RIGHT" x="-6" y="0"/>
+                        </Anchors>
+                    </Frame>
+                    <Frame name="DevSuite_CodeEditorFontSizeDropdown" parentKey="FontSizeDropdown"
+                           inherits="UIDropDownMenuTemplate">
+                        <Anchors>
+                            <Anchor point="RIGHT" relativeKey="$parent.FontDropdown" relativePoint="LEFT" x="10" y="0"/>
                         </Anchors>
                     </Frame>
                 </Frames>
