@@ -187,6 +187,16 @@ function o:ShowIconPicker(min, max)
   end)
 end
 
+--- For testing CodeEditorDialog (issue #90 prototype)
+--- /run dsd:ShowCodeEditor()
+function o:ShowCodeEditor()
+  if not DevSuite_CodeEditorDialog then
+    print('DevSuite_CodeEditorDialog not loaded (dev-only include).')
+    return
+  end
+  DevSuite_CodeEditorDialog:Show()
+end
+
 function o:IsScriptErrorsEnabled()
   self:logp('scriptErrors:', GetCVarBool('scriptErrors'))
 end
@@ -330,3 +340,8 @@ f:SetScript('OnEvent', function(self, event, ...)
     return OnAddOnReady()
   end)
 end)
+
+
+if DevSuite_CodeEditorDialog then
+    DevSuite_CodeEditorDialog:Show()
+end
