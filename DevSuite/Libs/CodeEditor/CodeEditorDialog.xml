@@ -2,6 +2,8 @@
 ..\FrameXML\UI.xsd">
 
     <Include file="Fonts.xml"/>
+
+    <Font name="DevSuite_CodeEditorFont" inherits="DevSuite_CodeEditorFont_UbuntuMono"/>
     <Script file="CodeEditBoxMixin.lua"/>
     <Script file="CodeEditorDialog.lua"/>
 
@@ -102,6 +104,16 @@
                     <Anchor point="TOPLEFT" relativeTo="$parent" x="0" y="-30"/>
                     <Anchor point="TOPRIGHT" relativeTo="$parent" x="0" y="-30"/>
                 </Anchors>
+                <Frames>
+                    <!-- Absolute name (not $parent-relative): TopBar itself has no
+                         name, only a parentKey, so $parent expansion would break here. -->
+                    <Frame name="DevSuite_CodeEditorFontDropdown" parentKey="FontDropdown"
+                           inherits="UIDropDownMenuTemplate">
+                        <Anchors>
+                            <Anchor point="RIGHT" x="-6" y="0"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
             </Frame>
 
             <!-- Status/action bar -->
@@ -217,6 +229,8 @@
                     </OnLoad>
                 </Scripts>
                 <ScrollChild>
+                    <!-- EditBox has its own font (SetFontObject/GetFont), set from Lua
+                         OnLoad  no nested FontString element needed. -->
                     <EditBox parentKey="CodeEditBox" mixin="DevSuite_CodeEditBoxMixin"
                              multiLine="true" autoFocus="false" letters="0">
                         <Size x="4000" y="1"/>
@@ -224,7 +238,6 @@
                             <Anchor point="TOPLEFT"/>
                             <Anchor point="TOPRIGHT"/>
                         </Anchors>
-                        <FontString parentKey="FontString" inherits="DevSuite_CodeEditorFont"/>
                         <Scripts>
                             <OnLoad method="OnLoad"/>
                             <OnEscapePressed method="OnEscapePressed"/>

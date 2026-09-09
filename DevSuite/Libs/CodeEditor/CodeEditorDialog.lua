@@ -25,6 +25,15 @@ local BACKDROP_TOAST_12_12_NO_EDGE = {
   insets = BACKDROP_TOAST_12_12.insets,
 }
 
+-- Font choices for the dropdown: label -> global font object. "Default"
+-- points at the DevSuite_CodeEditorFont alias (see CodeEditorDialog.xml),
+-- kept first so it matches the box's font on first open.
+local FONT_CHOICES = {
+  { label = 'Ubuntu Mono', font = DevSuite_CodeEditorFont_UbuntuMono },
+  { label = 'JetBrains Mono', font = DevSuite_CodeEditorFont_JetBrainsMono },
+  { label = 'Source Code Pro', font = DevSuite_CodeEditorFont_SourceCodePro },
+}
+
 -- Sample text long enough to force scrolling, for testing gutter/scroll sync.
 local SAMPLE_CODE = [[
 local function fibonacci(n)
@@ -80,6 +89,8 @@ Types
 
 --- @class DevSuite_CodeEditorDialogMixin : Frame
 --- @field TopBar Frame Reserved space for future toolbar/controls
+--- @field FontDropdown Frame The font-choice UIDropDownMenu, anchored inside TopBar
+--- @field codeFont Font Currently applied font object (index into FONT_CHOICES)
 --- @field BottomBar DevSuite_CodeEditorBottomBar
 --- @field WrapMeasure DevSuite_CodeEditorWrapMeasure
 --- @field wrapText boolean Current wrap-mode state
@@ -144,6 +155,21 @@ local function CodeTextWidth(self)
   return self.ScrollFrame:GetWidth() - left - right
 end
 
+--- @param dropdown Frame
+--- @param self DevSuite_CodeEditorDialog
+local function InitFontDropdown(dropdown, self)
+  UIDropDownMenu_SetWidth(dropdown, 140)
+  UIDropDownMenu_Initialize(dropdown, function(_, level)
+    for _, choice in ipairs(FONT_CHOICES) do
+      local info = UIDropDownMenu_CreateInfo()
+      info.text = choice.label
+      info.checked = (self.codeFont == choice.font)
+      info.func = function() self:SetCodeFont(choice.font, choice.label) end
+      UIDropDownMenu_AddButton(info, level)
+    end
+  end)
+end
+
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -175,6 +201,13 @@ function o:OnLoad()
   end
 
   self.HeaderTitle:SetText('Code Editor (Prototype)')
+
+  -- parentKey="FontDropdown" resolves onto TopBar (its immediate XML
+  -- parent), not this dialog frame -- alias it here, same as CodeEditBox
+  -- above.
+  self.FontDropdown = self.TopBar.FontDropdown
+  InitFontDropdown(self.FontDropdown, self)
+  self:SetCodeFont(FONT_CHOICES[1].font, FONT_CHOICES[1].label)
 
   local wrapCheck = self.BottomBar.WrapCheckButton
   wrapCheck.text:SetText('Wrap Text')
@@ -232,6 +265,23 @@ end
 
 --- @param checked boolean
 function o:OnWrapToggled(checked) self:SetWrapText(checked) end
+
+--- Applies a font to the code box, the gutter numbers, and the hidden wrap
+--- measuring string together -- inherits="..." in XML only binds once at
+--- load, so switching fonts at runtime needs SetFontObject on all three.
+--- @param font Font
+--- @param label string|nil For the dropdown's UIDropDownMenu_SetText
+function o:SetCodeFont(font, label)
+  self.codeFont = font
+  -- EditBox:GetFontString() does not exist -- EditBox has its own direct
+  -- SetFontObject/SetFont/GetFont API (confirmed against Blizzard's real
+  -- EditBox API docs), no need to reach into a child FontString for this.
+  self.CodeEditBox:SetFontObject(font)
+  self.Gutter.ScrollChild.Numbers:SetFontObject(font)
+  self.WrapMeasure.Text:SetFontObject(font)
+  if label then UIDropDownMenu_SetText(self.FontDropdown, label) end
+  self:RefreshGutter()
+end
 
 --- Toggles wrap mode. In no-wrap mode the EditBox is oversized (4000px) so
 --- lines never wrap; in wrap mode it is pinned to the viewport width so the
