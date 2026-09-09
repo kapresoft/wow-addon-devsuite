@@ -13,6 +13,5 @@
           height="13" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
-    <Font name="DevSuite_CodeEditorFont" inherits="DevSuite_CodeEditorFont_UbuntuMono"/>
 
 </Ui>
