@@ -10,7 +10,7 @@ the DevSuite namespace/module registry -- see [issue #90](https://github.com/kap
 | `CodeEditorDialog.xml` | Frame layout (`DevSuite_CodeEditorDialogTemplate`) |
 | `CodeEditorDialog.lua` | `DevSuite_CodeEditorDialogMixin` -- gutter sync, wrap mode, font switching |
 | `CodeEditBoxMixin.lua` | Mixin for the `CodeEditBox` EditBox |
-| `Fonts.xml` | Font definitions (Ubuntu Mono, JetBrains Mono, Source Code Pro) |
+| `Fonts.xml` | Font definitions -- Ubuntu Mono, JetBrains Mono, Source Code Pro, each at sizes 10/12/14 |
 | `Assets/` | Bundled monospace font files |
 
 ## Visual layout
@@ -22,7 +22,7 @@ Row order, top to bottom:
 block-beta
 columns 1
   Header["TitleFrameHeader / HeaderTitle\n(dialog header art + title text)"]
-  TopBar["TopBar — row 1\n(reserved toolbar) · FontDropdown"]
+  TopBar["TopBar — row 1\n(reserved toolbar) · FontSizeDropdown · FontDropdown"]
   block:body
     Gutter["GutterBackdrop → Gutter\n(line #s)"]
     Code["CodeBackdrop → ScrollFrame\nCodeEditBox (EditBox)"]
@@ -35,20 +35,20 @@ columns 1
 <summary>Plain-text fallback</summary>
 
 ```
-+---------------------------------------------------------+
-|                 TitleFrameHeader / HeaderTitle           |  <- dialog header art + title text
-+---------------------------------------------------------+
-| TopBar                                     [FontDropdown]|  <- row 1: reserved toolbar
-+---------------------------------------------------------+
-| GutterBackdrop | CodeBackdrop                            |
-|  +-----------+ |  +-------------------------------+      |
-|  | Gutter    | |  | ScrollFrame                    |     |  <- row 2: gutter + code
-|  | (line #s) | |  |  CodeEditBox (EditBox)          |     |
-|  +-----------+ |  +-------------------------------+      |
-+---------------------------------------------------------+
-| BottomBar   [WrapCheckButton]                            |  <- row 3: status/action bar
-+---------------------------------------------------------+
-                                          [SizerSE resize] ->
++-----------------------------------------------------------+
+|                 TitleFrameHeader / HeaderTitle             |  <- dialog header art + title text
++-----------------------------------------------------------+
+| TopBar                       [FontSizeDropdown][FontDropdown]| <- row 1: reserved toolbar
++-----------------------------------------------------------+
+| GutterBackdrop | CodeBackdrop                              |
+|  +-----------+ |  +-------------------------------+        |
+|  | Gutter    | |  | ScrollFrame                    |       |  <- row 2: gutter + code
+|  | (line #s) | |  |  CodeEditBox (EditBox)          |       |
+|  +-----------+ |  +-------------------------------+        |
++-----------------------------------------------------------+
+| BottomBar   [WrapCheckButton]                              |  <- row 3: status/action bar
++-----------------------------------------------------------+
+                                            [SizerSE resize] ->
 ```
 
 </details>
@@ -65,6 +65,7 @@ graph TD
 
     Dialog --> TopBar["TopBar (row 1)"]
     TopBar --> FontDropdown["FontDropdown\n(UIDropDownMenu)"]
+    TopBar --> FontSizeDropdown["FontSizeDropdown\n(UIDropDownMenu)"]
 
     Dialog --> GutterBackdrop["GutterBackdrop (row 2, left)"]
     GutterBackdrop --> Gutter["Gutter (ScrollFrame)"]
@@ -91,10 +92,14 @@ The gutter (`Gutter`) and the code area (`ScrollFrame`) are two independent
 all in `RefreshGutter()` and its scroll/size hooks:
 
 1. **Same font, same pitch.** `Numbers` (the gutter's FontString) and
-   `CodeEditBox` always share one font object (`SetCodeFont` calls
-   `SetFontObject` on both together). Since line height comes entirely from
-   the font/text engine, rendering both columns' text in the identical font
-   guarantees identical line pitch -- no per-line Y math is needed.
+   `CodeEditBox` always share one font object (`ApplyCodeFont` -- called by
+   both `SetCodeFont` and `SetFontSize` -- calls `SetFontObject` on both
+   together). Since line height comes entirely from the font/text engine,
+   rendering both columns' text in the identical font guarantees identical
+   line pitch -- no per-line Y math is needed. This holds across font-size
+   changes too: family and size together resolve to one font object via
+   `FONT_CHOICES[family].bySize[size]`, so a size change is the same
+   single-object swap as a family change.
 
 2. **Same content height.** `RefreshGutter()` measures
    `numbers:GetStringHeight()` after setting the gutter text, then applies
@@ -143,10 +148,10 @@ just calls into these two methods:
 
 `fontFamily` is a stable key into `FONT_CHOICES` (e.g. `'UbuntuMono'`),
 independent of the dropdown's display label so relabeling a font later won't
-break persisted config. `fontSize` is accepted and echoed through `Configure`/
-`GetOptions`/the callback, but not yet applied to rendering -- `Fonts.xml`
-hardcodes a fixed height per font object today, with no live font-size API
-wired in.
+break persisted config. `fontSize` is one of `FONT_SIZES` (`10`/`12`/`14`) --
+`Fonts.xml` declares one font object per family *per size* rather than
+resizing at runtime, so any other value passed to `Configure`/`SetFontSize`
+snaps to the nearest supported size (`NearestFontSize`).
 
 ## Behavior notes
 
@@ -154,9 +159,15 @@ wired in.
   the viewport, so lines never reach a wrap boundary.
 - **Wrap mode**: `CodeEditBox` is pinned to the `ScrollFrame` width; the gutter
   emits a blank line per extra wrapped row so numbering stays visually aligned.
-- **Fonts**: switching the dropdown calls `SetFontObject` on `CodeEditBox`,
-  `Gutter.ScrollChild.Numbers`, and `WrapMeasure.Text` together, since
-  `inherits="..."` in XML only binds once at load.
-- **Notify flag**: `SetCodeFont`/`SetWrapText` take an optional `notify`
-  argument -- `true` fires `OnConfigChanged` (used by the dropdown/checkbox
-  handlers), omitted for internal/initial sets (`OnLoad`, `Configure`).
+- **Fonts**: switching either dropdown (family or size) calls `SetFontObject`
+  on `CodeEditBox`, `Gutter.ScrollChild.Numbers`, and `WrapMeasure.Text`
+  together, since `inherits="..."` in XML only binds once at load.
+- **Font sizes**: `Fonts.xml` declares each family at 10/12/14 as separate
+  virtual font objects (e.g. `DevSuite_CodeEditorFont_UbuntuMono_12`) rather
+  than resizing one object at runtime -- no `CreateFont`/`SetFont` or
+  font-file-path bookkeeping needed in Lua, at the cost of only supporting
+  those three fixed sizes.
+- **Notify flag**: `SetCodeFont`/`SetFontSize`/`SetWrapText` take an optional
+  `notify` argument -- `true` fires `OnConfigChanged` (used by the
+  dropdown/checkbox handlers), omitted for internal/initial sets (`OnLoad`,
+  `Configure`).

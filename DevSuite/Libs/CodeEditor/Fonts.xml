@@ -1,16 +1,46 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
-    <Font name="DevSuite_CodeEditorFont_JetBrainsMono" font="interface/addons/devsuite/libs/codeeditor/assets/jetbrainsmono-variablefont_wght.ttf"
-          height="13" virtual="true">
+    <!-- Each family is declared once per supported size (10/12/14) rather than
+         resized at runtime, so switching fontSize is a plain SetFontObject
+         swap, same mechanism as switching family, with no CreateFont or
+         font-file-path bookkeeping in Lua. 14 is the default/base size. -->
+    <Font name="DevSuite_CodeEditorFont_JetBrainsMono_10" font="interface/addons/devsuite/libs/codeeditor/assets/jetbrainsmono-variablefont_wght.ttf"
+          height="10" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
-    <Font name="DevSuite_CodeEditorFont_SourceCodePro" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-medium.ttf"
-          height="13" virtual="true">
+    <Font name="DevSuite_CodeEditorFont_JetBrainsMono_12" font="interface/addons/devsuite/libs/codeeditor/assets/jetbrainsmono-variablefont_wght.ttf"
+          height="12" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
-    <Font name="DevSuite_CodeEditorFont_UbuntuMono" font="interface/addons/devsuite/libs/codeeditor/assets/ubuntumono-regular.ttf"
-          height="13" virtual="true">
+    <Font name="DevSuite_CodeEditorFont_JetBrainsMono_14" font="interface/addons/devsuite/libs/codeeditor/assets/jetbrainsmono-variablefont_wght.ttf"
+          height="14" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+
+    <Font name="DevSuite_CodeEditorFont_SourceCodePro_10" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-medium.ttf"
+          height="10" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+    <Font name="DevSuite_CodeEditorFont_SourceCodePro_12" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-medium.ttf"
+          height="12" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+    <Font name="DevSuite_CodeEditorFont_SourceCodePro_14" font="interface/addons/devsuite/libs/codeeditor/assets/sourcecodepro-medium.ttf"
+          height="14" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+
+    <Font name="DevSuite_CodeEditorFont_UbuntuMono_10" font="interface/addons/devsuite/libs/codeeditor/assets/ubuntumono-regular.ttf"
+          height="10" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+    <Font name="DevSuite_CodeEditorFont_UbuntuMono_12" font="interface/addons/devsuite/libs/codeeditor/assets/ubuntumono-regular.ttf"
+          height="12" virtual="true">
+        <Color color="WHITE_FONT_COLOR"/>
+    </Font>
+    <Font name="DevSuite_CodeEditorFont_UbuntuMono_14" font="interface/addons/devsuite/libs/codeeditor/assets/ubuntumono-regular.ttf"
+          height="14" virtual="true">
         <Color color="WHITE_FONT_COLOR"/>
     </Font>
 
