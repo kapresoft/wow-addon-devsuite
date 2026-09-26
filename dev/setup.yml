@@ -17,7 +17,6 @@ manual-changelog:
 # Ace3:
 #  - This is faster: https://github.com/WoWUIDev/Ace3
 #  - But this is the official: https://repos.wowace.com/wow/ace3/trunk
-# LibIconPicker: We just need the interface files
 externals:
   ThirdParty-Libs/Ace3:
     url: https://github.com/WoWUIDev/Ace3
@@ -31,6 +30,17 @@ externals:
   ThirdParty-Libs/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util
     tag: latest
+
+  ## annotations always get pulled from main
+  ThirdParty-Libs/Annotations/Kapresoft-LibUtil:
+    url: https://github.com/kapresoft/wow-lib-util
+    path: Lib-2-0/Annotations
+  ThirdParty-Libs/Annotations/LibPrettyPrint:
+    url: https://github.com/kapresoft/wow-addon-LibPrettyPrint
+    path: Libs/Annotations
+  ThirdParty-Libs/Annotations/DebugChatFrame:
+    url: https://github.com/kapresoft/wow-addon-debug-chat-frame
+    path: Libs/Annotations
 
 ignore:
   - "*.sh"
@@ -60,6 +70,7 @@ ignore:
   - ThirdParty-Libs/LibPrettyPrint/ThirdParty
   - ThirdParty-Libs/LibPrettyPrint/LICENSE
   - ThirdParty-Libs/LibPrettyPrint/Libs/Developer
+  - ThirdParty-Libs/LibPrettyPrint/Libs/Annotations
   - ThirdParty-Libs/LibTraceKit/dev
   - ThirdParty-Libs/LibTraceKit/doc
   - ThirdParty-Libs/LibTraceKit/Libs/Assets
@@ -68,6 +79,7 @@ ignore:
   - ThirdParty-Libs/Kapresoft-LibUtil/dev
   - ThirdParty-Libs/Kapresoft-LibUtil/LICENSE
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-1-0
+  - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/Annotations
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/Assets
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.lua

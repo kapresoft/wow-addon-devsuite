@@ -11,7 +11,7 @@ Local Vars
 local ns = select(2, ...)
 local sformat     = ns.sformat
 local O, GC       = ns.O, ns.GC
-local String = ns:String()
+local String, Fonts = ns:String(), O.Fonts
 local MODULE_NAME = 'DevConsole'
 local LIB_MIXIN   = { 'AceEvent-3.0' }
 local libName     = ns.M.DevConsoleModuleMixin()
@@ -192,13 +192,24 @@ function d:EnableDebugChatFrame()
 
   if not DebugChatFrame then return end
 
-  local dcf = DebugChatFrame
+  --- Keeps console_fontSize in sync with the tab's Font Size menu
+  --- @param chatFrame ChatLogFrameInterface
+  local function SyncFontSize(chatFrame)
+    if not chatFrame.OnFontSizeChanged then return end
+    chatFrame:OnFontSizeChanged(function(_, fontSize)
+      ns:g().console_fontSize = fontSize
+      ns:AceConfigRegistry():NotifyChange(ns.addon)
+    end)
+  end
 
+  local fn, fs = Fonts:GetUserFontSettings()
+
+  local dcf = DebugChatFrame
   --- @type DebugChatFrameOptionsInterface
   local opt = {
     chatFrameTabName = ns.addon,
-    font = DCF_ConsoleMonoCondensedSemiBoldOutline,
-    fontSize = ns:g().console_fontSize,
+    font = _G[fn],
+    fontSize = fs,
     windowAlpha = windowAlpha,
     maxLines = ns:dbg().maxLogConsoleLines,
   }
@@ -210,6 +221,7 @@ function d:EnableDebugChatFrame()
     FCF_SetWindowColor(chatFrame, r, g, b)
     FCF_SetWindowAlpha(chatFrame, opt.windowAlpha)
     local xns = ns; xns:RegisterChatFrame(chatFrame)
+    SyncFontSize(chatFrame)
   end)
 
   logp(c5('-------------------------------------------'))

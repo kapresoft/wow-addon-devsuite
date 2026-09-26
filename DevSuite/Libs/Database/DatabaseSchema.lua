@@ -68,6 +68,7 @@ Type: Profile_Global_Config
 --- @field prompt_for_reload_to_enable_addons boolean
 --- @field auto_loaded_addons AutoLoadedAddons
 --- @field console_fontSize number
+--- @field console_font string @The font name
 --
 --
 local fn1 = [[-- evaluate a variable

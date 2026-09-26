@@ -172,8 +172,8 @@ function o:CreateGeneralOptions()
     order = order:next(),
     type = 'range',
     min = 10,
-    max = 18,
-    step = 2,
+    max = 32,
+    step = 1,
     get = self.util:GlobalGet('console_fontSize'),
     set = self.util:GlobalSet(
       'console_fontSize',

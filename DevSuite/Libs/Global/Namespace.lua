@@ -67,6 +67,8 @@ local M = {
     AceDbInitializerMixin = {},
     --- @type API
     API = {},
+    --- @type Fonts_DevSuite
+    Fonts = {},
     --- @type DatabaseSchema
     DatabaseSchema = {},
     --- @type DebugDialog
