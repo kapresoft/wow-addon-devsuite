@@ -12,6 +12,7 @@
     <Include file="Libs\Locales\_Locales.xml"/>
 
     <Script file="Libs\Global\API.lua"/>
+    <Script file="Libs\Global\Fonts.lua"/>
     <Script file="Libs\Controller\ConfigDialogController.lua" />
     <Script file="Libs\Controller\MainController.lua" />
 
