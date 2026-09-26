@@ -30,7 +30,7 @@ externals:
     tag: latest
   ThirdParty-Libs/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util
-    tag: latest
+#    tag: latest
 
 ignore:
   - "*.sh"

@@ -145,14 +145,11 @@ Formatter/Printer
 local function predicateFn() return ns.IsDev() end
 
 ns.fmt = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3 }); fmt = ns.fmt
+ns.fmtx = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3,multiline_tables = true }); fmtx = ns.fmtx
 ns.printer = LibPrettyPrint:Printer({
   prefix = ns.nameShort, formatter = ns.fmt,
   prefix_color = '466EFF', sub_prefix_color = '9CFF9C',
 }, predicateFn)
-
---- @class LogHolder
---- @field printer fun(moduleName:Name) : PrintFn A simple printer
---- @field tracer fun(moduleName:Name) : TraceFn
 
 ns.logHolder = {}; do
   local h = ns.logHolder; local noop = function(_moduleName) return function() end end
