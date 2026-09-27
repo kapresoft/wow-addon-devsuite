@@ -20,6 +20,7 @@ L['Last-Update']       = true
 L['Interface-Version'] = true
 L['Game-Version']      = true
 L['Locale']            = true
+L['Example']           = true
 
 L['Debugging::Category::Enable All::Button']        = 'Enable All'
 L['Debugging::Category::Enable All::Button::Desc']  = 'Enables all log categories below. Note that the default category (not shown here) will always be active.'
@@ -33,7 +34,7 @@ L['REQUIRES_RELOAD']         = 'Additional addons require a reload to take effec
 L['General']                 = true
 L['General::Desc']           = "General Settings"
 L['Debug Console']           = true
-L['Debug Console::Desc']     = true
+L['Debug Console::Desc']     = 'Settings for the Debug Console chat tab: font, size, tab behavior and output limits.'
 
 L['Add-On Management']       = true
 L['Add-On Management::Desc'] = 'Easily enable or disable and customize some of your WoW add-ons for a tailored gameplay experience.'
@@ -43,6 +44,9 @@ L['Show Frames-Per-Second (FPS)::Desc']       = 'Shows the Blizzard Frames-per-s
 L['Prompt to Reload and Enable Addons']       = true
 L['Prompt to Reload and Enable Addons::Desc'] = 'Prompts player to Reload UI if addons need to be enabled after closing the Settings Dialog. (Global Setting)'
 
+L['Console Font']                  = true
+L['Console Font::Desc']            = 'Choose a Console Font'
+L['Console Font::Hint']            = 'Arrows cycle fonts; applies to the Debug Console tab right away.'
 L['Console Font Size']             = true
 L['Console Font Size::Desc']       = 'Choose a Console Font Size'
 L['Console Font Size::ConfirmFmt'] = 'You selected console font size %d.\nReload UI to apply this change?'
@@ -72,10 +76,10 @@ L['Select Profile']             = true
 L['Select Profile::Desc']       = 'Select a profile to activate.  You will be prompted to reload the UI.  Note that these profiles are managed on the Profiles tab.'
 
 L['Addon Manager Special Notice']    = 'The Addon Manager feature is now part of a new and improved addon, "Addon Suite". For enhanced functionality and updates, please visit CurseForge to download the latest version of "Addon Suite". We appreciate your support and hope you enjoy the new features and improvements. Thank you!'
-L['DEVTOOLS_DEPTH_CUTOFF']           = true
-L['DEVTOOLS_DEPTH_CUTOFF::Desc']     = 'This parameter controls the maximum depth to which tables are inspected in the development tools like |cff00ccff/dump|r. By setting this value, users can limit how deeply the tools traverse nested tables during operations such as debugging or displaying data structures. A lower depth can prevent excessive processing time and output clutter when working with deeply nested tables. The default setting is |cff00ccff10|r, but it can be adjusted to accommodate different levels of complexity or to enhance performance during development tasks.'
-L['DEVTOOLS_MAX_ENTRY_CUTOFF']       = true
-L['DEVTOOLS_MAX_ENTRY_CUTOFF::Desc'] = 'This parameter sets the maximum number of table entries that are displayed by the development tools like |cff00ccff/dump|r. It helps manage the output when inspecting large tables, preventing overwhelming amounts of data from being shown at once. By default, only the first |cff00ccff30|r entries of a table are displayed. Adjusting this parameter can be useful for developers who need to either limit or expand their view when debugging complex data structures, depending on the level of detail required for their analysis.'
+L['DEVTOOLS_DEPTH_CUTOFF']           = 'Dump Depth'
+L['DEVTOOLS_DEPTH_CUTOFF::Desc']     = '|cff00ccffDEVTOOLS_DEPTH_CUTOFF|r: This parameter controls the maximum depth to which tables are inspected in the development tools like |cff00ccff/dump|r. By setting this value, users can limit how deeply the tools traverse nested tables during operations such as debugging or displaying data structures. A lower depth can prevent excessive processing time and output clutter when working with deeply nested tables. The default setting is |cff00ccff10|r, but it can be adjusted to accommodate different levels of complexity or to enhance performance during development tasks.'
+L['DEVTOOLS_MAX_ENTRY_CUTOFF']       = 'Dump Max Entries'
+L['DEVTOOLS_MAX_ENTRY_CUTOFF::Desc'] = '|cff00ccffDEVTOOLS_MAX_ENTRY_CUTOFF|r: This parameter sets the maximum number of table entries that are displayed by the development tools like |cff00ccff/dump|r. It helps manage the output when inspecting large tables, preventing overwhelming amounts of data from being shown at once. By default, only the first |cff00ccff30|r entries of a table are displayed. Adjusting this parameter can be useful for developers who need to either limit or expand their view when debugging complex data structures, depending on the level of detail required for their analysis.'
 
 L['DevSuite addon feature']     = true
 L['Clear current preset']       = true

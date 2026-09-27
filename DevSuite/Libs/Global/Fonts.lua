@@ -3,15 +3,17 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type DevSuite_Namespace
 local ns = select(2, ...)
-local O, Table = ns.O, ns:Table()
+local Table = ns:Table()
 
 --[[-----------------------------------------------------------------------------
 New Instance
 -------------------------------------------------------------------------------]]
 local libName = 'Fonts'
 --- @class Fonts_DevSuite
-local o = {}
-ns:Register(libName, o)
+--- @field availableFonts table<string, string> @Display name to global FontObject name
+--- @field availableFontKeys string[]           @Sorted display names
+--- @field defaultFont string                   @Global FontObject name
+local o = {}; ns:Register(libName, o)
 local p, t = ns:log(libName)
 
 -- These are global var names that is provided by DebugChatFrame
@@ -46,6 +48,17 @@ local FONT_REGISTRY_NON_WESTERN = {
   ['NotoSansMono_koKR'] = 'DCF_NotoSansMono_koKR_Outline',
 }
 
+--- Dropdown display order; the locale font is listed first
+local FONT_ORDER = {
+  'Inconsolata',
+  'Inconsolata SemiBold',
+  'Inconsolata Condensed',
+  'Inconsolata ExtraCondensed',
+  'Inconsolata UltraCondensed',
+  'RobotoMono Medium',
+  'NotoSansMono Regular',
+}
+
 local FONTS_BY_LOCALE = {
   ['ruRU'] = 'RobotoMono_ruRU',
   ['zhCN'] = 'NotoSansMono_zhCN',
@@ -53,8 +66,10 @@ local FONTS_BY_LOCALE = {
   ['koKR'] = 'NotoSansMono_koKR',
 }
 
---- @type table<string, string>, string[], string
-local AVAILABLE_FONTS, AVAILABLE_FONT_KEYS, DEFAULT_FONT = (function()
+--[[-----------------------------------------------------------------------------
+Mixin Methods
+-------------------------------------------------------------------------------]]
+function o:RefreshFonts()
   -- loop through FONT_REGISTRY
   local f = {}
   local loc = GetLocale()
@@ -77,18 +92,41 @@ local AVAILABLE_FONTS, AVAILABLE_FONT_KEYS, DEFAULT_FONT = (function()
     return k
   end)()
   local defaultFont = (function()
-    local df = FONT_REGISTRY["Inconsolata ExtraCondensed"]
+    local df = FONT_REGISTRY['Inconsolata ExtraCondensed']
     return _G[df] and df or 'ChatFontNormal'
   end)()
-  return f, keys, defaultFont
-end)()
+  self.availableFonts, self.availableFontKeys, self.defaultFont = f, keys, defaultFont
+end
 
---[[-----------------------------------------------------------------------------
-Mixin Methods
--------------------------------------------------------------------------------]]
---- @return Name[] @Sorted names
-function o:GetFontNames() return AVAILABLE_FONT_KEYS end
-function o:GetDefaultFont() return DEFAULT_FONT or 'ChatFontNormal' end
+function o:GetDefaultFont() return self.defaultFont or 'ChatFontNormal' end
+
+--- @return table<Name, Name> @Global FontObject name to display name
+function o:GetFontChoices()
+  local choices = {}
+  if not self.availableFonts then return choices end
+  for name, objName in pairs(self.availableFonts) do
+    choices[objName] = name
+  end
+  return choices
+end
+
+--- @return Name[] @Global FontObject names: FONT_ORDER first, then the rest by name
+function o:GetFontSorting()
+  local sorting = {}
+  local f = self.availableFonts
+  if not f then return sorting end
+  local added = {}
+  local function add(name)
+    if not f[name] or added[name] then return end
+    added[name] = true
+    table.insert(sorting, f[name])
+  end
+  add(FONTS_BY_LOCALE[GetLocale()])
+  for _, name in ipairs(FONT_ORDER) do add(name) end
+  -- AceConfig hides keys missing from sorting
+  for _, name in ipairs(self.availableFontKeys) do add(name) end
+  return sorting
+end
 
 --- @return Name, number @The user preference font by name and size
 function o:GetUserFontSettings()

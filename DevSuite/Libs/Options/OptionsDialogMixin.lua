@@ -18,6 +18,10 @@ Lua Vars
 -------------------------------------------------------------------------------]]
 local sformat = string.format
 
+-- General labels are longer than the Debug Console ones
+--- @type Ace3WidgetArg_DevSuite
+local GENERAL_ARG = { layout = { label = { width = 210 } } }
+
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -29,7 +33,10 @@ local L = ns:GetLocale()
 local C_GetAddOnMetadata = GetAddOnMetadata or C_AddOns.GetAddOnMetadata
 
 local AceConfigDialog, AceDBOptions = ns:AceConfigDialog(), ns:AceDBOptions()
+--- @type API, Kapresoft-AceConfigUtil-2-0
 local API, ACU = O.API, ns:AceConfigUtil():New(ns.addon)
+
+local Fonts = O.Fonts
 local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_FONT_COLOR)
 local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)
@@ -92,10 +99,12 @@ function o:CreateOptions()
   return options
 end
 
---- Updates the description once DebugChatFrame becomes the default chat frame.
+--- Refreshes fonts and desc once DebugChatFrame is default
 --- @see DevConsoleModuleMixin#EnableDebugChatFrame
 function o:OnEnabledDefaultChatFrame()
-  if not __edc then return end; __edc.desc = __edc_desc_dcfEnabled
+  Fonts:RefreshFonts()
+  if not __edc then return end
+  __edc.desc = __edc_desc_dcfEnabled
 end
 
 --- @return GeneralConfigOption
@@ -125,7 +134,8 @@ function o:CreateGeneralOptions()
     type = 'toggle',
     order = order:next(),
     width = 'full',
-    descStyle = 'inline',
+    dialogControl = 'DevSuite_SettingsCheckbox',
+    arg = GENERAL_ARG,
     get = ShowEventTraceAtStartupGetFn,
     set = ShowEventTraceAtStartupSetFn,
   })
@@ -143,7 +153,8 @@ function o:CreateGeneralOptions()
     type = 'toggle',
     order = order:next(),
     width = 'full',
-    descStyle = 'inline',
+    dialogControl = 'DevSuite_SettingsCheckbox',
+    arg = GENERAL_ARG,
     get = DebugConsoleGetFn,
     set = DebugConsoleSetFn,
   })
@@ -159,28 +170,13 @@ function o:CreateGeneralOptions()
   a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
     type = 'toggle',
     width = 'full',
-    descStyle = 'inline',
+    dialogControl = 'DevSuite_SettingsCheckbox',
+    arg = GENERAL_ARG,
     order = order:next(),
     get = self.util:GlobalGet('show_fps', false),
     set = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate),
   })
   a.showFPS.name = c2(a.showFPS.name)
-
-  a.fontSize = {
-    name = c2(L['Console Font Size']),
-    desc = ns.LocaleUtil.G('Choose a Console Font Size'),
-    order = order:next(),
-    type = 'range',
-    min = 10,
-    max = 32,
-    step = 1,
-    get = self.util:GlobalGet('console_fontSize'),
-    set = self.util:GlobalSet(
-      'console_fontSize',
-      nil,
-      function(_, val) ns:SetChatFrameFontSize(val) end
-    ),
-  }
   return general
 end
 
@@ -198,7 +194,7 @@ function o:InitOptions()
   AceConfigDialog:AddToBlizOptions(ns.addon, ns.addon)
   if API:GetUIScale() > 1.0 then return end
 
-  AceConfigDialog:SetDefaultSize(ns.addon, 950, 600)
+  AceConfigDialog:SetDefaultSize(ns.addon, 658, 420)
 end
 
 o:RegisterMessage(GC.toMsg('OnEnabledDefaultChatFrame'), 'OnEnabledDefaultChatFrame')

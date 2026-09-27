@@ -20,6 +20,11 @@
     <Script file="Libs\Database\AceDbInitializerMixin.lua"/>
 
     <Script file="Libs\Options\OptionsUtil.lua" />
+    <Script file="Libs\Options\Ace3WidgetConfig.lua" />
+    <Script file="Libs\Options\Ace3WidgetUtil.lua" />
+    <Script file="Libs\Options\StepperSliderWidget.lua" />
+    <Script file="Libs\Options\SettingsCheckboxWidget.lua" />
+    <Include file="Libs\Options\StepperDropdownWidget.xml" />
     <Script file="Libs\Options\OptionsDialogMixin.lua" />
     <Script file="Libs\Options\OptionsDebugConsole.lua" />
 
