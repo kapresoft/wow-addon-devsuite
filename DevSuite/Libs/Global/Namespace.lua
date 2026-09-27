@@ -67,6 +67,10 @@ local M = {
     AceDbInitializerMixin = {},
     --- @type API
     API = {},
+    --- @type Ace3WidgetConfig_DevSuite
+    Ace3WidgetConfig = {},
+    --- @type Ace3WidgetUtil_DevSuite
+    Ace3WidgetUtil = {},
     --- @type Fonts_DevSuite
     Fonts = {},
     --- @type DatabaseSchema

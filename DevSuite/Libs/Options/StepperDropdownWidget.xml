@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <!-- OnLoad needs the Dropdown child; offset closes the arrow gap -->
+    <Frame name="DevSuite_DropdownWithSteppersTemplate" inherits="DropdownWithSteppersTemplate" virtual="true">
+        <Size x="200" y="26"/>
+        <KeyValues>
+            <KeyValue key="decrementOffsetX" value="-2" type="number"/>
+            <KeyValue key="incrementOffsetX" value="2" type="number"/>
+        </KeyValues>
+        <Frames>
+            <DropdownButton parentKey="Dropdown" inherits="WowStyle2DropdownTemplate">
+                <Anchors>
+                    <Anchor point="CENTER"/>
+                </Anchors>
+            </DropdownButton>
+        </Frames>
+    </Frame>
+
+    <Script file="StepperDropdownWidget.lua"/>
+</Ui>
