@@ -37,9 +37,9 @@ local AceConfigDialog, AceDBOptions = ns:AceConfigDialog(), ns:AceDBOptions()
 local API, ACU = O.API, ns:AceConfigUtil():New(ns.addon)
 
 local Fonts = O.Fonts
+local AddonUtil = ns:AddonUtil()
 local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_FONT_COLOR)
-local c2 = cfmt:ColorFn(YELLOW_FONT_COLOR)
 
 --- @type AceConfigOption, string
 local __edc, __edc_desc_dcfEnabled
@@ -139,7 +139,6 @@ function o:CreateGeneralOptions()
     get = ShowEventTraceAtStartupGetFn,
     set = ShowEventTraceAtStartupSetFn,
   })
-  a.showEventTraceAtStartup.name = c2(a.showEventTraceAtStartup.name)
 
   -- DebugConsole
   local function DebugConsoleGetFn() return ns:dbg().enableLogConsole == true end
@@ -158,13 +157,13 @@ function o:CreateGeneralOptions()
     get = DebugConsoleGetFn,
     set = DebugConsoleSetFn,
   })
-  a.enableDebugConsole.name = c2(a.enableDebugConsole.name)
   local edc = a.enableDebugConsole
   __edc, __edc_desc_dcfEnabled = edc, edc.desc
-  
-  if not DebugChatFrame then
+
+  if AddonUtil:GetAddOnInfo('DebugChatFrame'):IsMissing() then
     ns:dbg().enableLogConsole = false
     edc.desc = 'Requires ' .. c1('DebugChatFrame') .. ' AddOn'
+    edc.disabled = true
   end
 
   a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
@@ -176,7 +175,6 @@ function o:CreateGeneralOptions()
     get = self.util:GlobalGet('show_fps', false),
     set = self.util:GlobalSet('show_fps', GC.M.OnToggleFrameRate),
   })
-  a.showFPS.name = c2(a.showFPS.name)
   return general
 end
 
