@@ -6,6 +6,7 @@ local ns = select(2, ...)
 
 local O, GC = ns.O, ns.GC
 local AceConfigDialog = ns:AceConfigDialog()
+local AceConfigRegistry = ns:AceConfigRegistry()
 
 local addonLibs = { 'AceConsole-3.0', 'AceEvent-3.0', 'AceBucket-3.0', 'AceHook-3.0' }
 local Table, String = ns:Table(), ns:String()
@@ -334,6 +335,7 @@ function o.BINDING_DEVS_TOGGLE_SHOW_EVENT_TRACE_UI_AT_STARTUP()
     ns:traceUtil():ShowUI()
     traceSettings.show_at_startup = true
   end
+  AceConfigRegistry:NotifyChange(ns.addon)
 
   RaidNotice_AddMessage(RaidWarningFrame, msg, ChatTypeInfo["RAID_WARNING"])
 end
