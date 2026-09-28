@@ -42,6 +42,8 @@ ignore:
   - "*.toml"
   - dev
   - doc
+  - DevSuite/Libs/Developer
+  - DevSuite/Libs/Annotations
   - DevSuite/ThirdParty/Libs/Ace3/changelog.txt
   - DevSuite/ThirdParty/Libs/Ace3/Ace3.lua
   - DevSuite/ThirdParty/Libs/Ace3/Ace3.toc
