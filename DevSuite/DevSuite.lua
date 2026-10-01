@@ -26,6 +26,7 @@ NewAddOn
 --- @field private __configDialogWidget AceConfigDialog-3.0
 --- @field private __onHideHooked boolean
 --- @field PopupDialog PopupDebugDialog
+--- @field db AceDBObjectInstance
 local o = ns:AceAddon():NewAddon(ns.addon, unpack(addonLibs)); if not o then return end
 DevSuite = o -- Global Var
 

@@ -22,14 +22,18 @@ local p, t, fmt = ns:log(libName)
 ConfirmAndReload UI
 -------------------------------------------------------------------------------]]
 StaticPopupDialogs[CONFIRM_RELOAD_UI_WITH_MSG] = {
-  text = "Reload UI?", button1 = "Yes", button2 = "No",
-  timeout = 0, whileDead = true, hideOnEscape = true,
+  text = 'Reload UI?',
+  button1 = 'Yes',
+  button2 = 'No',
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
   --- @param messageName Name|nil
   OnAccept = function(self, messageName)
-      if messageName then AceEvent:SendMessage(messageName, M.AceDbInitializerMixin) end
-      ReloadUI()
+    if messageName then AceEvent:SendMessage(messageName, M.AceDbInitializerMixin) end
+    ReloadUI()
   end,
-  preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+  preferredIndex = 3, -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
 }
 
 --[[-----------------------------------------------------------------------------
@@ -70,10 +74,9 @@ function o:New(addon) return CreateAndInitFromMixin(o, addon) end
 function o:InitDb()
   AddonCallbackMethods(self.addon)
 
-  local OnProfileChanged = "OnProfileChanged"
-  local OnProfileReset   = "OnProfileReset"
-  local OnProfileCopied  = "OnProfileCopied"
-  ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
+  local OnProfileChanged = 'OnProfileChanged'
+  local OnProfileReset = 'OnProfileReset'
+  local OnProfileCopied = 'OnProfileCopied'
   ns:db().RegisterCallback(self.addon, OnProfileChanged, OnProfileChanged)
   ns:db().RegisterCallback(self.addon, OnProfileReset, OnProfileReset)
   ns:db().RegisterCallback(self.addon, OnProfileCopied, OnProfileCopied)
@@ -84,5 +87,3 @@ function o:InitDbDefaults()
   local profileName = ns:db():GetCurrentProfile()
   ns:db():RegisterDefaults(ns.O.DatabaseSchema:GetDatabase())
 end
-
-
