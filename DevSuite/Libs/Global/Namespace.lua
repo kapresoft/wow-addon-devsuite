@@ -8,7 +8,7 @@ local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
 
 local strupper = strupper or string.upper
 
-addonName, xns = ...;
+addonName, xns = ...
 
 --- @class DevSuite_Namespace : Kapresoft-AceLib-2-0, Kapresoft-DebugChatFrameMixin-2-0, Kapresoft-GameVersionMixin-2-0
 --- @field GC GlobalConstants
@@ -48,8 +48,8 @@ end
 
 --- @return Kapresoft-ColorFormatter-2-0
 local function ColorFormatter()
-    if not ColorFormatter__ then ColorFormatter__ = LibStub('Kapresoft-ColorFormatter-2-0') end
-    return ColorFormatter__
+  if not ColorFormatter__ then ColorFormatter__ = LibStub('Kapresoft-ColorFormatter-2-0') end
+  return ColorFormatter__
 end
 
 --[[-----------------------------------------------------------------------------
@@ -63,42 +63,42 @@ Type: Modules
 -------------------------------------------------------------------------------]]
 --- @class Modules
 local M = {
-    --- @type AceDbInitializerMixin
-    AceDbInitializerMixin = {},
-    --- @type API
-    API = {},
-    --- @type Ace3WidgetConfig_DevSuite
-    Ace3WidgetConfig = {},
-    --- @type Ace3WidgetUtil_DevSuite
-    Ace3WidgetUtil = {},
-    --- @type Fonts_DevSuite
-    Fonts = {},
-    --- @type DatabaseSchema
-    DatabaseSchema = {},
-    --- @type DebugDialog
-    DebugDialog = {},
-    --- @type ConfigDialogController
-    ConfigDialogController = {},
-    --- @type MainController
-    MainController = {},
-    --- @type DialogWidgetMixin
-    DialogWidgetMixin = {},
-    --- @type DevConsoleModuleMixin
-    DevConsoleModuleMixin = {},
-    --- @type EventTraceUtil
-    EventTraceUtil = {},
-    --- @type OptionsDialogMixin
-    OptionsDialogMixin = {},
-    --- @type OptionsDebugConsole
-    OptionsDebugConsole = {},
-    --- @type OptionsUtil
-    OptionsUtil = {},
-    --- @type PickupHooks
-    PickupHooks = {},
-    --- @type PopupDebugDialog
-    PopupDebugDialog = {},
+  --- @type AceDbInitializerMixin
+  AceDbInitializerMixin = {},
+  --- @type API
+  API = {},
+  --- @type Ace3WidgetConfig_DevSuite
+  Ace3WidgetConfig = {},
+  --- @type Ace3WidgetUtil_DevSuite
+  Ace3WidgetUtil = {},
+  --- @type Fonts_DevSuite
+  Fonts = {},
+  --- @type DatabaseSchema
+  DatabaseSchema = {},
+  --- @type DebugDialog
+  DebugDialog = {},
+  --- @type ConfigDialogController
+  ConfigDialogController = {},
+  --- @type MainController
+  MainController = {},
+  --- @type DialogWidgetMixin
+  DialogWidgetMixin = {},
+  --- @type DevConsoleModuleMixin
+  DevConsoleModuleMixin = {},
+  --- @type EventTraceUtil
+  EventTraceUtil = {},
+  --- @type OptionsDialogMixin
+  OptionsDialogMixin = {},
+  --- @type OptionsDebugConsole
+  OptionsDebugConsole = {},
+  --- @type OptionsUtil
+  OptionsUtil = {},
+  --- @type PickupHooks
+  PickupHooks = {},
+  --- @type PopupDebugDialog
+  PopupDebugDialog = {},
 
-    --- Dev Mode Only
+  --- Dev Mode Only
 }
 local ModuleUtil = LibStub('Kapresoft-ModuleUtil-2-0')
 ModuleUtil:EnrichModules(M)
@@ -116,15 +116,15 @@ function ns:ColorFn(color) return ColorFormatter():ColorFn(color) end
 
 --- @type Kapresoft-ColorDefinition-2-0
 ns.consoleColors = {
-    primary   = CreateColorFromRGBHexString('FF780A'),
-    secondary = CreateColorFromRGBHexString('fbeb2d'),
-    tertiary  = CreateColorFromRGBHexString('ffffff'),
+  primary = CreateColorFromRGBHexString('FF780A'),
+  secondary = CreateColorFromRGBHexString('fbeb2d'),
+  tertiary = CreateColorFromRGBHexString('ffffff'),
 }
 
 --- Color Formatters: Use these for values
 ns.f = {
-    val = ns:ColorFn(LIGHTGRAY_FONT_COLOR),
-    debug = ns:ColorFn(COMMON_GRAY_COLOR),
+  val = ns:ColorFn(LIGHTGRAY_FONT_COLOR),
+  debug = ns:ColorFn(COMMON_GRAY_COLOR),
 }
 
 --[[-----------------------------------------------------------------------------
@@ -146,16 +146,25 @@ Formatter/Printer
 ---------------------------------------------------------------------]]
 local function predicateFn() return ns.IsDev() end
 
-ns.fmt = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3 }); fmt = ns.fmt
-ns.fmtx = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3,multiline_tables = true }); fmtx = ns.fmtx
+ns.fmt = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3 })
+fmt = ns.fmt
+ns.fmtx = LibPrettyPrint:Formatter({ show_all = true, depth_limit = 3, multiline_tables = true })
+fmtx = ns.fmtx
 ns.printer = LibPrettyPrint:Printer({
-  prefix = ns.nameShort, formatter = ns.fmt,
-  prefix_color = '466EFF', sub_prefix_color = '9CFF9C',
+  prefix = ns.nameShort,
+  formatter = ns.fmt,
+  prefix_color = '466EFF',
+  sub_prefix_color = '9CFF9C',
 }, predicateFn)
 
-ns.logHolder = {}; do
-  local h = ns.logHolder; local noop = function(_moduleName) return function() end end
-  h.printer = noop; h.tracer = noop
+ns.logHolder = {}
+do
+  local h = ns.logHolder
+  local noop = function(_moduleName)
+    return function() end
+  end
+  h.printer = noop
+  h.tracer = noop
 end
 
 --- @type Modules
@@ -191,9 +200,7 @@ local SequenceMixin = LibStub('Kapresoft-SequenceMixin-2-0')
 
 --- @param startingSequence number|nil
 --- @return Kapresoft-SequenceMixin-2-0
-function ns.CreateSequence(startingSequence)
-  return SequenceMixin.New(startingSequence)
-end
+function ns.CreateSequence(startingSequence) return SequenceMixin.New(startingSequence) end
 
 --- @return EventTraceUtil
 function ns:traceUtil() return self.eventTraceUtil end
@@ -233,9 +240,9 @@ end
 --- @param ... any? @Mixins
 --- @return table|T library
 function ns:NewLib2(libName, ...)
-  assertsafe(type(libName) == 'string', "ns:NewLibSimple(libName): {libName} should be a string.")
+  assertsafe(type(libName) == 'string', 'ns:NewLibSimple(libName): {libName} should be a string.')
   local newLib = {}
-  local len    = select("#", ...)
+  local len = select('#', ...)
   if len > 0 then newLib = Mixin({}, ...) end
   newLib.DevSuite_LibName = libName
   self.O[libName] = newLib
@@ -245,9 +252,9 @@ end
 -- todo next: find out if mt is being used, if not use NewLib2 for NewLib()
 --- Simple Library
 function ns:NewLib(libName, ...)
-  assert(libName, "LibName is required")
+  assert(libName, 'LibName is required')
   local newLib = {}
-  local len    = select("#", ...)
+  local len = select('#', ...)
   if len > 0 then newLib = Mixin({}, ...) end
   local mt = { __tostring = function() return 'Lib:' .. libName end }
   setmetatable(newLib, mt)
@@ -257,11 +264,11 @@ end
 
 -- todo next: refactor and use NewLib(libName, 'AceEvent-3.0')
 function ns:NewLibWithEvent(libName, ...)
-  assert(libName, "LibName is required")
+  assert(libName, 'LibName is required')
 
   local TOSTRING_ADDON_FMT = '|cfdfefefe{{|r|cfdeab676%s|r|cfdfefefe}}|r'
   local newLib = self:NewAceEvent()
-  local len    = select("#", ...)
+  local len = select('#', ...)
   if len > 0 then newLib = Mixin(newLib, ...) end
   newLib.mt = { __tostring = function() return string.format(TOSTRING_ADDON_FMT, libName) end }
   setmetatable(newLib, newLib.mt)
@@ -284,7 +291,7 @@ function ns:dbg() return self:g().debug end
 
 --- @return Profile_Config
 function ns:profile()
-  local db = self.addonDbFn();
+  local db = self.addonDbFn()
   return db and db.profile
 end
 --- @return Character_Config
