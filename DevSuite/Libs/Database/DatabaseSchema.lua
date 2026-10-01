@@ -6,7 +6,8 @@ local ns = select(2, ...)
 local Table = ns:Table()
 local Tbl_DeepCopy, Tbl_IsEmpty = Table.DeepCopy, Table.IsEmpty
 
-local msg_RemovePresetKeyword = 'RemovePresetKeyword(keywordToDelete): {keywordToDelete} should be a string, but type was [%s]'
+local msg_RemovePresetKeyword =
+  'RemovePresetKeyword(keywordToDelete): {keywordToDelete} should be a string, but type was [%s]'
 
 local libName = 'DatabaseSchema'
 local p, t, fmt = ns:log(libName)
@@ -93,14 +94,14 @@ local function InitDefaultProfile(defaultProfile)
   for i = 3, defaultProfile.debugDialog.maxHistory do
     local name = ns.sformat('Saved #%s', i)
     --- @type Profile_Config_Item
-    local itemData = { name = name, value = fnN, sortIndex = i, }
+    local itemData = { name = name, value = fnN, sortIndex = i }
     table.insert(defaultProfile.debugDialog.items, itemData)
   end
   ---@param a Profile_Config_Item
   ---@param b Profile_Config_Item
   local function sortFn(a, b) return a.sortIndex <= b.sortIndex end
   table.sort(defaultProfile.debugDialog.items, sortFn)
-  
+
   return defaultProfile
 end
 
@@ -113,15 +114,15 @@ Type: Profile_Config
 --- @field debugDialog Profile_Config_DebugDialog
 --- @field last_eval Index
 local DefaultProfileSettings = {
-  enable      = true,
+  enable = true,
   debugDialog = {
     maxHistory = 15,
-    items      = {
+    items = {
       { name = 'Saved #1', value = fn1, sortIndex = 1 },
       { name = 'Saved #2', value = fn2, sortIndex = 2 },
-    }
+    },
   },
-};
+}
 InitDefaultProfile(DefaultProfileSettings)
 
 --[[-----------------------------------------------------------------------------
@@ -156,37 +157,37 @@ Type: AceDBObjectInstance
 local DefaultAddOnDatabase = {
   --- @type DevSuite_Global_Config
   ['global'] = {
-    show_fps                           = true,
+    show_fps = true,
     prompt_for_reload_to_enable_addons = true,
-    console_fontSize                   = 14,
+    console_fontSize = 14,
     --- @type DebugSettingsFlag_Config
     debug = {
-      enableLogConsole                 = false,
-      selectLogConsoleTab              = true,
-      makeDefaultChatFrame             = true,
-      maxLogConsoleLines               = 1000,
-      DEVTOOLS_DEPTH_CUTOFF            = 5,
-      DEVTOOLS_MAX_ENTRY_CUTOFF        = 50,
+      enableLogConsole = false,
+      selectLogConsoleTab = true,
+      makeDefaultChatFrame = true,
+      maxLogConsoleLines = 1000,
+      DEVTOOLS_DEPTH_CUTOFF = 5,
+      DEVTOOLS_MAX_ENTRY_CUTOFF = 50,
     },
     --- @type DebugDialog_Config
     debug_dialog = {
-      width                            = 500,
-      height                           = 600,
+      width = 500,
+      height = 600,
       --- @type DevSuite_Anchor_Config
       anchor = {
-        point                          = "CENTER"
-      }
+        point = 'CENTER',
+      },
     },
     --- @type TraceConfig
     trace = {
-      show_at_startup      = false,
-      preset_keyword       = '',
+      show_at_startup = false,
+      preset_keyword = '',
       preset_filter_keywords = {},
       preset_filters_initialized = false,
     },
   },
-  profile                              = DefaultProfileSettings,
-  char                                 = {},
+  profile = DefaultProfileSettings,
+  char = {},
 }
 
 --- @class DevSuite_Anchor_Config
@@ -215,9 +216,7 @@ local function FindFirstKeyword(keyword, callbackFn)
   local keywords = GetPresetFilterKeywords()
   local lower = keyword:lower()
   for kw in pairs(keywords) do
-    if kw:lower() == lower then
-      return callbackFn and callbackFn(keywords, kw)
-    end
+    if kw:lower() == lower then return callbackFn and callbackFn(keywords, kw) end
   end
 end
 
@@ -243,16 +242,23 @@ function o:GetPresetKeywordsAsArray()
   end
   table.sort(ordered, function(a, b) return a.order < b.order end)
   local result = {}
-  for i, entry in ipairs(ordered) do result[i] = entry.kw end
+  for i, entry in ipairs(ordered) do
+    result[i] = entry.kw
+  end
   return result
 end
 
-
 --- @param newKeyword string
 function o:AddPresetKeyword(newKeyword)
-  assertsafe(type(newKeyword) == 'string', 'AddPresetKeyword(newKeyword): {newKeyword} should be a string.')
+  assertsafe(
+    type(newKeyword) == 'string',
+    'AddPresetKeyword(newKeyword): {newKeyword} should be a string.'
+  )
   local keywords = GetPresetFilterKeywords()
-  if Tbl_IsEmpty(keywords) then keywords[newKeyword] = 1; return end
+  if Tbl_IsEmpty(keywords) then
+    keywords[newKeyword] = 1
+    return
+  end
   local lower = newKeyword:lower()
   local maxOrder = 0
   for k, order in pairs(keywords) do
@@ -264,10 +270,7 @@ end
 
 --- @param keywordToDelete string
 function o:RemovePresetKeyword(keywordToDelete)
-  assertsafe(type(keywordToDelete) == 'string',
-  msg_RemovePresetKeyword, type(keywordToDelete))
+  assertsafe(type(keywordToDelete) == 'string', msg_RemovePresetKeyword, type(keywordToDelete))
 
-  FindFirstKeyword(keywordToDelete, function(keywords, match)
-      keywords[match] = nil
-  end)
+  FindFirstKeyword(keywordToDelete, function(keywords, match) keywords[match] = nil end)
 end
