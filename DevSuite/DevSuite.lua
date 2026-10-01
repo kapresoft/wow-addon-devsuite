@@ -355,7 +355,7 @@ function o.BINDING_DEVS_DUMP_CURSOR_INFO()
   local all = SafePack(GetCursorInfo())
   local useDefault = true
   local typ, id, info, extra = GetCursorInfo()
-  local spellFmt = 'spellID=%s (%s)'
+  local spellFmt = 'spell=%s (%s)'
   local extraInfo = {}
   if typ == 'spell' then
     local spellID = extra
