@@ -52,8 +52,12 @@ local function InitCreateKeywordDialog()
     text = 'Add New Keyword',
     button1 = ADD,
     button2 = CANCEL,
-    hasEditBox = 1, editBoxWidth = 100, maxLetters = 32,
-    timeout = 0, exclusive = 1, whileDead = 1,
+    hasEditBox = 1,
+    editBoxWidth = 100,
+    maxLetters = 32,
+    timeout = 0,
+    exclusive = 1,
+    whileDead = 1,
 
     --- @param dlg StaticPopupDialog
     OnShow = function(dlg)
@@ -64,9 +68,10 @@ local function InitCreateKeywordDialog()
         Create_OnAccept(dlg)
         StaticPopup_Hide(DEVSUITE_CREATE_KEYWORD)
       end)
-      dlg.EditBox:SetScript('OnEscapePressed', function()
-        StaticPopup_Hide(DEVSUITE_CREATE_KEYWORD)
-      end)
+      dlg.EditBox:SetScript(
+        'OnEscapePressed',
+        function() StaticPopup_Hide(DEVSUITE_CREATE_KEYWORD) end
+      )
     end,
     OnAccept = Create_OnAccept,
     OnCancel = function(dlg, data) end,
@@ -109,9 +114,7 @@ local function OnClick_KeywordButton(b)
   owner:SendMessage(GC.toMsg('PresetFilterClose'), 'PresetFilterButton::' .. b.text:GetText())
 end
 --- @param self IconButton
-local function OnClick_AddButton(self)
-    StaticPopup_Show(DEVSUITE_CREATE_KEYWORD)
-end
+local function OnClick_AddButton(self) StaticPopup_Show(DEVSUITE_CREATE_KEYWORD) end
 local function OnClick_DeleteButton(btn)
   local owner = contentFrame()
 
@@ -154,7 +157,7 @@ local function ClearButton_Init(self, relativeTo, owner)
   local fs = self:GetFontString()
   local font, size, flags = fs:GetFont()
   fs:SetFont(font, size - 2, flags)
-  
+
   self:SetScript('OnClick', OnClick_ClearButton)
   self:SetScript('OnEnter', function(b)
     ns.GameTooltip_DefaultAnchor()
@@ -162,7 +165,6 @@ local function ClearButton_Init(self, relativeTo, owner)
     GameTooltip:Show()
   end)
   self:SetScript('OnLeave', function(b) GameTooltip:Hide() end)
-  
 end
 
 --[[-------------------------------------------------------------------
@@ -178,19 +180,19 @@ function o:OnLoad()
   BackdropTemplateMixin.OnBackdropLoaded(self)
   self:SetBackdrop(BACKDROP_TOAST_12_12)
 
-  local anchorTo = self.anchorTo  -- already resolved global
+  local anchorTo = self.anchorTo -- already resolved global
   self:SetParent(anchorTo)
   self:SetPoint('TOPLEFT', presetFiltersButton(), 'BOTTOMLEFT', 5, 2)
   self:SetFrameLevel(1000)
   self:SetAlpha(0.9)
-  
+
   self.HeaderTitle:SetText(L['Preset Filters'])
-  
+
   --- @type TextureObj
   local headerIcon = self.HeaderIconLeft
   headerIcon:SetDrawLayer('OVERLAY')
   headerIcon:SetScript('OnLeave', function() end)
-  
+
   headerIcon:SetScript('OnEnter', function()
     ns.GameTooltip_DefaultAnchor()
     GameTooltip:AddLine(L['DevSuite addon feature'])
@@ -208,7 +210,6 @@ function o:OnLoad()
   local availableWidth = self.ScrollFrame:GetWidth() - scrollBarWidth - 4
   local deleteIconButtonWidth, bufferWidth = 12, 0
   self:SetWidth(availableWidth + deleteIconButtonWidth + bufferWidth)
-
 
   self:RegisterMessage(GC.M.OnAfterEnable, 'OnAfterEnable')
 end
@@ -244,18 +245,14 @@ end
 
 function o:SetEventTraceSearchKeyword(keyword)
   local s = EventTrace.Log.Bar.SearchBox
-  if s and keyword then
-    s:SetText(keyword)
-  end
+  if s and keyword then s:SetText(keyword) end
 end
 function o:GetEventTraceSearchKeyword()
   local s = EventTrace.Log.Bar.SearchBox; if not s then return end
   return s:GetText()
 end
 
-function o:OnShow()
-  self:RefreshPredefinedFilters()
-end
+function o:OnShow() self:RefreshPredefinedFilters() end
 
 --- @class PredefinedKeywordsButton : Button
 --- @field private __used boolean
@@ -272,11 +269,11 @@ local function PredefinedKeywordsButton_Init(self, owner, keyword)
   self.__used = true
 
   self:SetScript('OnClick', OnClick_KeywordButton)
-  self:SetScript("OnEnter", function(btn)
+  self:SetScript('OnEnter', function(btn)
     btn.HighlightBg:Show()
     btn.text:SetTextColor(1, 0.82, 0.25) -- gold (your theme)
   end)
-  self:SetScript("OnLeave", function(btn)
+  self:SetScript('OnLeave', function(btn)
     btn.HighlightBg:Hide()
     btn.text:SetTextColor(1, 1, 1) -- default
   end)
@@ -285,7 +282,9 @@ local function PredefinedKeywordsButton_Init(self, owner, keyword)
   local icon = self.DeleteButton.Icon
   icon:SetVertexColor(0.5, 0.5, 0.5, 0.6)
   -- todo: localize 'Delete keyword'
-  self.DeleteButton.tooltipText = L['Delete keyword'] .. ': ' .. c1(self.DeleteButton:GetParent().text:GetText())
+  self.DeleteButton.tooltipText = L['Delete keyword']
+    .. ': '
+    .. c1(self.DeleteButton:GetParent().text:GetText())
   self.DeleteButton.onClickHandler = OnClick_DeleteButton
   self.DeleteButton:ClearAllPoints()
   self.DeleteButton:SetPoint('RIGHT', self, 'RIGHT', -8, 0)
@@ -301,9 +300,9 @@ local function PredefinedKeywordsButton_Layout(owner, presetKeywords)
     if btn and btn.__used then
       btn:ClearAllPoints()
       if not prev then
-        btn:SetPoint("TOPLEFT", child, "TOPLEFT", 0, 0)
+        btn:SetPoint('TOPLEFT', child, 'TOPLEFT', 0, 0)
       else
-        btn:SetPoint("TOPLEFT", prev, "BOTTOMLEFT", 0, -2)
+        btn:SetPoint('TOPLEFT', prev, 'BOTTOMLEFT', 0, -2)
       end
       prev = btn
     end
@@ -323,16 +322,16 @@ function o:RefreshPredefinedFilters()
     if not f then
       --- @type Template
       local template = 'DevSuite_PredefinedKeywordsButton'
-      f = CreateFrame("Button", nil, child, template)
+      f = CreateFrame('Button', nil, child, template)
       self.buttonPool[keyword] = f
     end
     PredefinedKeywordsButton_Init(f, self, keyword)
 
     usedCount = usedCount + 1
   end
-  
+
   PredefinedKeywordsButton_Layout(self, presetKeywords)
-  
+
   -- cleanup
   for _, frame in pairs(self.buttonPool) do
     if not frame.__used then
@@ -341,7 +340,7 @@ function o:RefreshPredefinedFilters()
     end
     frame.__used = nil
   end
-  
+
   self:UpdateScrollHeight(usedCount)
 end
 
@@ -350,15 +349,11 @@ function o:UpdateScrollHeight(numRows)
   local child = self.ScrollChild
 
   local rowHeight = keywordFrameHeight
-  local spacing   = 1
-  local padding   = 1
+  local spacing = 1
+  local padding = 1
 
   local height = 0
-  if numRows > 0 then
-    height = (numRows * rowHeight)
-           + ((numRows - 1) * spacing)
-           + padding
-  end
+  if numRows > 0 then height = (numRows * rowHeight) + ((numRows - 1) * spacing) + padding end
 
   child:SetHeight(height)
 end

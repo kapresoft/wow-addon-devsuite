@@ -8,9 +8,9 @@ local strupper, strlower = strupper, strlower
 local IsNotBlank = ns:String().IsNotBlank
 
 -- classic green
-local activeColor = CreateColorFromHexString("ff00ff00")
+local activeColor = CreateColorFromHexString('ff00ff00')
 -- white
-local ttColor = CreateColorFromHexString("ffeeffee")
+local ttColor = CreateColorFromHexString('ffeeffee')
 
 --[[-----------------------------------------------------------------------------
 Module::PresetFiltersButton
@@ -56,25 +56,23 @@ function o:OnAfterEnable()
   self:SetText(L['Preset Filters'])
   local fs = self:GetFontString()
   fs:SetTextColor(1, 0.85, 0.4)
-  fs:SetPoint("LEFT", 3, 0)
-  fs:SetPoint("RIGHT", -10, 0)
+  fs:SetPoint('LEFT', 3, 0)
+  fs:SetPoint('RIGHT', -10, 0)
 
   self:UpdateButtonTextState()
 end
 
 --- @private
-function o:OnPresetFilterClose(evt, src) if self:GetChecked() then self:Click() end end
+function o:OnPresetFilterClose(evt, src)
+  if self:GetChecked() then self:Click() end
+end
 
 --- @private
 function o:EventTraceHooks()
   local subtitleBar = ns:evt().SubtitleBar
-  local onClicks = { subtitleBar.ViewLog,
-                     subtitleBar.ViewFilter,
-                     subtitleBar.OptionsDropdown }
+  local onClicks = { subtitleBar.ViewLog, subtitleBar.ViewFilter, subtitleBar.OptionsDropdown }
   for i, f in ipairs(onClicks) do
-    if f and not self:IsHooked(f, 'OnClick') then
-      self:HookScript(f, 'OnClick', 'OnClickOthers')
-    end
+    if f and not self:IsHooked(f, 'OnClick') then self:HookScript(f, 'OnClick', 'OnClickOthers') end
   end
 end
 
@@ -105,7 +103,7 @@ function o:IsFilterActive() return IsNotBlank(self:GetPresetKeyword()) end
 
 function o:UpdateGameTooltipActiveState()
   if not self:IsFilterActive() then return end
-  
+
   GameTooltip:AddLine(' ')
   GameTooltip:AddDoubleLine(ttC(L['active']), activeC(strlower(YES)))
   GameTooltip:AddDoubleLine(ttC(L['keyword']), ttC(self:GetPresetKeyword()))
@@ -114,7 +112,8 @@ end
 --- @private
 function o:UpdateButtonTextState()
   if self:IsFilterActive() then
-    self:SetText(activeC(L['Preset Filters'])); return
+    self:SetText(activeC(L['Preset Filters']))
+    return
   end
   self:SetText(L['Preset Filters'])
 end
