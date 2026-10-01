@@ -2,6 +2,12 @@
 Blizzard Vars
 -------------------------------------------------------------------------------]]
 local CreateFrame = CreateFrame
+--- @type Frame
+local WorldFrame = WorldFrame
+--- @type Frame, Frame
+local MultiBarBottomLeft, MultiBarBottomRight = MultiBarBottomLeft, MultiBarBottomRight
+--- @type FontString?
+local FramerateLabel = FramerateLabel
 
 --[[-----------------------------------------------------------------------------
 Local Vars
@@ -10,6 +16,9 @@ Local Vars
 local ns = select(2, ...)
 local O, GC = ns.O, ns.GC
 local E, MSG, AceEvent = GC.E, GC.M, ns:NewAceEvent()
+
+-- Blizzard's FramerateLabel offset (Classic WorldFrame.xml)
+local FPS_DEFAULT_OFFSET_Y = 64
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -22,6 +31,27 @@ local p, t, fmt = ns:log(libName)
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
+--- @return Frame? @nil if neither bottom bar is visible
+local function VisibleBottomBar()
+  if MultiBarBottomLeft:IsVisible() then return MultiBarBottomLeft end
+  if MultiBarBottomRight:IsVisible() then return MultiBarBottomRight end
+end
+
+--- Lifts the FPS text above bottom bars. Non-Retail only:
+--- Retail anchors it to the Micro Menu, no adjustment needed.
+local function AnchorFramerateLabel()
+  if not FramerateLabel then return end
+  local bar = VisibleBottomBar()
+  FramerateLabel:ClearAllPoints()
+  if bar then return FramerateLabel:SetPoint('TOPRIGHT', bar, 'TOPRIGHT', 0, 24) end
+  FramerateLabel:SetPoint('BOTTOM', WorldFrame, 'BOTTOM', 0, FPS_DEFAULT_OFFSET_Y)
+end
+
+local function HookBottomBars()
+  if not (FramerateLabel and MultiActionBar_Update) then return end
+  hooksecurefunc('MultiActionBar_Update', AnchorFramerateLabel)
+end
+
 ---Other modules can listen to message
 ---```Usage:
 ---AceEvent:RegisterMessage(MSG.OnAddonReady, function(evt, ...) end
@@ -61,7 +91,10 @@ function o:Init(addon)
 end
 
 --- @private
-function o:OnAfterInitialize() self:RegisterEvents() end
+function o:OnAfterInitialize()
+  self:RegisterEvents()
+  HookBottomBars()
+end
 
 --- @private
 function o:RegisterEvents()
@@ -84,7 +117,10 @@ function o:OnShowEventTrace()
   tu[m](tu)
 end
 
-function o:OnToggleFrameRate() self:ShowFPS(ns:g().show_fps) end
+function o:OnToggleFrameRate()
+  self:ShowFPS(ns:g().show_fps)
+  AnchorFramerateLabel()
+end
 
 --- @private
 function o:RegisterOnPlayerEnteringWorld()
