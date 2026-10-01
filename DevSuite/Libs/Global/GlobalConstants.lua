@@ -9,8 +9,8 @@ Local Vars
 --- @type DevSuite_Namespace
 local ns = select(2, ...)
 
-local consoleCommand = "devsuite"
-local consoleCommandShort = "ds"
+local consoleCommand = 'devsuite'
+local consoleCommandShort = 'ds'
 local consoleCommandOptions = consoleCommand .. '-options'
 local consoleCommandOptionsShort = consoleCommandShort .. '-options'
 local CONFIRM_RELOAD_UI_NAME = ns.addon .. '_CONFIRM_RELOAD_UI'
@@ -21,11 +21,15 @@ local function AddonInfoUtil() return LibStub('Kapresoft-AddonInfoUtil-2-0') end
 ConfirmAndReload UI
 -------------------------------------------------------------------------------]]
 StaticPopupDialogs[CONFIRM_RELOAD_UI_NAME] = {
-    text = "Reload UI?", button1 = "Yes", button2 = "No",
-    timeout = 0, whileDead = true, hideOnEscape = true,
-    --- @param messageName Name|nil
-    OnAccept = function(self) ReloadUI() end,
-    preferredIndex = 3,  -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
+  text = 'Reload UI?',
+  button1 = 'Yes',
+  button2 = 'No',
+  timeout = 0,
+  whileDead = true,
+  hideOnEscape = true,
+  --- @param messageName Name|nil
+  OnAccept = function(self) ReloadUI() end,
+  preferredIndex = 3, -- avoid some UI taint, see http://www.wowace.com/announcements/how-to-avoid-some-ui-taint/
 }
 
 --[[-----------------------------------------------------------------------------
@@ -98,10 +102,8 @@ local MessageNames = {
   OnSyncAddOnEnabledState = {},
   --- @type Name
   OnDebugConsoleDefaultChatFrameState = {},
-};
-local function uniqueName(name)
-  return sformat('%s::%s', ns.addon, name)
-end
+}
+local function uniqueName(name) return sformat('%s::%s', ns.addon, name) end
 ---@param event string The originating Blizzard Event name
 local function toMsg(event) return uniqueName(event) end
 local function InitMessageNames()
@@ -122,16 +124,14 @@ function o:AIU()
   return o.AddonInfoUtil
 end
 
-function o:GetAddonInfoFormatted()
-  return self:AIU():GetInfoSlashCommandText()
-end
+function o:GetAddonInfoFormatted() return self:AIU():GetInfoSlashCommandText() end
 
-function o:GetMessageLoadedText()
-  return self:AIU():GetMessageLoadedText(command, commandShort)
-end
+function o:GetMessageLoadedText() return self:AIU():GetMessageLoadedText(command, commandShort) end
 
 function o:ConfirmAndReload()
-  if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME) end
+  if StaticPopup_Visible(CONFIRM_RELOAD_UI_NAME) == nil then
+    return StaticPopup_Show(CONFIRM_RELOAD_UI_NAME)
+  end
   return false
 end
 --- @type DevSuite_Namespace

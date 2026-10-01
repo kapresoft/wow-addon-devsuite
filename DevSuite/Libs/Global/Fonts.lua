@@ -122,9 +122,13 @@ function o:GetFontSorting()
     table.insert(sorting, f[name])
   end
   add(FONTS_BY_LOCALE[GetLocale()])
-  for _, name in ipairs(FONT_ORDER) do add(name) end
+  for _, name in ipairs(FONT_ORDER) do
+    add(name)
+  end
   -- AceConfig hides keys missing from sorting
-  for _, name in ipairs(self.availableFontKeys) do add(name) end
+  for _, name in ipairs(self.availableFontKeys) do
+    add(name)
+  end
   return sorting
 end
 

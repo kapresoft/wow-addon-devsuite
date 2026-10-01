@@ -18,7 +18,7 @@ Methods
 function o:GetUIScale()
   -- This returns "1" if UI scaling is enabled, "0" otherwise.
   local useUiScale = GetCVar('useUiScale')
-  if useUiScale == "1" then
+  if useUiScale == '1' then
     local uiScale = GetCVar('uiScale')
     return tonumber(uiScale)
   else
