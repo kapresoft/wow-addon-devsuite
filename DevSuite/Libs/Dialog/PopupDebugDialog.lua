@@ -27,14 +27,20 @@ local FRAME_TITLE = ns.addon .. ' Dialog'
 
 local Formatter
 local FormatterOptions = {
-  use_newline = true, show_function = true, multiline_tables = true,
-  wrap_string = true, indent_size=2, sort_keys=false,
-  show_metatable=false, show_string = true, show_userdata = false,
-  level_width=120, depth_limit = 1000 }
+  use_newline = true,
+  show_function = true,
+  multiline_tables = true,
+  wrap_string = true,
+  indent_size = 2,
+  sort_keys = false,
+  show_metatable = false,
+  show_string = true,
+  show_userdata = false,
+  level_width = 120,
+  depth_limit = 1000,
+}
 local function GetFormatter()
-  if type(Formatter) ~= 'table' then
-    Formatter = ns.fmt:New(FormatterOptions)
-  end
+  if type(Formatter) ~= 'table' then Formatter = ns.fmt:New(FormatterOptions) end
   return Formatter
 end
 local function ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
@@ -46,17 +52,17 @@ end
 --- @return PopupDebugDialogFrame
 local function CreateDialog()
   --- @class PopupDebugDialogFrame
-  local frame = AceGUI:Create("Frame")
+  local frame = AceGUI:Create('Frame')
   -- The following makes the "Escape" close the window
   ConfigureFrameToCloseOnEscapeKey(FRAME_NAME, frame)
 
   frame:SetTitle(FRAME_TITLE)
   frame:SetStatusText('')
-  frame:SetCallback("OnClose", function(widget)
+  frame:SetCallback('OnClose', function(widget)
     widget:SetTextContent('')
     widget:SetStatusText('')
   end)
-  frame:SetLayout("Flow")
+  frame:SetLayout('Flow')
   --frame:SetHeight(600)
   --frame:SetWidth(800)
 
@@ -66,18 +72,18 @@ local function CreateDialog()
   --inlineGroup:SetFullHeight(true)
   --frame:AddChild(inlineGroup)
 
-  local showFnEditBox = AceGUI:Create("CheckBox")
-  showFnEditBox:SetLabel("Show Functions")
+  local showFnEditBox = AceGUI:Create('CheckBox')
+  showFnEditBox:SetLabel('Show Functions')
   showFnEditBox:SetValue(true)
 
-  local useNewLine = AceGUI:Create("CheckBox")
-  useNewLine:SetLabel("Use Newline")
+  local useNewLine = AceGUI:Create('CheckBox')
+  useNewLine:SetLabel('Use Newline')
   useNewLine:SetValue(true)
 
   frame:AddChild(showFnEditBox)
   frame:AddChild(useNewLine)
 
-  local editbox = AceGUI:Create("MultiLineEditBox")
+  local editbox = AceGUI:Create('MultiLineEditBox')
   editbox:SetLabel('')
   editbox:SetText('')
   --editbox:SetNumLines(30)
@@ -91,9 +97,7 @@ local function CreateDialog()
   --inlineGroup:AddChild(showFnEditBox)
   --inlineGroup:AddChild(editbox)
 
-  function frame:SetTextContent(text)
-    self.editBox:SetText(text)
-  end
+  function frame:SetTextContent(text) self.editBox:SetText(text) end
 
   function frame:SetIcon(iconPathOrId)
     if not iconPathOrId then return end

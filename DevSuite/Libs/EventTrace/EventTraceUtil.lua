@@ -1,7 +1,7 @@
-local IsAddOnLoaded     = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
+local IsAddOnLoaded = C_AddOns.IsAddOnLoaded or IsAddOnLoaded
 local UIParentLoadAddOn = UIParentLoadAddOn
 local EVENT_TRACE_ADDON = 'Blizzard_EventTrace'
-local upperc            = string.upper
+local upperc = string.upper
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
@@ -42,18 +42,18 @@ local c_base = ns:ColorFn('88ff88')
 --- @param showAtStartup boolean
 --- @param predicateFn PredicateFn|nil  | "function() return true end"
 function o:Init(addon, showAtStartup, predicateFn)
-  assertsafe(type(addon) == 'string',
-    "Init(addon, showAtStartup, predicateFn):: The param addon should be a string, but was [%s].",
-    type(addon))
-  
-  self.logName     = addon
-  self.eventBase   = upperc(c_base(addon))
-  self.predicateFn = predicateFn or function() return true  end
-  self.evt         = self:LoadEventTrace(showAtStartup)
-  
-  if self.evt then
-    self.evt:SetClampedToScreen(true)
-  end
+  assertsafe(
+    type(addon) == 'string',
+    'Init(addon, showAtStartup, predicateFn):: The param addon should be a string, but was [%s].',
+    type(addon)
+  )
+
+  self.logName = addon
+  self.eventBase = upperc(c_base(addon))
+  self.predicateFn = predicateFn or function() return true end
+  self.evt = self:LoadEventTrace(showAtStartup)
+
+  if self.evt then self.evt:SetClampedToScreen(true) end
 end
 
 function o:ShowUI() self.evt:Show() end
@@ -94,19 +94,17 @@ end
 --- @return EventTrace?
 function o:LoadEventTrace(showAtStartup)
   if self.evt then return self.evt end
-  
+
   local addOnName = EVENT_TRACE_ADDON
-  
+
   if IsAddOnLoaded(addOnName) then return EventTrace end
 
   local success, reason = UIParentLoadAddOn(addOnName)
   if not success then
-    print(('%s:: Failed to load [%s], reason=%s')
-      :format( self.logName, addOnName, reason))
+    print(('%s:: Failed to load [%s], reason=%s'):format(self.logName, addOnName, reason))
     return nil
   end
-  assertsafe(EventTrace, '%s:: Failed to load [%s].',
-    self.logName or ns.addon, addOnName)
+  assertsafe(EventTrace, '%s:: Failed to load [%s].', self.logName or ns.addon, addOnName)
   self.evt = EventTrace
   if not showAtStartup then self.evt:Hide() end
   return self.evt
@@ -123,5 +121,5 @@ end
 --- @param prefix Name|nil
 function o:_EventName(prefix)
   if prefix == nil then return self.eventBase end
-  return ("%s::%s"):format(self.eventBase, prefix)
+  return ('%s::%s'):format(self.eventBase, prefix)
 end

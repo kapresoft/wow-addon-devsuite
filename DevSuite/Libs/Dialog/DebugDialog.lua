@@ -12,7 +12,7 @@ local L = ns:GetLocale()
 local ERROR_COLOR = '|cffFF7D83'
 
 local String, AceGUI = ns:String(), ns:AceGUI()
-local DEBUG_DIALOG_GLOBAL_FRAME_NAME = "DEVS_DebugDialog"
+local DEBUG_DIALOG_GLOBAL_FRAME_NAME = 'DEVS_DebugDialog'
 local IsBlank, IsNotBlank = String.IsBlank, String.IsNotBlank
 local EqualsIgnoreCase = String.EqualsIgnoreCase
 --[[-----------------------------------------------------------------------------
@@ -27,9 +27,9 @@ Support Functions
 -------------------------------------------------------------------------------]]
 ---@param w DebugDialogWidget
 local function OnClose(w)
-    w:SetCodeText('')
-    w:SetContent('')
-    w:SetStatusText('')
+  w:SetCodeText('')
+  w:SetContent('')
+  w:SetStatusText('')
 end
 
 --- @param name string
@@ -44,20 +44,18 @@ end
 
 local function ClampDialogSize(desiredW, desiredH)
   local uiW, uiH = UIParent:GetWidth(), UIParent:GetHeight()
-  if not uiW or not uiH then
-    return desiredW, desiredH
-  end
-  
+  if not uiW or not uiH then return desiredW, desiredH end
+
   local marginW = 20
   local marginH = 20
-  
+
   local maxW = uiW - marginW
   local maxH = uiH - marginH
-  
+
   -- only shrink if exceeding available space
   if desiredW > maxW then desiredW = maxW end
   if desiredH > maxH then desiredH = maxH end
-  
+
   return desiredW, desiredH
 end
 
@@ -65,9 +63,9 @@ end
 local function DebugDialogWidget_AdjustSize(w)
   if w.__sizeAdjusted then return end
   w.__sizeAdjusted = true
-  
+
   local settings = ns:g().debug_dialog
-  
+
   local desiredW = settings.width or w.f:GetWidth()
   local desiredH = settings.height or w.f:GetHeight()
   local width, height = ClampDialogSize(desiredW, desiredH)
@@ -78,26 +76,32 @@ end
 --- @param w DebugDialogWidget
 local function OnShow(w)
   DebugDialogWidget_AdjustSize(w)
-  
+
   w:EnableAcceptButtonDelayed()
   --w:SetCodeText(w.profile.last_eval or FUNCTION_TEMPLATE)
   local profile = ns:profile()
   local text
-  local items   = profile.debugDialog.items
+  local items = profile.debugDialog.items
   if profile.last_eval then
     local item = items[profile.last_eval]
     if item then text = item.value end
     w.histDropdown:SetValue(profile.last_eval)
   end
   if not text then
-    local sel  = w.histDropdown:GetValue()
+    local sel = w.histDropdown:GetValue()
     local item = findItem(sel, items)
     if item then text = item.value end
   end
   w:SetCodeText(text)
-  
+
   local s_anchor = ns:g().debug_dialog.anchor
-  local anchor = CreateAnchor(s_anchor.point, s_anchor.relativeTo, s_anchor.relativePoint, s_anchor.x, s_anchor.y)
+  local anchor = CreateAnchor(
+    s_anchor.point,
+    s_anchor.relativeTo,
+    s_anchor.relativePoint,
+    s_anchor.x,
+    s_anchor.y
+  )
   anchor:SetPoint(w.f, true)
 end
 
@@ -107,106 +111,105 @@ local function CodeEditBox_OnEditFocusGained(w) w:EnableAcceptButton() end
 ---@param w DebugDialogWidget
 ---@return boolean success
 local function CodeEditBox_OnEnterPressed(w, literalVarName)
-    -- todo: new checkbox to clear output every time
-    -- ns:a().BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
+  -- todo: new checkbox to clear output every time
+  -- ns:a().BINDING_DEVS_CLEAR_DEBUG_CONSOLE()
 
-    if IsBlank(literalVarName) then return false end
+  if IsBlank(literalVarName) then return false end
 
-    local scriptToEval = ns.sformat([[ return %s ]], literalVarName)
-    local func, errorMessage = loadstring(scriptToEval, "Eval-Variable")
-    if errorMessage then
-        w:SaveHistory()
-        w:SetStatusText(L['ERROR'])
-        w:SetErrorContent(errorMessage)
-        return false
+  local scriptToEval = ns.sformat([[ return %s ]], literalVarName)
+  local func, errorMessage = loadstring(scriptToEval, 'Eval-Variable')
+  if errorMessage then
+    w:SaveHistory()
+    w:SetStatusText(L['ERROR'])
+    w:SetErrorContent(errorMessage)
+    return false
+  end
+
+  local env = { fmt = ns.fmt, sformat = ns.sformat, ns = ns, O = O }
+  env.mt = { __index = _G }
+  setmetatable(env, env.mt)
+  setfenv(func, env)
+
+  w.a:SetStatusText(errorMessage)
+
+  local val = func()
+
+  if type(val) == 'function' then
+    local status, error = pcall(function() val = val() end)
+    if not status then
+      val = nil
+      w:SaveHistory()
+      w:SetStatusText(L['ERROR'])
+      w:SetErrorContent(error)
+      return false
     end
 
-    local env = { fmt = ns.fmt, sformat = ns.sformat, ns=ns, O=O }
-    env.mt = { __index = _G }
-    setmetatable(env, env.mt)
-    setfenv(func, env)
+    local replace = String.Replace
 
-    w.a:SetStatusText(errorMessage)
-
-    local val = func()
-
-    if type(val) == 'function' then
-        local status, error = pcall(function() val = val() end)
-        if not status then
-            val = nil
-            w:SaveHistory()
-            w:SetStatusText(L['ERROR'])
-            w:SetErrorContent(error)
-            return false
-        end
-
-        local replace = String.Replace
-
-        if 'table' == type(val) and val.__tostring then
-            local text = ''
-            local vprime
-            for i, v in ipairs(val) do
-                vprime = replace(v, 'function ', 'function A:')
-                text = text .. vprime .. ' end;'
-            end
-            w:SetContent(text)
-            return true
-        end
-
+    if 'table' == type(val) and val.__tostring then
+      local text = ''
+      local vprime
+      for i, v in ipairs(val) do
+        vprime = replace(v, 'function ', 'function A:')
+        text = text .. vprime .. ' end;'
+      end
+      w:SetContent(text)
+      return true
     end
-    w:SetContent(val)
-    return true
+  end
+  w:SetContent(val)
+  return true
 end
 
 --- @param w DebugDialogWidget
 local function AcceptAndReloadButton_OnClick(w)
-    local literalVarName = w.codeEditBox:GetText()
-    local success = CodeEditBox_OnEnterPressed(w, literalVarName)
-    if not success then return end
-    ReloadUI()
+  local literalVarName = w.codeEditBox:GetText()
+  local success = CodeEditBox_OnEnterPressed(w, literalVarName)
+  if not success then return end
+  ReloadUI()
 end
 
 --- Anchors the tooltip relative to the code edit box so it stays clear of the
 --- crowded Accept / Accept-and-Reload button row.
 --- @param codeEditBox DebugDialog_Code_MultiLineEditBox
 local function ShowDialogTooltip(codeEditBox, title, desc)
-    GameTooltip:SetOwner(codeEditBox.frame, 'ANCHOR_NONE')
-    GameTooltip:SetPoint('BOTTOMRIGHT', codeEditBox.frame, 'BOTTOMRIGHT', 15, -10)
-    GameTooltip:AddLine(title, 1, 1, 1)
-    GameTooltip:AddLine(desc, 1, 0.82, 0, true)
-    GameTooltip:Show()
+  GameTooltip:SetOwner(codeEditBox.frame, 'ANCHOR_NONE')
+  GameTooltip:SetPoint('BOTTOMRIGHT', codeEditBox.frame, 'BOTTOMRIGHT', 15, -10)
+  GameTooltip:AddLine(title, 1, 1, 1)
+  GameTooltip:AddLine(desc, 1, 0.82, 0, true)
+  GameTooltip:Show()
 end
 
 --- @param w DebugDialogWidget
 local function AcceptAndReloadButton_OnEnter(w)
-    ShowDialogTooltip(w.codeEditBox, L['Accept and Reload UI'], L['Accept and Reload UI::Desc'])
+  ShowDialogTooltip(w.codeEditBox, L['Accept and Reload UI'], L['Accept and Reload UI::Desc'])
 end
 
 local function AcceptAndReloadButton_OnLeave() GameTooltip:Hide() end
 
 --- @param codeEditBox DebugDialog_Code_MultiLineEditBox
 local function AcceptButton_OnEnter(codeEditBox)
-    ShowDialogTooltip(codeEditBox, L['Accept'], L['Accept::Desc'])
+  ShowDialogTooltip(codeEditBox, L['Accept'], L['Accept::Desc'])
 end
 
 local function AcceptButton_OnLeave() GameTooltip:Hide() end
 
 ---@param w DebugDialogWidget
 local function HistDropDown_OnValueChanged(w, selectedValue)
-    local profile = ns:profile()
-    profile.last_eval = selectedValue
-    local items = profile.debugDialog.items
-    local selItem = findItem(selectedValue, items)
-    if not selItem then return end
-    w:SetCodeText(selItem.value)
-    w:EnableAcceptButtonDelayed()
+  local profile = ns:profile()
+  profile.last_eval = selectedValue
+  local items = profile.debugDialog.items
+  local selItem = findItem(selectedValue, items)
+  if not selItem then return end
+  w:SetCodeText(selItem.value)
+  w:EnableAcceptButtonDelayed()
 end
 
 --- @param frame FrameObj
 local function Frame_OnSizeChanged(frame)
   local resizeTimer
   --- @param self FrameObj
-  frame:HookScript("OnSizeChanged", function(self)
+  frame:HookScript('OnSizeChanged', function(self)
     if resizeTimer then resizeTimer:Cancel() end
     local s = ns:g().debug_dialog
 
@@ -218,7 +221,7 @@ local function Frame_OnSizeChanged(frame)
         self:StopMovingOrSizing()
         self:SetSize(newW, newH)
       end
-      s.width, s.height  = newW, newH
+      s.width, s.height = newW, newH
     end)
   end)
 end
@@ -231,7 +234,7 @@ local function Frame_UpdateSize(self)
   local newW, newH = ClampDialogSize(curW, curH)
   -- Only correct if overflowed
   if newW ~= curW or newH ~= curH then self:SetSize(newW, newH) end
-  s.width, s.height  = newW, newH
+  s.width, s.height = newW, newH
 end
 
 --- Save Frame anchor and size
@@ -242,30 +245,29 @@ local function Frame_SaveDialogAnchorHook(self)
   --- @type AnchorMixin
   local anchor = AnchorUtil.CreateAnchorFromPoint(self, 1)
   if not anchor then return end
-  
+
   local point, relativeTo, relativePoint, x, y = anchor:Get()
   local s = ns:g().debug_dialog
-  s.anchor = { point = point, relativeTo = relativeTo,
-    relativePoint = relativePoint, x = x, y = y }
+  s.anchor = { point = point, relativeTo = relativeTo, relativePoint = relativePoint, x = x, y = y }
 end
 
 --- @param w DebugDialogWidget
 local function RegisterCallbacks(w)
-  w.a:SetCallback("OnClose", function() OnClose(w) end)
-  w.a:SetCallback("OnShow", function() OnShow(w) end)
-  w.codeEditBox:SetCallback("OnEditFocusGained", function()
-    CodeEditBox_OnEditFocusGained(w)
-  end)
-  w.codeEditBox:SetCallback("OnEnterPressed", function(fw, event, literalVarName)
-    CodeEditBox_OnEnterPressed(w, literalVarName)
-  end)
-  w.histDropdown:SetCallback("OnValueChanged", function(fw, event, selectedIndex)
-    HistDropDown_OnValueChanged(w, selectedIndex)
-  end)
-  w.acceptAndReloadButton:SetCallback("OnClick", function() AcceptAndReloadButton_OnClick(w) end)
-  w.acceptAndReloadButton:SetCallback("OnEnter", function() AcceptAndReloadButton_OnEnter(w) end)
-  w.acceptAndReloadButton:SetCallback("OnLeave", AcceptAndReloadButton_OnLeave)
-  hooksecurefunc(w.f, "StopMovingOrSizing", Frame_SaveDialogAnchorHook)
+  w.a:SetCallback('OnClose', function() OnClose(w) end)
+  w.a:SetCallback('OnShow', function() OnShow(w) end)
+  w.codeEditBox:SetCallback('OnEditFocusGained', function() CodeEditBox_OnEditFocusGained(w) end)
+  w.codeEditBox:SetCallback(
+    'OnEnterPressed',
+    function(fw, event, literalVarName) CodeEditBox_OnEnterPressed(w, literalVarName) end
+  )
+  w.histDropdown:SetCallback(
+    'OnValueChanged',
+    function(fw, event, selectedIndex) HistDropDown_OnValueChanged(w, selectedIndex) end
+  )
+  w.acceptAndReloadButton:SetCallback('OnClick', function() AcceptAndReloadButton_OnClick(w) end)
+  w.acceptAndReloadButton:SetCallback('OnEnter', function() AcceptAndReloadButton_OnEnter(w) end)
+  w.acceptAndReloadButton:SetCallback('OnLeave', AcceptAndReloadButton_OnLeave)
+  hooksecurefunc(w.f, 'StopMovingOrSizing', Frame_SaveDialogAnchorHook)
 end
 
 --[[-----------------------------------------------------------------------------
@@ -283,7 +285,9 @@ local DebugDialogWidgetMixin = {}; local w = DebugDialogWidgetMixin
 
 function w:Show() self.a:Show() end
 function w:GetTitle() return self.a.titletext:GetText() end
-function w:EnableAcceptButtonDelayed() C_Timer.After(0.1, function() self:EnableAcceptButton() end) end
+function w:EnableAcceptButtonDelayed()
+  C_Timer.After(0.1, function() self:EnableAcceptButton() end)
+end
 function w:EnableAcceptButton() self.a.codeEditBox.button:Enable() end
 --- @deprecated functions are always shown now
 function w:IsShowFunctions() return self.showFnEditBox:GetValue() end
@@ -294,14 +298,15 @@ function w:SetStatusText(text) self.a:SetStatusText(text) end
 function w:ClearContent() self.contentEditBox:SetText('') end
 
 local fmtML = ns.fmt:New({
-  multiline_tables = true, show_all = true, show_function=true, depth_limit = 5
+  multiline_tables = true,
+  show_all = true,
+  show_function = true,
+  depth_limit = 5,
 })
 function w:SetContent(content)
   local text
   if type(content) == 'string' then text = '' end
-  if #tostring(content) > 0 then
-    text = fmtML(content)
-  end
+  if #tostring(content) > 0 then text = fmtML(content) end
   self.contentEditBox:SetText(text)
   self:SaveHistory()
 end
@@ -310,11 +315,9 @@ end
 --- @param s string|nil
 --- @return string?, string?
 function w:SplitFirstColon(s)
-  if type(s) ~= "string" then
-    return nil, nil
-  end
+  if type(s) ~= 'string' then return nil, nil end
 
-  local left, right = s:match("^(.-):(.*)$")
+  local left, right = s:match('^(.-):(.*)$')
   return left, right
 end
 
@@ -328,10 +331,10 @@ function w:SetErrorContent(text)
 
   local source, msg = self:SplitFirstColon(text)
   if source and msg then
-    local msgp = ("%s%s|r|n%s"):format(ERROR_COLOR, source, msg)
+    local msgp = ('%s%s|r|n%s'):format(ERROR_COLOR, source, msg)
     self.contentEditBox:SetText(msgp)
   else
-    self.contentEditBox:SetText(("%s%s|r"):format(ERROR_COLOR, text))
+    self.contentEditBox:SetText(('%s%s|r'):format(ERROR_COLOR, text))
   end
 end
 
@@ -350,44 +353,42 @@ function w:SaveHistory()
   if IsBlank(selectedKey) then return end
 
   local items = ns:profile().debugDialog.items
-  local item  = findItem(selectedKey, items)
+  local item = findItem(selectedKey, items)
   if item then
-    item.value = codeText;
+    item.value = codeText
     return
   end
   --p:log('SaveHistory::Error: failed to save history.')
 end
-
 
 --[[-----------------------------------------------------------------------------
 Constructor
 -------------------------------------------------------------------------------]]
 --- @return DebugDialogWidget
 function D:New()
-  
   --- @class DebugDialogAceFrameWidget : AceGUIWidget
   --- @field frame FrameObj
   --- @field sizer_se FrameObj
   --- @field titletext FontStringObj
   --- @field titlebg TextureObj
-  local dialog  = AceGUI:Create("Frame")
-  
+  local dialog = AceGUI:Create('Frame')
+
   -- so we don't resize to larger than the screen
   dialog.frame:SetClampedToScreen(true)
   dialog.sizer_se:SetClampedToScreen(true)
-  
+
   local profile = ns:profile()
-  
+
   -- The following makes the "Escape" close the window
   --_G[DEBUG_DIALOG_GLOBAL_FRAME_NAME] = frame.frame
   --tinsert(UISpecialFrames, DEBUG_DIALOG_GLOBAL_FRAME_NAME)
   self:ConfigureFrameToCloseOnEscapeKey(DEBUG_DIALOG_GLOBAL_FRAME_NAME, dialog)
-  
+
   dialog:SetTitle(L['Debug Frame'])
   dialog:SetStatusText('')
-  dialog:SetLayout("Flow")
+  dialog:SetLayout('Flow')
   dialog:SetHeight(800)
-  
+
   local settings = ns:g().debug_dialog
   local f = dialog.frame
   if f.SetResizeBounds then -- WoW 10.0
@@ -397,42 +398,40 @@ function D:New()
   end
   dialog:SetWidth(settings.width)
   dialog:SetHeight(settings.height)
-  
-  local label = AceGUI:Create("Label")
+
+  local label = AceGUI:Create('Label')
   label:SetFullWidth(true)
   label:SetText(' ' .. L['Evaluate a variable or return a function'])
   dialog:AddChild(label)
-  
-  local inlineGroup = AceGUI:Create("InlineGroup")
-  inlineGroup:SetLayout("List")
+
+  local inlineGroup = AceGUI:Create('InlineGroup')
+  inlineGroup:SetLayout('List')
   inlineGroup:SetFullWidth(true)
   dialog:AddChild(inlineGroup)
-  
+
   --- @class DebugDialog_Code_MultiLineEditBox : AceGUIMultiLineEditBox
-  local codeEditBox = AceGUI:Create("MultiLineEditBox")
+  local codeEditBox = AceGUI:Create('MultiLineEditBox')
   dialog.codeEditBox = codeEditBox
   codeEditBox:SetLabel('')
   codeEditBox:SetFullWidth(true)
   codeEditBox:SetHeight(200)
   codeEditBox:SetText('')
-  
+
   --- @class DebugDialog_History_Dropdown : AceGUIDropdown
-  local histDropdown = AceGUI:Create("Dropdown")
+  local histDropdown = AceGUI:Create('Dropdown')
   histDropdown:SetLabel(L['History:'])
   --- @type table<number, Profile_Config_Item>
   local orderKeys = {}
-  local list      = {}
-  
+  local list = {}
+
   for i, item in ipairs(profile.debugDialog.items) do
     tinsert(orderKeys, item.name)
     list[item.name] = item.name
   end
-  
+
   histDropdown:SetList(list, orderKeys)
-  if #orderKeys > 1 then
-    histDropdown:SetValue(orderKeys[1])
-  end
-  
+  if #orderKeys > 1 then histDropdown:SetValue(orderKeys[1]) end
+
   inlineGroup:AddChild(histDropdown)
   inlineGroup:AddChild(codeEditBox)
 
@@ -441,33 +440,33 @@ function D:New()
   -- fix Ace3's asymmetric text inset (TOPLEFT -5, BOTTOMRIGHT 1) that skews "Accept" text off-center
   local codeEditBoxButtonText = codeEditBox.button:GetFontString()
   codeEditBoxButtonText:ClearAllPoints()
-  codeEditBoxButtonText:SetPoint("TOPLEFT", codeEditBox.button, "TOPLEFT", 5, -3)
-  codeEditBoxButtonText:SetPoint("BOTTOMRIGHT", codeEditBox.button, "BOTTOMRIGHT", -5, 3)
-  codeEditBox.button:SetScript("OnEnter", function() AcceptButton_OnEnter(codeEditBox) end)
-  codeEditBox.button:SetScript("OnLeave", AcceptButton_OnLeave)
+  codeEditBoxButtonText:SetPoint('TOPLEFT', codeEditBox.button, 'TOPLEFT', 5, -3)
+  codeEditBoxButtonText:SetPoint('BOTTOMRIGHT', codeEditBox.button, 'BOTTOMRIGHT', -5, 3)
+  codeEditBox.button:SetScript('OnEnter', function() AcceptButton_OnEnter(codeEditBox) end)
+  codeEditBox.button:SetScript('OnLeave', AcceptButton_OnLeave)
 
   local ACCEPT_RELOAD_ICON_SIZE = 12
 
   --- @class DebugDialog_AcceptAndReload_Button : AceGUIWidget
-  local acceptAndReloadButton = AceGUI:Create("Button")
+  local acceptAndReloadButton = AceGUI:Create('Button')
   acceptAndReloadButton:SetText('')
   acceptAndReloadButton.frame:ClearAllPoints()
   acceptAndReloadButton.frame:SetSize(ACCEPT_BUTTON_HEIGHT, ACCEPT_BUTTON_HEIGHT)
-  acceptAndReloadButton.frame:SetPoint("LEFT", codeEditBox.button, "RIGHT", 3, 0)
+  acceptAndReloadButton.frame:SetPoint('LEFT', codeEditBox.button, 'RIGHT', 3, 0)
   acceptAndReloadButton.frame:SetParent(codeEditBox.frame)
   acceptAndReloadButton.frame:Show()
 
-  local acceptAndReloadIcon = acceptAndReloadButton.frame:CreateTexture(nil, "OVERLAY")
+  local acceptAndReloadIcon = acceptAndReloadButton.frame:CreateTexture(nil, 'OVERLAY')
   acceptAndReloadIcon:SetTexture([[Interface\Buttons\UI-RefreshButton]])
   acceptAndReloadIcon:SetSize(ACCEPT_RELOAD_ICON_SIZE, ACCEPT_RELOAD_ICON_SIZE)
-  acceptAndReloadIcon:SetPoint("CENTER", acceptAndReloadButton.frame, "CENTER", 0, -1)
+  acceptAndReloadIcon:SetPoint('CENTER', acceptAndReloadButton.frame, 'CENTER', 0, -1)
 
   -- keep the reload button's enabled state (and icon tint) in lockstep with codeEditBox.button
-  hooksecurefunc(codeEditBox.button, "Enable", function()
+  hooksecurefunc(codeEditBox.button, 'Enable', function()
     acceptAndReloadButton.frame:Enable()
     acceptAndReloadIcon:SetVertexColor(1, 1, 1)
   end)
-  hooksecurefunc(codeEditBox.button, "Disable", function()
+  hooksecurefunc(codeEditBox.button, 'Disable', function()
     acceptAndReloadButton.frame:Disable()
     acceptAndReloadIcon:SetVertexColor(0.5, 0.5, 0.5)
   end)
@@ -475,7 +474,7 @@ function D:New()
   if not codeEditBox.button:IsEnabled() then acceptAndReloadIcon:SetVertexColor(0.5, 0.5, 0.5) end
 
   --- @class DebugDialog_Content_MultiLineEditBox : AceGUIMultiLineEditBox
-  local contentEditBox = AceGUI:Create("MultiLineEditBox")
+  local contentEditBox = AceGUI:Create('MultiLineEditBox')
   contentEditBox:SetLabel(L['Output:'])
   contentEditBox:SetText('')
   contentEditBox:SetFullWidth(true)
@@ -483,12 +482,12 @@ function D:New()
   contentEditBox.button:Hide()
   dialog:AddChild(contentEditBox)
   dialog.contentEditBox = contentEditBox
-  
+
   dialog:Hide()
-  
+
   --- @class DebugDialogWidget : DebugDialogWidgetMixin
   --- @field private __sizeAdjusted boolean
-  local widget  = {
+  local widget = {
     profile = profile,
     a = dialog,
     f = f,
@@ -501,6 +500,5 @@ function D:New()
   dialog.widget = widget
   RegisterCallbacks(widget)
 
-  return widget;
+  return widget
 end
-

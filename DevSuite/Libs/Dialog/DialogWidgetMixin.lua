@@ -25,11 +25,8 @@ local L = ns:NewLib(libName)
 ---@param frameName string
 ---@param frameInstance table The frame object
 function L:ConfigureFrameToCloseOnEscapeKey(frameName, frameInstance)
-    local frame = frameInstance
-    if frameInstance.frame then frame = frameInstance.frame end
-    setglobal(frameName, frame)
-    tinsert(UISpecialFrames, frameName)
+  local frame = frameInstance
+  if frameInstance.frame then frame = frameInstance.frame end
+  setglobal(frameName, frame)
+  tinsert(UISpecialFrames, frameName)
 end
-
-
-
