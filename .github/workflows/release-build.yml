@@ -10,11 +10,11 @@ on:
       createDraftRelease:
         description: 'Create Github Release Draft'
         required: true
-        default: true
+        default: false
         type: boolean
       uploadCurseForge:
         description: 'Upload to CurseForge.com'
-        default: true
+        default: false
         type: boolean
       uploadWowInterface:
         description: 'Upload to WoWInterface.com'
@@ -107,10 +107,8 @@ jobs:
           echo packagerOptions=${packagerOptions}
           echo addonName=${addonName}
           echo buildArtifact=${buildArtifact}
-          echo buildArtifactChecksumFile=${buildArtifactChecksumFile}
           echo buildBasePath=${buildBasePath}
           echo buildArtifactFilename=${buildArtifactFilename}
-          echo buildArtifactChecksumFilename=${buildArtifactChecksumFilename}
           echo artifact_retentionDays=${artifact_retentionDays}
           echo sha256Script=${sha256Script}
           echo -------------------------------
@@ -177,7 +175,8 @@ jobs:
       ## ------------------------------------------------ ##
       - name: Check Vars
         run: |
-          echo buildArtifactChecksum="$($sha256Script $buildArtifact)" >> $GITHUB_ENV
+          buildArtifactChecksum="$($sha256Script $buildArtifact)"
+          echo buildArtifactChecksum="${buildArtifactChecksum}" >> $GITHUB_ENV
           echo "buildArtifact is $buildArtifact"
           echo "buildArtifactChecksum is $buildArtifactChecksum"
       ## ------------------------------------------------ ##
@@ -185,7 +184,7 @@ jobs:
         run: |
           echo -e "::notice::HOME=${HOME}\n::notice::buildArtifact=${buildArtifact}"
           echo ::notice::Uploads CurseForge=${uploadCurseForge}, WoWInterface=${uploadWowInterface}, BigWigs-UploadOptions=${bigWigsUploads}
-          echo "::notice::Sha256=${buildArtifactSha256}"
+          echo ::notice::Build Artifact=${buildArtifactFilename}, SHA256=${buildArtifactChecksum}
 
       - name: Create a draft release
         id: create_draft_release
@@ -218,11 +217,6 @@ jobs:
       ## ------------------------------------------------ ##
       - name: Upload Release Artifact
         if: ${{ env.createDraftRelease == 'true' }}
-        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_draft_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ${{ env.buildArtifact }}
-          asset_name: ${{ env.buildArtifactFilename }}
-          asset_content_type: application/zip
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${refName}" "${buildArtifact}" --clobber
