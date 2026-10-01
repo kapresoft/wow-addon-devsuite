@@ -29,7 +29,7 @@
 ## X-Github-Repo: https://github.com/kapresoft/wow-addon-devsuite
 ## X-Github-Issues: https://github.com/kapresoft/wow-addon-devsuite/issues
 ## X-CurseForge: https://www.curseforge.com/wow/addons/devsuite
-## X-Curse-Project-ID: 566626
+## X-Curse-Project-ID: 818084
 ## X-Github-Project-Author: @project-author@
 ## X-Github-Project-Hash: @project-hash@
 ## X-Github-Project-Last-Changed-Date: @project-date-iso@
