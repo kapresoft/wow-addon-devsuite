@@ -29,11 +29,6 @@ L['Game-Version']      = 'Versión del juego'
 L['Locale']            = 'Idioma'
 L['Example']           = 'Ejemplo'
 
-L['Debugging::Category::Enable All::Button']        = 'Activar todo'
-L['Debugging::Category::Enable All::Button::Desc']  = 'Activa todas las categorías de registro a continuación. Ten en cuenta que la categoría predeterminada (no mostrada aquí) siempre estará activa.'
-L['Debugging::Category::Disable All::Button']       = 'Desactivar todo'
-L['Debugging::Category::Disable All::Button::Desc'] = 'Desactiva todas las categorías de registro a continuación. Ten en cuenta que la categoría predeterminada (no mostrada aquí) siempre estará activa.'
-
 L['Global Setting']          = 'Configuración global'
 L['Character Setting']       = 'Configuración de personaje'
 
@@ -61,8 +56,6 @@ L['Console Font Size::ConfirmFmt'] = 'Has seleccionado el tamaño de fuente %d p
 L['Add-On Specific Options']    = 'Opciones específicas del complemento'
 L['Available Add-Ons']          = 'Complementos disponibles'
 L['Available Add-Ons::Desc']    = 'Para activar o desactivar un complemento, marca o desmarca su casilla correspondiente. Después de hacer tus selecciones, haz clic en "Aplicar y recargar interfaz" para implementar los cambios en tu configuración.'
-L['Debugging']                  = 'Depuración'
-L['Debugging::Desc']            = 'Configuración de depuración para solución de problemas'
 L['Enable Debug Console']       = 'Activar consola de depuración'
 L['Enable Debug Console::Desc'] = 'Activa la consola de depuración, permitiendo que se muestre dentro del marco de chat. Usa esta opción para habilitar salidas de depuración en tiempo real e interactuar con el sistema de depuración directamente desde la interfaz de chat.'
 L['Show Tab On Load']           = 'Mostrar pestaña al cargar'
@@ -72,7 +65,6 @@ L['Default Chat Frame::Desc']   = 'Establece el marco de chat seleccionado como 
 
 L['Max Lines']                  = 'Líneas máximas'
 L['Max Lines::Desc']            = 'Define el número máximo de líneas que la consola de depuración puede mostrar en un momento dado. Ajustar esta configuración ayuda a gestionar la cantidad de información visible en la consola de depuración, evitando desbordamientos y ayudándote a centrarte en los mensajes y salidas más recientes. Adecuado para adaptar la capacidad de la consola a tus necesidades de depuración.'
-L['Debug Configuration']        = 'Configuración de depuración'
 
 L['Log Level']                  = 'Nivel de registro'
 L['Log Level::Desc']            = 'Los niveles de registro más altos generan más registros:\nNiveles de registro: ERROR(5), WARN(10), INFO(15), DEBUG(20), FINE(25), FINER(30), FINEST(35), TRACE(50)'

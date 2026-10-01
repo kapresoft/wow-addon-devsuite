@@ -8,7 +8,8 @@ local sformat = string.format
 --[[-----------------------------------------------------------------------------
 Blizzard Vars
 -------------------------------------------------------------------------------]]
-local EnableAddOn, DisableAddOn = EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
+local EnableAddOn, DisableAddOn =
+  EnableAddOn or C_AddOns.EnableAddOn, DisableAddOn or C_AddOns.DisableAddOn
 local StaticPopupDialogs, ReloadUI = StaticPopupDialogs, ReloadUI
 local StaticPopup_Visible, StaticPopup_Show = StaticPopup_Visible, StaticPopup_Show
 local GetNumSavedInstances, GetSavedInstanceInfo = GetNumSavedInstances, GetSavedInstanceInfo
@@ -21,7 +22,6 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type DevSuite_Namespace
 local ns = DevSuite_NS
-local ip = ns.O.LibIconPickerUtil
 
 local libName = 'Developer'
 local p, t, fmt = ns:log(libName)
@@ -36,10 +36,8 @@ Developer
 -------------------------------------------------------------------------------]]
 --- @class DevSuite_Developer
 local L = ns:NewLibWithEvent(libName)
-if ns.IsDev() then
-  dsd = L;
-  DEVSUITE_DEV = L
-end
+dsd = L
+DEVSUITE_DEV = L
 
 local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_THREAT_COLOR)
@@ -66,10 +64,6 @@ local function OnAddOnReady()
     UIWidgetTopCenterContainerFrame, -- hellfire
   }
   local SHOW_ADDON_LIST_ON_LOGIN = DEVS_SHOW_ADDON_LIST_ON_LOGIN
-
-  C_Timer.After(0.2, function()
-    --L:ShowIconPicker()
-  end)
 
   C_Timer.After(1, function()
     p('MINIMAL_UI_MODE:', MINIMAL_UI_MODE)
@@ -101,33 +95,15 @@ local function OnAddOnReady()
   end
 end
 
-
 --[[-----------------------------------------------------------------------------
 Support Functions
 -------------------------------------------------------------------------------]]
 local function errorhandler(err) return geterrorhandler()(err) end
 
 local function safecall(func, ...)
-  if func then
-    return xpcall(func, errorhandler, ...)
-  end
+  if func then return xpcall(func, errorhandler, ...) end
 end
 
-local function getLIP()
-  if LibIconPicker then return LibIconPicker end
-
-  local LoadAddOn = C_AddOns.LoadAddOn or LoadAddOn
-  local EnableAddOn = C_AddOns.EnableAddOn or EnableAddOn
-  local libName = 'LibIconPicker'
-  local c = UnitName('player')
-  EnableAddOn(libName, UnitName('player'))
-  local status, msg = LoadAddOn(libName)
-  if not status then
-    print(('LoadAddOn(%q) failed with status=%s; msg=%s'):format(libName, status, msg))
-    return nil
-  end
-  return LibIconPicker
-end
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
@@ -149,7 +125,7 @@ function o:doc(name)
   --for _, fn in ipairs(APIDocumentation.functions) do
   --  print(fn.Name)
   --end
-  local info = APIDocumentation:FindAPIByName("table", name)
+  local info = APIDocumentation:FindAPIByName('table', name)
   if not info then
     p('No info found on:', name)
     return
@@ -157,34 +133,14 @@ function o:doc(name)
   p('')
   p('Structure Info:', name)
   for _, field in ipairs(info.Fields) do
-      p('doc',field.Name, field.Type, 'nillable=', field.Nilable)
+    p('doc', field.Name, field.Type, 'nillable=', field.Nilable)
   end
 end
 
 function o:HideFrames(frames)
   for i, f in ipairs(frames) do
-    if f and f.Hide then
-      f:Hide()
-    end
+    if f and f.Hide then f:Hide() end
   end
-end
-
---- For testing LibIconPicker
---- /dump dsd:ShowIconPicker()
---- /dump dsd:ShowIconPicker(5, 12)
-function o:ShowIconPicker(min, max)
-  ip:Get(function(lip)
-    --- @type LibIconPicker_Options
-    local opt = {
-      icon = 132111,
-      showTextInput = true,
-      textInput = {
-        label = 'Name:', value = 'My', min = min or 5, max = max or 10 }
-    }
-    lip:Open(function(selection)
-      print('selected:', fmt(selection))
-    end, opt)
-  end)
 end
 
 --- For testing CodeEditorDialog (issue #90 prototype)
@@ -197,21 +153,19 @@ function o:ShowCodeEditor()
   DevSuite_CodeEditorDialog:Show()
 end
 
-function o:IsScriptErrorsEnabled()
-  self:logp('scriptErrors:', GetCVarBool('scriptErrors'))
-end
+function o:IsScriptErrorsEnabled() self:logp('scriptErrors:', GetCVarBool('scriptErrors')) end
 
 function o:GetProfile() return ns:db().profile end
 
 function o:GetProfileNames() return ns:db():GetProfiles() end
 
 function o:MaxScreen()
-  SetCVar(GX_MAXIMIZE, 1);
+  SetCVar(GX_MAXIMIZE, 1)
   RestartGx()
 end
 
 function o:Windowed()
-  SetCVar(GX_MAXIMIZE, 0);
+  SetCVar(GX_MAXIMIZE, 0)
   RestartGx()
 end
 
@@ -224,12 +178,12 @@ local function OutputAPIMatches(out, doc, apiMatches, headerName)
 end
 
 local function OutputAllSystemAPI(doc, system)
-  local apiMatches = system:ListAllAPI();
+  local apiMatches = system:ListAllAPI()
   local out = {}
   if apiMatches then
-    OutputAPIMatches(out, doc, apiMatches.functions, "function(s)");
-    OutputAPIMatches(out, doc, apiMatches.events, "events(s)");
-    OutputAPIMatches(out, doc, apiMatches.tables, "table(s)");
+    OutputAPIMatches(out, doc, apiMatches.functions, 'function(s)')
+    OutputAPIMatches(out, doc, apiMatches.events, 'events(s)')
+    OutputAPIMatches(out, doc, apiMatches.tables, 'table(s)')
   end
   return out
 end
@@ -247,13 +201,13 @@ end
 function o:GetColors()
   local ret = {
     names = {},
-    codes = {}
+    codes = {},
   }
   do
-    local DBColors = C_UIColor.GetColors();
+    local DBColors = C_UIColor.GetColors()
     for _, dbColor in ipairs(DBColors) do
       table.insert(ret.names, dbColor.baseTag)
-      table.insert(ret.codes, dbColor.baseTag .. "_CODE")
+      table.insert(ret.codes, dbColor.baseTag .. '_CODE')
     end
   end
   return ret
@@ -297,13 +251,13 @@ function o:FrameFormation1()
   local pf = PlayerFrame
   pf:SetScale(scale)
   pf:ClearAllPoints()
-  pf:SetPoint("TOPRIGHT", UIParent, "CENTER", -100, ofsy)
+  pf:SetPoint('TOPRIGHT', UIParent, 'CENTER', -100, ofsy)
 
   --- @type FrameObj
   local tf = TargetFrame
   tf:ClearAllPoints()
   tf:SetScale(scale)
-  tf:SetPoint("TOPLEFT", UIParent, "CENTER", 100, ofsy)
+  tf:SetPoint('TOPLEFT', UIParent, 'CENTER', 100, ofsy)
 end
 
 -- /run d:Formation2()
@@ -318,13 +272,13 @@ function o:FrameFormation2()
   local pf = PlayerFrame
   pf:SetScale(scale)
   pf:ClearAllPoints()
-  pf:SetPoint("TOPRIGHT", UIParent, "TOP", -100, ofsy)
+  pf:SetPoint('TOPRIGHT', UIParent, 'TOP', -100, ofsy)
 
   --- @type FrameObj
   local tf = TargetFrame
   tf:ClearAllPoints()
   tf:SetScale(scale)
-  tf:SetPoint("TOPLEFT", UIParent, "TOP", 100, ofsy)
+  tf:SetPoint('TOPLEFT', UIParent, 'TOP', 100, ofsy)
 end
 
 --- Usage: /run d:c('hello', 'world')
@@ -336,8 +290,5 @@ local f = CreateFrame('Frame')
 FrameUtil.RegisterFrameForEvents(f, { 'PLAYER_LOGIN' })
 f:SetScript('OnEvent', function(self, event, ...)
   if event ~= 'PLAYER_LOGIN' then return end
-  C_Timer.After(0.01, function()
-    return OnAddOnReady()
-  end)
+  C_Timer.After(0.01, function() return OnAddOnReady() end)
 end)
-
