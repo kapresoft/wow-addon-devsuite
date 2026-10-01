@@ -24,14 +24,12 @@ function o:New(optionsMixin) return CreateAndInitFromMixin(o, optionsMixin) end
 --- Called Automatically by CreateAndInitFromMixin
 --- @private
 --- @param optionsMixin OptionsDialogMixin
-function o:Init(optionsMixin)
-    self.optionsMixin = optionsMixin
-end
+function o:Init(optionsMixin) self.optionsMixin = optionsMixin end
 
 --- @see GlobalConstants#M for Message names
 --- @param optionalVal any|nil
 function o:SendEventMessage(addOnMessage, optionalVal)
-    self:SendMessage(addOnMessage, libName, optionalVal)
+  self:SendMessage(addOnMessage, libName, optionalVal)
 end
 
 --- @param propKey string
@@ -50,7 +48,6 @@ function o:GetValue(propKey, defVal) return ns:profile()[propKey] or defVal end
 --- @param val any
 function o:SetValue(propKey, val) ns:profile()[propKey] = val end
 
-
 --[[-------------------------------------------------------
 Get/Set: Function Handlers
 ----------------------------------------------------------]]
@@ -61,9 +58,7 @@ Get/Set: Function Handlers
 --- @param key string The key value
 --- @return function The Profile Get Function
 function o:ProfileGet(key, fallback)
-    return function(_)
-        return self:GetValue(key, fallback)
-    end
+  return function(_) return self:GetValue(key, fallback) end
 end
 
 --- #### Example:
@@ -71,12 +66,10 @@ end
 --- @param key string The key value
 --- @return function The Profile Set Function
 function o:ProfileSet(key, eventMessageToFire)
-    return function(_, v)
-        self:SetValue(key, v)
-        if 'string' == type(eventMessageToFire) then
-            self:SendEventMessage(eventMessageToFire, v)
-        end
-    end
+  return function(_, v)
+    self:SetValue(key, v)
+    if 'string' == type(eventMessageToFire) then self:SendEventMessage(eventMessageToFire, v) end
+  end
 end
 
 --- #### Example:
@@ -85,9 +78,7 @@ end
 --- @param key string The key value
 --- @return function The Global Profile Get Function
 function o:GlobalGet(key, fallback)
-    return function(_)
-        return self:GetGlobalValue(key, fallback)
-    end
+  return function(_) return self:GetGlobalValue(key, fallback) end
 end
 --- `set=this:GlobalSet('configName')`
 --- @param key string The key value
@@ -95,13 +86,9 @@ end
 --- @param callbackFn fun(key:string, val:any) | "function(key, val) end"
 --- @return function The Global Profile Set Function
 function o:GlobalSet(key, eventMessageToFire, callbackFn)
-    return function(_, v)
-        self:SetGlobalValue(key, v)
-        if 'string' == type(eventMessageToFire) then
-            self:SendEventMessage(eventMessageToFire, v)
-        end
-        return callbackFn and callbackFn(key, v)
-    end
+  return function(_, v)
+    self:SetGlobalValue(key, v)
+    if 'string' == type(eventMessageToFire) then self:SendEventMessage(eventMessageToFire, v) end
+    return callbackFn and callbackFn(key, v)
+  end
 end
-
-
