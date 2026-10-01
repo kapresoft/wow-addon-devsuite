@@ -77,8 +77,6 @@ local M = {
     DatabaseSchema = {},
     --- @type DebugDialog
     DebugDialog = {},
-    --- @type DebuggingSettingsGroup
-    DebuggingSettingsGroup = {},
     --- @type ConfigDialogController
     ConfigDialogController = {},
     --- @type MainController
@@ -101,8 +99,6 @@ local M = {
     PopupDebugDialog = {},
 
     --- Dev Mode Only
-    --- @type LibIconPickerUtil
-    LibIconPickerUtil = {},
 }
 local ModuleUtil = LibStub('Kapresoft-ModuleUtil-2-0')
 ModuleUtil:EnrichModules(M)

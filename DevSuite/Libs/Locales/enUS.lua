@@ -22,11 +22,6 @@ L['Game-Version']      = true
 L['Locale']            = true
 L['Example']           = true
 
-L['Debugging::Category::Enable All::Button']        = 'Enable All'
-L['Debugging::Category::Enable All::Button::Desc']  = 'Enables all log categories below. Note that the default category (not shown here) will always be active.'
-L['Debugging::Category::Disable All::Button']       = 'Disable All'
-L['Debugging::Category::Disable All::Button::Desc'] = 'Disables all log categories below. Note that the default category (not shown here) will always be active.'
-
 L['Global Setting']          = 'Global Setting'
 L['Character Setting']       = 'Character Setting'
 
@@ -54,8 +49,6 @@ L['Console Font Size::ConfirmFmt'] = 'You selected console font size %d.\nReload
 L['Add-On Specific Options']    = true
 L['Available Add-Ons']          = true
 L['Available Add-Ons::Desc']    = 'To activate or deactivate an Add-On, check or uncheck its corresponding box. After making your selections, click on "Apply and ReloadUI" to implement the changes to your configuration.'
-L['Debugging']                  = true
-L['Debugging::Desc']            = 'Debug Settings for troubleshooting'
 L['Debug Console']              = true
 L['Enable Debug Console']       = true
 L['Enable Debug Console::Desc'] = 'Activates the debug console, allowing it to display within the chat frame. Use this option to enable real-time debugging outputs and to interact with the debug system directly from the chat interface.'
@@ -66,7 +59,6 @@ L['Default Chat Frame::Desc']   = "Sets the selected chat frame as the default d
 
 L['Max Lines']                  = true
 L['Max Lines::Desc']            = 'Defines the maximum number of lines that the debug console can display at any given time. Adjusting this setting helps manage the amount of information visible in the debug console, preventing overflow and helping you focus on recent messages and outputs. Suitable for tailoring the console\'s capacity to your debugging needs.'
-L['Debug Configuration']        = true
 
 L['Log Level']                  = true
 L['Log Level::Desc']            = 'Higher log levels generate more logs:\nLog Levels: ERROR(5), WARN(10), INFO(15), DEBUG(20), FINE(25), FINER(30), FINEST(35), TRACE(50)'

@@ -7,15 +7,12 @@ local ns = select(2, ...)
 local LibTraceKit = LibStub('LibTraceKit-1.0')
 assertsafe(type(LibTraceKit) ~= nil, 'Failed to reference LibTraceKit-1.0')
 
-
 --[[-------------------------------------------------------------------
 Support Functions
 ---------------------------------------------------------------------]]
 --- @return string|nil
 local function resolveModuleName(moduleName)
-  if type(moduleName) == 'string' then
-    return strtrim(moduleName)
-  end
+  if type(moduleName) == 'string' then return strtrim(moduleName) end
   return nil
 end
 
@@ -32,7 +29,7 @@ end
 local function printerFn(moduleName)
   local _ns = ns
   local m = resolveModuleName(moduleName)
-  
+
   return function(...)
     local args = { ... }
     C_Timer.After(1, function()
@@ -54,7 +51,9 @@ end
 Core:: Namespace Override for Dev Namespace
 -------------------------------------------------------------------------------]]
 do
-  local h = ns.logHolder; h.printer = printerFn; h.tracer = traceFn
+  local h = ns.logHolder
+  h.printer = printerFn
+  h.tracer = traceFn
 end
 
 --[[-------------------------------------------------------------------

@@ -32,9 +32,6 @@ BaseLibraryObject_WithAceEvent
 --- @field minor string Retrieves the minor version of the module. i.e., <LibName>-1.0
 
 
---- @type LibIconPicker
-LibIconPicker = {}
-
 --- @type PresetFiltersContentFrame
 DevSuite_PresetFiltersContentFrame = {}
 
