@@ -143,11 +143,15 @@ local function Constructor()
     frame = frame,
     type = Type,
   }
-  for method, func in pairs(methods) do widget[method] = func end
+  for method, func in pairs(methods) do
+    widget[method] = func
+  end
 
-  stepper:RegisterCallback(Mixin_.Event.OnValueChanged, function(_, value)
-    Stepper_OnValueChanged(widget, value)
-  end, widget)
+  stepper:RegisterCallback(
+    Mixin_.Event.OnValueChanged,
+    function(_, value) Stepper_OnValueChanged(widget, value) end,
+    widget
+  )
   stepper.Slider:HookScript('OnMouseUp', function() Slider_OnMouseUp(widget) end)
   Util:HookRowHover(widget, stepper, stepper.Slider, stepper.Back, stepper.Forward)
 

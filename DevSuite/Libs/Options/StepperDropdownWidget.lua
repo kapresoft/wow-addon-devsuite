@@ -20,7 +20,9 @@ Support functions
 --- @return any[] @Keys sorted by their display text
 local function SortedKeys(list)
   local keys = {}
-  for k in pairs(list) do table.insert(keys, k) end
+  for k in pairs(list) do
+    table.insert(keys, k)
+  end
   table.sort(keys, function(a, b) return tostring(list[a]) < tostring(list[b]) end)
   return keys
 end
@@ -66,7 +68,6 @@ local function SteppersWidth(control)
   local _, _, _, forwardX = forward:GetPoint()
   return back:GetWidth() - backX + forward:GetWidth() + forwardX
 end
-
 
 --- @param self table
 local function Dropdown_OnEnter(self)
@@ -171,7 +172,9 @@ local function Constructor()
     frame = frame,
     type = Type,
   }
-  for method, func in pairs(methods) do widget[method] = func end
+  for method, func in pairs(methods) do
+    widget[method] = func
+  end
   OpenMenuAboveDialogs(widget.dropdown)
   SetupMenu(widget)
   Util:HookRowHover(widget, control)
