@@ -17,21 +17,19 @@ local o = ns:NewLibWithEvent(libName)
 --[[-----------------------------------------------------------------------------
 Methods
 -------------------------------------------------------------------------------]]
-function o:OnAddonReady()
-  self:CreateDialogEventFrame()
-end
+function o:OnAddonReady() self:CreateDialogEventFrame() end
 
 function o:CreateDialogEventFrame()
-  local frameName = ns.sformat("%s_%sEventFrame", ns.addon, libName)
+  local frameName = ns.sformat('%s_%sEventFrame', ns.addon, libName)
   --- @type Frame
-  local f = CreateFrame("Frame", frameName, UIParent, "SecureHandlerStateTemplate")
+  local f = CreateFrame('Frame', frameName, UIParent, 'SecureHandlerStateTemplate')
   f:Hide()
-  f:SetScript("OnHide", function(self)
+  f:SetScript('OnHide', function(self)
     if not AceConfigDialog.OpenFrames[ns.addon] then return end
     AceConfigDialog:Close(ns.addon)
   end)
   self.dialogEventFrame = f
-  RegisterStateDriver(self.dialogEventFrame, "visibility", "[combat]hide;show")
+  RegisterStateDriver(self.dialogEventFrame, 'visibility', '[combat]hide;show')
 end
 
 o:RegisterMessage(MS.OnAddOnReady, function() o:OnAddonReady() end)

@@ -9,12 +9,12 @@ Local Vars
 -------------------------------------------------------------------------------]]
 --- @type DevSuite_Namespace
 local ns = select(2, ...)
-local sformat     = ns.sformat
-local O, GC       = ns.O, ns.GC
+local sformat = ns.sformat
+local O, GC = ns.O, ns.GC
 local String, Fonts = ns:String(), O.Fonts
 local MODULE_NAME = 'DevConsole'
-local LIB_MIXIN   = { 'AceEvent-3.0' }
-local libName     = ns.M.DevConsoleModuleMixin()
+local LIB_MIXIN = { 'AceEvent-3.0' }
+local libName = ns.M.DevConsoleModuleMixin()
 
 --[[-----------------------------------------------------------------------------
 New Mixin
@@ -43,17 +43,17 @@ end
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local primaryColor   = ns.consoleColors.primary
+local primaryColor = ns.consoleColors.primary
 local secondaryColor = ns.consoleColors.secondary
 
 local cfmt = ns:ColorFormatter()
-local c1, c2  = cfmt:ColorFn(primaryColor), cfmt:ColorFn(secondaryColor)
-local c3, c4  = cfmt:ColorFn(ADVENTURES_COMBAT_LOG_BLUE), cfmt:ColorFn(FACTION_GREEN_COLOR)
-local c5  = cfmt:ColorFn(LIGHTGRAY_FONT_COLOR)
+local c1, c2 = cfmt:ColorFn(primaryColor), cfmt:ColorFn(secondaryColor)
+local c3, c4 = cfmt:ColorFn(ADVENTURES_COMBAT_LOG_BLUE), cfmt:ColorFn(FACTION_GREEN_COLOR)
+local c5 = cfmt:ColorFn(LIGHTGRAY_FONT_COLOR)
 local windowAlpha, windowColor = 0.9, cfmt:ColorFromHex('343434')
 
 local p, t, fmt = ns:log(libName)
-local pre     = sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
+local pre = sformat('{{%s::%s}}:', c1(ns.nameShort), c2(MODULE_NAME))
 local pre_dev = sformat('{{%s::%s}}:', ns.f.debug(nameShort), c2(MODULE_NAME))
 
 --[[-----------------------------------------------------------------------------
@@ -64,9 +64,7 @@ local TimeUtil = LibStub('Kapresoft-TimeUtil-2-0')
 local function ts() return sformat('[%s]', TimeUtil:NowInHoursMinSeconds()) end
 
 --- @param module Name
-local function _PrintpFn(module, ...)
-  print(ts(), module, ...)
-end
+local function _PrintpFn(module, ...) print(ts(), module, ...) end
 
 --- @param module Name
 local function _LogpFn(module, ...)
@@ -82,7 +80,9 @@ end
 --- ```
 --- @param module Name
 --- @return fun(...:any) : void
-function LogFunctions.logp(module) return function(...) _LogpFn(module, ...) end end
+function LogFunctions.logp(module)
+  return function(...) _LogpFn(module, ...) end
+end
 
 --- ### Usage
 --- ```
@@ -91,7 +91,9 @@ function LogFunctions.logp(module) return function(...) _LogpFn(module, ...) end
 --- ```
 --- @param module Name
 --- @return fun(...:any) : void
-function LogFunctions.printp(module) return function(...) _PrintpFn(module, ...) end end
+function LogFunctions.printp(module)
+  return function(...) _PrintpFn(module, ...) end
+end
 
 local logp = LogFunctions.logp(pre)
 local printp = LogFunctions.printp(pre)
@@ -145,7 +147,8 @@ function d:InitializeDebugChatFrame()
 
   local cf
   if not DefaultChatFrame then
-    cf = self:EnableDebugChatFrame(); if not cf then return end
+    cf = self:EnableDebugChatFrame()
+    if not cf then return end
   end
 
   O.OptionsDebugConsole:EnableGroup()
@@ -188,7 +191,8 @@ function d:EnableDebugChatFrame()
         end
       end
     end)
-  end; LoadDebugChatFrame()
+  end
+  LoadDebugChatFrame()
 
   if not DebugChatFrame then return end
 
@@ -215,17 +219,18 @@ function d:EnableDebugChatFrame()
   }
 
   --- @param chatFrame ChatLogFrameInterface
-  local cf  = dcf:New(opt, function(chatFrame)
+  local cf = dcf:New(opt, function(chatFrame)
     chatFrame:SetAlpha(1.0)
     local r, g, b = windowColor:GetRGB()
     FCF_SetWindowColor(chatFrame, r, g, b)
     FCF_SetWindowAlpha(chatFrame, opt.windowAlpha)
-    local xns = ns; xns:RegisterChatFrame(chatFrame)
+    local xns = ns
+    xns:RegisterChatFrame(chatFrame)
     SyncFontSize(chatFrame)
   end)
 
   logp(c5('-------------------------------------------'))
-  logp(c1(':: Debug ChatFrame initialized ::'));
+  logp(c1(':: Debug ChatFrame initialized ::'))
   logp('  IsDev:', c3(ns.IsDev()))
 
   local maxFontLen = 45

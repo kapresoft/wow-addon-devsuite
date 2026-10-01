@@ -34,9 +34,7 @@ local function OnPlayerEnteringWorld(frame, event, ...)
 
   local addon = frame.ctx.addon
   addon:SendMessage(MSG.OnAddOnReady)
-  if not addon.PopupDialog then
-    addon.PopupDialog = O.PopupDebugDialog()
-  end
+  if not addon.PopupDialog then addon.PopupDialog = O.PopupDebugDialog() end
 
   --@do-not-package@
   if ns.IsDev() then
@@ -63,9 +61,7 @@ function o:Init(addon)
 end
 
 --- @private
-function o:OnAfterInitialize()
-  self:RegisterEvents()
-end
+function o:OnAfterInitialize() self:RegisterEvents() end
 
 --- @private
 function o:RegisterEvents()
@@ -79,14 +75,13 @@ function o:OnAddonReady(msg) self:InitializeState() end
 --- @private
 function o:InitializeState()
   self:OnShowEventTrace()
-  C_Timer.After(3, function()
-    self:OnToggleFrameRate()
-  end)
+  C_Timer.After(3, function() self:OnToggleFrameRate() end)
 end
 
 function o:OnShowEventTrace()
   local m = ns:g().trace.show_at_startup and 'ShowUI' or 'HideUI'
-  local tu = ns:traceUtil(); tu[m](tu)
+  local tu = ns:traceUtil()
+  tu[m](tu)
 end
 
 function o:OnToggleFrameRate() self:ShowFPS(ns:g().show_fps) end
@@ -100,15 +95,17 @@ end
 
 ---@param val boolean The config value
 function o:ShowFPS(val)
-  local frameShown = (FramerateText and FramerateText:IsShown()) or
-      (FramerateFrame and FramerateFrame:IsShown())
+  local frameShown = (FramerateText and FramerateText:IsShown())
+    or (FramerateFrame and FramerateFrame:IsShown())
   local toggleFn = function() ToggleFramerate() end
   --- @type Frame
   local f = FramerateFrame
   if f then
     toggleFn = function()
-      if f:IsShown() then f:Hide()
-      else f:Show()
+      if f:IsShown() then
+        f:Hide()
+      else
+        f:Show()
       end
     end
   end
@@ -133,11 +130,12 @@ end
 function o:CreateEventFrame()
   --- @class MainControllerFrame : Frame
   --- @field ctx MainEventContext
-  local f = CreateFrame("Frame", nil, self.addon.frame)
+  local f = CreateFrame('Frame', nil, self.addon.frame)
   f.ctx = self:CreateEventContext(f)
   return f
 end
 
-AceEvent:RegisterMessage(MSG.OnToggleFrameRate, function(msg, source, ...)
-  o:OnToggleFrameRate()
-end)
+AceEvent:RegisterMessage(
+  MSG.OnToggleFrameRate,
+  function(msg, source, ...) o:OnToggleFrameRate() end
+)
