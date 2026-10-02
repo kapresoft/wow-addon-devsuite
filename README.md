@@ -1,5 +1,9 @@
-# DevSuite
-> ▶︎ _The developer tool your WoW addons deserve._
+[![Release Build](https://github.com/kapresoft/wow-addon-devsuite/actions/workflows/release-build.yml/badge.svg)](https://github.com/kapresoft/wow-addon-devsuite/actions/workflows/release-build.yml)
+
+# DevSuite :: The developer tool your WoW addons deserve.
+> ▶ A [World of Warcraft](https://worldofwarcraft.com/) AddOn
+
+![download-count](https://cf.way2muchnoise.eu/full_818084_downloads.svg?badge_style=for_the_badge) ![supported-wow-versions](https://cf.way2muchnoise.eu/versions/World%20of%20Warcraft%20Versions_818084_all.svg?badge_style=for_the_badge)
 
 [Releases](https://github.com/kapresoft/wow-addon-devsuite/releases) | [Known Issues](https://github.com/kapresoft/wow-addon-devsuite/issues) | [CurseForge](https://curseforge.com/wow/addons/devsuite/files)
 
