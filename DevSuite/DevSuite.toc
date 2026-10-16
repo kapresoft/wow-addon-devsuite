@@ -1,4 +1,4 @@
-## Interface: 11509, 20506, 30403, 40402, 50504, 120100
+## Interface: 11509, 20506, 30403, 40402, 50504, 120100, 120105
 ## Version: @project-version@
 ## Title: Dev|cff4DBEFFSuite|r
 ## IconTexture: interface/addons/devsuite/libs/assets/devsuite-icontexture
