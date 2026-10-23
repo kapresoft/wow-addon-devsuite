@@ -6,6 +6,8 @@ local O, GC, M = ns.O, ns.GC, ns.M
 local AceEvent, AceDB = ns:NewAceEvent(), ns:AceDB()
 
 local CONFIRM_RELOAD_UI_WITH_MSG = ns.addon .. 'CONFIRM_RELOAD_UI_WITH_MSG'
+-- Only for characters without a saved profile selection
+local DEFAULT_PROFILE = 'Default'
 
 --[[-----------------------------------------------------------------------------
 New Instance
@@ -62,7 +64,7 @@ local o = S
 function o:Init(addon)
   self.addon = addon
   --- @type AceDBObjectInstance
-  self.addon.db = AceDB:New(GC.C.DB_NAME)
+  self.addon.db = AceDB:New(GC.C.DB_NAME, nil, DEFAULT_PROFILE)
   ns:SetAddOnFn(function() return self.addon.db end)
 end
 
