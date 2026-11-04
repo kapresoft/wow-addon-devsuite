@@ -19,7 +19,7 @@ Lua Vars
 local sformat = string.format
 
 -- General labels are longer than the Debug Console ones
---- @type Ace3WidgetArg_DevSuite
+--- @type LibAceOptionsKit_Arg
 local GENERAL_ARG = { layout = { label = { width = 210 } } }
 
 --[[-----------------------------------------------------------------------------
@@ -37,6 +37,7 @@ local AceConfigDialog, AceDBOptions = ns:AceConfigDialog(), ns:AceDBOptions()
 local API, ACU = O.API, ns:AceConfigUtil():New(ns.addon)
 
 local Fonts = O.Fonts
+local AOK = ns:LibAceOptionsKit()
 local AddonUtil = ns:AddonUtil()
 local cfmt = ns:ColorFormatter()
 local c1 = cfmt:ColorFn(RED_FONT_COLOR)
@@ -134,7 +135,7 @@ function o:CreateGeneralOptions()
     type = 'toggle',
     order = order:next(),
     width = 'full',
-    dialogControl = 'DevSuite_SettingsCheckbox',
+    dialogControl = AOK.SettingsCheckbox.Type,
     arg = GENERAL_ARG,
     get = ShowEventTraceAtStartupGetFn,
     set = ShowEventTraceAtStartupSetFn,
@@ -152,7 +153,7 @@ function o:CreateGeneralOptions()
     type = 'toggle',
     order = order:next(),
     width = 'full',
-    dialogControl = 'DevSuite_SettingsCheckbox',
+    dialogControl = AOK.SettingsCheckbox.Type,
     arg = GENERAL_ARG,
     get = DebugConsoleGetFn,
     set = DebugConsoleSetFn,
@@ -169,7 +170,7 @@ function o:CreateGeneralOptions()
   a.showFPS = ACU:CreateGlobalOption('Show Frames-Per-Second (FPS)', {
     type = 'toggle',
     width = 'full',
-    dialogControl = 'DevSuite_SettingsCheckbox',
+    dialogControl = AOK.SettingsCheckbox.Type,
     arg = GENERAL_ARG,
     order = order:next(),
     get = self.util:GlobalGet('show_fps', false),

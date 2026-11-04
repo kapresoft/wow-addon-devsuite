@@ -13,6 +13,12 @@
     <Script file="Libs\LibPrettyPrint\Libs\Printer.lua"/>
     <Script file="Libs\LibTraceKit\LibTraceKit.lua"/>
 
+    <Script file="Libs\LibAceOptionsKit\Libs\LibAceOptionsKit.lua"/>
+    <Script file="Libs\LibAceOptionsKit\Libs\WidgetUtil.lua"/>
+    <Script file="Libs\LibAceOptionsKit\Libs\Widgets\SettingsCheckbox.lua"/>
+    <Script file="Libs\LibAceOptionsKit\Libs\Widgets\StepperSlider.lua"/>
+    <Script file="Libs\LibAceOptionsKit\Libs\Widgets\StepperDropdown.lua"/>
+
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\AceConfigUtil.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\AceLib.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\AddonInfoUtil.lua"/>

@@ -1,7 +1,6 @@
 --[[-----------------------------------------------------------------------------
 Local Vars
 -------------------------------------------------------------------------------]]
-local LibStub = LibStub
 local AceLib = LibStub('Kapresoft-AceLib-2-0')
 local DCFM = LibStub('Kapresoft-DebugChatFrameMixin-2-0')
 local GVM = LibStub('Kapresoft-GameVersionMixin-2-0')
@@ -67,10 +66,6 @@ local M = {
   AceDbInitializerMixin = {},
   --- @type API
   API = {},
-  --- @type Ace3WidgetConfig_DevSuite
-  Ace3WidgetConfig = {},
-  --- @type Ace3WidgetUtil_DevSuite
-  Ace3WidgetUtil = {},
   --- @type Fonts_DevSuite
   Fonts = {},
   --- @type DatabaseSchema
@@ -212,12 +207,20 @@ function ns:InitEventTrace()
   self:traceUtil():SetEventTraceSearchKeyword(trace.preset_keyword)
 end
 
+--- @return Kapresoft-Table-2-0
 function ns:Table() return LibStub('Kapresoft-Table-2-0') end
+--- @return Kapresoft-String-2-0
 function ns:String() return LibStub('Kapresoft-String-2-0') end
+--- @return Kapresoft-AceConfigUtil-2-0
 function ns:AceConfigUtil() return LibStub('Kapresoft-AceConfigUtil-2-0') end
+--- @return Kapresoft-ColorFormatter-2-0
 function ns:ColorFormatter() return ColorFormatter() end
+--- @return Kapresoft-AddonUtil-2-0
 function ns:AddonUtil() return LibStub('Kapresoft-AddonUtil-2-0') end
+--- @return Kapresoft-LuaEvaluator-2-0
 function ns:LuaEvaluator() return LibStub('Kapresoft-LuaEvaluator-2-0') end
+--- @return LibAceOptionsKit-1.0
+function ns:LibAceOptionsKit() return LibStub('LibAceOptionsKit-1.0') end
 
 --- Registers a non-default locale. Always isDefault=false, silent=true.
 --- @see AceLocale-3.0.NewLocale
