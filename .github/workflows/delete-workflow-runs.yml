@@ -3,9 +3,6 @@ on:
   #Run monthly, at 00:00 on the 1st day of month.
   schedule:
     - cron: '0 0 1 * *'
-  push:
-    tags: [ 100.**" ]
-    #branches: [ "main" ]
 
   workflow_dispatch:
     inputs:
@@ -50,6 +47,9 @@ on:
 jobs:
   del_runs:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
     steps:
       - name: Delete workflow runs
         # see: https://github.com/marketplace/actions/delete-workflow-runs

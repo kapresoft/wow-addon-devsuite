@@ -111,6 +111,9 @@ jobs:
       ## ------------------------------------------------ ##
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v7
+        with:
+          # No later step needs git auth; keeps the token from the packager
+          persist-credentials: false
       ## ------------------------------------------------ ##
       # Dry-run the release notes so the same text can be handed to CurseForge
       # via pkgmeta.yaml's manual-changelog before the packager uploads.
