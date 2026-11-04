@@ -15,6 +15,7 @@ embedded-libraries:
   - LibPrettyPrint
   - LibTraceKit
   - LibUtil
+  - LibAceOptionsKit
 
 tools-used:
   - DevSuite
@@ -33,6 +34,9 @@ externals:
     tag: latest
   DevSuite/ThirdParty/Libs/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util
+    tag: latest
+  DevSuite/ThirdParty/Libs/LibAceOptionsKit:
+    url: https://github.com/kapresoft/wow-addon-LibAceOptionsKit
     tag: latest
 
 ignore:
@@ -75,6 +79,14 @@ ignore:
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/Assets
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
   - DevSuite/ThirdParty/Libs/Kapresoft-LibUtil/Lib-2-0/Annotations
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/*.toc
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/dev
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/doc
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/Assets
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/LibAceOptionsKit.xml
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/ThirdParty
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/Libs/Annotations
+  - DevSuite/ThirdParty/Libs/LibAceOptionsKit/Libs/Developer
 
 
 # REQUIRED for CurseForge packager (non-obvious):

@@ -17,6 +17,9 @@ manual-changelog:
 # Ace3:
 #  - This is faster: https://github.com/WoWUIDev/Ace3
 #  - But this is the official: https://repos.wowace.com/wow/ace3/trunk
+# alts to tag: latest are:
+#    main: branch
+#    commit: <hash>
 externals:
   ThirdParty-Libs/Ace3:
     url: https://github.com/WoWUIDev/Ace3
@@ -30,6 +33,9 @@ externals:
   ThirdParty-Libs/Kapresoft-LibUtil:
     url: https://github.com/kapresoft/wow-lib-util
     tag: latest
+  ThirdParty-Libs/LibAceOptionsKit:
+    url: https://github.com/kapresoft/wow-addon-LibAceOptionsKit
+    tag: latest
 
   ## annotations always get pulled from main
   ThirdParty-Libs/Annotations/Kapresoft-LibUtil:
@@ -40,6 +46,9 @@ externals:
     path: Libs/Annotations
   ThirdParty-Libs/Annotations/DebugChatFrame:
     url: https://github.com/kapresoft/wow-addon-debug-chat-frame
+    path: Libs/Annotations
+  ThirdParty-Libs/Annotations/LibAceOptionsKit:
+    url: https://github.com/kapresoft/wow-addon-LibAceOptionsKit
     path: Libs/Annotations
 
 ignore:
@@ -84,6 +93,15 @@ ignore:
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/ThirdParty
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.lua
   - ThirdParty-Libs/Kapresoft-LibUtil/Lib-2-0/LibUtil.xml
+  - ThirdParty-Libs/LibAceOptionsKit/LICENSE
+  - ThirdParty-Libs/LibAceOptionsKit/*.toc
+  - ThirdParty-Libs/LibAceOptionsKit/dev
+  - ThirdParty-Libs/LibAceOptionsKit/doc
+  - ThirdParty-Libs/LibAceOptionsKit/Assets
+  - ThirdParty-Libs/LibAceOptionsKit/LibAceOptionsKit.xml
+  - ThirdParty-Libs/LibAceOptionsKit/ThirdParty
+  - ThirdParty-Libs/LibAceOptionsKit/Libs/Annotations
+  - ThirdParty-Libs/LibAceOptionsKit/Libs/Developer
 
 
 # Base path is .release/

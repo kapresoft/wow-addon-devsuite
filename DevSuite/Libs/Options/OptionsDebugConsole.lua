@@ -10,7 +10,8 @@ local L = ns:GetLocale()
 local t_merge = ns:Table().MergeRecursive
 local ACU = ns:AceConfigUtil():New(ns.addon)
 local NameDescG = ns.LocaleUtil.NameDescGlobal
---- @type Ace3WidgetArg_DevSuite
+local AOK = ns:LibAceOptionsKit()
+--- @type LibAceOptionsKit_Arg
 local ARG = { layout = { label = { width = 150 } } }
 --- spacer
 local sp = '                                                                   '
@@ -79,7 +80,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'select',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_StepperDropdown',
+    dialogControl = AOK.StepperDropdown.Type,
     arg = t_merge(ARG, { tooltip = { dropdown = FontTooltip } }),
     values = function() return Fonts:GetFontChoices() end,
     sorting = function() return Fonts:GetFontSorting() end,
@@ -99,7 +100,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'range',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_StepperSlider',
+    dialogControl = AOK.StepperSlider.Type,
     arg = ARG,
     min = 10,
     max = 28,
@@ -115,7 +116,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'range',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_StepperSlider',
+    dialogControl = AOK.StepperSlider.Type,
     arg = ARG,
     min = 10,
     max = 10000,
@@ -135,7 +136,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'range',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_StepperSlider',
+    dialogControl = AOK.StepperSlider.Type,
     arg = ARG,
     min = 1,
     max = 50,
@@ -154,7 +155,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'range',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_StepperSlider',
+    dialogControl = AOK.StepperSlider.Type,
     arg = ARG,
     min = 1,
     max = 1000,
@@ -174,7 +175,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'toggle',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_SettingsCheckbox',
+    dialogControl = AOK.SettingsCheckbox.Type,
     arg = ARG,
     get = function() return ns:dbg().selectLogConsoleTab == true end,
     set = function(_, v) ns:dbg().selectLogConsoleTab = (v == true) end,
@@ -185,7 +186,7 @@ function o:DebugConsoleSection(debugConf, seq)
     type = 'toggle',
     order = seq:next(),
     width = 'full',
-    dialogControl = 'DevSuite_SettingsCheckbox',
+    dialogControl = AOK.SettingsCheckbox.Type,
     arg = ARG,
     get = function() return ns:dbg().makeDefaultChatFrame == true end,
     set = function(_, v)
