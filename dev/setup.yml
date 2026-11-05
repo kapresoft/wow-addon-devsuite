@@ -21,9 +21,10 @@ manual-changelog:
 #    main: branch
 #    commit: <hash>
 externals:
+  # r1424-alpha (Release-r1403 + 21), needed for WoW Forever
   ThirdParty-Libs/Ace3:
     url: https://github.com/WoWUIDev/Ace3
-    tag: latest
+    commit: ac3d1225037e0dc74e025a72342c0f7824aae147
   ThirdParty-Libs/LibPrettyPrint:
     url: https://github.com/kapresoft/wow-addon-LibPrettyPrint
     tag: latest
