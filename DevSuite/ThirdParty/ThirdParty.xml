@@ -5,6 +5,13 @@
     <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
     <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
 
+    <!--@do-not-package@-->
+    <!-- Exclude during development for perf -->
+    <!--@end-do-not-package@-->
+    <!--@non-debug@
+    <Include file="Ace3.xml"/>
+    @end-non-debug@-->
+
     <Script file="Libs\LibPrettyPrint\Libs\Namespace.lua"/>
     <Script file="Libs\LibPrettyPrint\Libs\LibPrettyPrint.lua"/>
     <Script file="Libs\LibPrettyPrint\Libs\pprint.lua"/>
@@ -34,10 +41,4 @@
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\Table.lua"/>
     <Script file="Libs\Kapresoft-LibUtil\Lib-2-0\Modules\TimeUtil.lua"/>
 
-    <!--@do-not-package@-->
-    <!-- Exclude during development for perf -->
-    <!--@end-do-not-package@-->
-    <!--@non-debug@
-    <Include file="Ace3.xml"/>
-    @end-non-debug@-->
 </Ui>
