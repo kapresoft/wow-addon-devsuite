@@ -284,6 +284,12 @@ end
 --- Usage: /run d:c('hello', 'world')
 function o:c(...) ns.logp(libNamePretty, ...) end
 
+--- Usage: /run dsd:ReplayAnnouncements()
+function o:ReplayAnnouncements()
+  ns:g().announcementsShown = {}
+  ns.O.Announcements:ShowNextUnseen()
+end
+
 -- TODO: Add this as a feature; a textbox that takes a code to execute on login
 --- @type Frame
 local f = CreateFrame('Frame')

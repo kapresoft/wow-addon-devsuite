@@ -1,0 +1,77 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Script file="Announcements.lua"/>
+    <Script file="AnnouncementDialogMixin.lua"/>
+
+    <!-- One-time announcement dialog. ScrollFrame.ScrollChild.Body is the text that scrolls. -->
+    <Frame name="DevSuite_AnnouncementDialogTemplate" virtual="true"
+           mixin="DevSuite_AnnouncementDialogMixin"
+           inherits="BackdropTemplate"
+           frameStrata="DIALOG" enableMouse="true" movable="true" clampedToScreen="true">
+
+        <Size x="440" y="280"/>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+        </Scripts>
+
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString parentKey="Title" inherits="GameFontNormalLarge" justifyH="CENTER">
+                    <Anchors>
+                        <Anchor point="TOP" x="0" y="-16"/>
+                    </Anchors>
+                </FontString>
+                <Texture parentKey="TitleIcon" alpha="0.6"
+                         file="Interface\AddOns\DevSuite\Libs\Assets\DevSuite-IconTexture">
+                    <Size x="20" y="20"/>
+                    <Anchors>
+                        <Anchor point="RIGHT" relativeKey="$parent.Title"
+                                relativePoint="LEFT" x="-6" y="0"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <ScrollFrame parentKey="ScrollFrame" inherits="UIPanelScrollFrameTemplate">
+                <Size x="380" y="180"/>
+                <Anchors>
+                    <Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-8" y="-16"/>
+                </Anchors>
+                <Frames>
+                    <Frame parentKey="ScrollChild">
+                        <Size x="380" y="180"/>
+                        <Layers>
+                            <Layer level="ARTWORK">
+                                <FontString parentKey="Body" inherits="GameFontHighlight"
+                                            justifyH="LEFT" justifyV="TOP" wordwrap="true">
+                                    <Size x="380" y="0"/>
+                                    <Anchors>
+                                        <Anchor point="TOPLEFT"/>
+                                        <Anchor point="TOPRIGHT"/>
+                                    </Anchors>
+                                </FontString>
+                            </Layer>
+                        </Layers>
+                    </Frame>
+                </Frames>
+            </ScrollFrame>
+
+            <Button parentKey="OkButton" inherits="UIPanelButtonTemplate"
+                    registerForClicks="LeftButtonUp" text="OKAY">
+                <Size x="90" y="24"/>
+                <Anchors>
+                    <Anchor point="BOTTOM" x="0" y="16"/>
+                </Anchors>
+                <Scripts>
+                    <OnClick>self:GetParent():OnClickOk()</OnClick>
+                </Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+</Ui>

@@ -13,7 +13,7 @@ Locale Entries
 L['BINDING_NAME_DEVS_OPTIONS_DLG'] = 'Ventana de opciones'
 L['BINDING_NAME_DEVS_DEBUG_DLG'] = 'Ventana de depuración'
 L['BINDING_NAME_DEVS_OPEN_GRAPHICS_SETTINGS'] = 'Abrir ajustes de gráficos'
-L['BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER'] ='Obtener detalles al pasar el ratón'
+L['BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER'] = 'Obtener detalles al pasar el ratón'
 L['BINDING_NAME_DEVS_TOGGLE_FRAMESTACK'] = 'Alternar pila de marcos'
 L['BINDING_NAME_DEVS_CLEAR_DEBUG_CONSOLE'] = 'Limpiar consola de depuración'
 L['BINDING_NAME_DEVS_TOGGLE_DEBUG_CONSOLE'] = 'Alternar consola de depuración'

@@ -64,6 +64,8 @@ Type: Modules
 local M = {
   --- @type AceDbInitializerMixin
   AceDbInitializerMixin = {},
+  --- @type Announcements
+  Announcements = {},
   --- @type API
   API = {},
   --- @type Fonts_DevSuite

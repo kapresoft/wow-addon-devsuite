@@ -31,6 +31,9 @@
     <Script file="Libs\Dialog\DialogWidgetMixin.lua"/>
     <Script file="Libs\Dialog\DebugDialog.lua"/>
     <Script file="Libs\Dialog\PopupDebugDialog.lua"/>
+    <Include file="Libs\Assets\Fonts\_Fonts.xml"/>
+    <Include file="Libs\Announcement\_Announcement.xml"/>
+    <Script file="Libs\Announcement\Content\OpenGraphicsSettings.lua"/>
     <Script file="Libs\Hooks\PickupHooks.lua" />
 
     <Script file="DevSuite.lua"/>

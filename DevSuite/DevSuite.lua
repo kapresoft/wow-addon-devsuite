@@ -58,6 +58,7 @@ function o:OnEnable()
   self:RegisterHooks()
   debugDialog = DebugDialog:New()
   o.OnLoadEventTrace()
+  C_Timer.After(2, function() O.Announcements:ShowNextUnseen() end)
   if IsPlayerInWorld() then
     self:SendMessage(GC.M.OnAfterEnable, self)
   else
