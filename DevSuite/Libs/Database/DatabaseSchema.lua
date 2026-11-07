@@ -70,6 +70,7 @@ Type: Profile_Global_Config
 --- @field auto_loaded_addons AutoLoadedAddons
 --- @field console_fontSize number
 --- @field console_font string @The font name
+--- @field announcementsShown table<string, boolean> @Announcement dbKey to true once shown
 --
 --
 local fn1 = [[-- evaluate a variable
@@ -160,6 +161,7 @@ local DefaultAddOnDatabase = {
     show_fps = true,
     prompt_for_reload_to_enable_addons = true,
     console_fontSize = 14,
+    announcementsShown = {},
     --- @type DebugSettingsFlag_Config
     debug = {
       enableLogConsole = false,
