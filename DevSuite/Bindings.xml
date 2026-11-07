@@ -5,6 +5,9 @@
     <Binding name="DEVS_DEBUG_DLG" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_DEBUG_DLG();
     </Binding>
+    <Binding name="DEVS_OPEN_GRAPHICS_SETTINGS" category="DEVS_CATEGORY">
+        DevSuite.BINDING_DEVS_OPEN_GRAPHICS_SETTINGS();
+    </Binding>
     <Binding name="DEVS_GET_DETAILS_ON_MOUSEOVER" category="DEVS_CATEGORY">
         DevSuite.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER();
     </Binding>

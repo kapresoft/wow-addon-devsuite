@@ -253,6 +253,22 @@ end
 function o.SlashCommand_Info_Handler()
     p(GC:GetAddonInfoFormatted())
 end
+
+--- Graphics has no Settings.*_CATEGORY_ID; find it by label
+--- @param name string @Localized category label, e.g. GRAPHICS_LABEL
+--- @return number? @nil if no top-level category has that name
+local function FindCategoryID(name)
+  for _, category in ipairs(SettingsPanel:GetAllCategories()) do
+    if category:GetName() == name then return category:GetID() end
+  end
+end
+
+function o.OpenGraphicsSettings()
+  local categoryID = FindCategoryID(GRAPHICS_LABEL)
+  if not categoryID then return end
+  Settings.OpenToCategory(categoryID)
+end
+
 function o.SlashCommand_Help_Handler()
   local C = GC.C
   print('')
@@ -260,6 +276,7 @@ function o.SlashCommand_Help_Handler()
   local COMMAND_CONFIG_TEXT = 'Shows the config UI'
   local COMMAND_INFO_TEXT   = 'Prints additional info about the addon on this console'
   local COMMAND_CLEAR_TEXT  = 'Clears the debug console (Alias: cls, clr)'
+  local COMMAND_GRAPHICS_TEXT = 'Opens Options > Graphics'
   local COMMAND_HELP_TEXT   = 'Shows this help'
   local OPTIONS_LABEL       = 'options'
   local USAGE_LABEL         = ns.sformat("usage: %s [%s]", C.CONSOLE_PLAIN, OPTIONS_LABEL)
@@ -269,6 +286,7 @@ function o.SlashCommand_Help_Handler()
   print(C.CONSOLE_OPTIONS_FORMAT:format('config', COMMAND_CONFIG_TEXT))
   print(C.CONSOLE_OPTIONS_FORMAT:format('dialog', COMMAND_DIALOG_TEXT))
   print(C.CONSOLE_OPTIONS_FORMAT:format('clear', COMMAND_CLEAR_TEXT))
+  print(C.CONSOLE_OPTIONS_FORMAT:format('graphics', COMMAND_GRAPHICS_TEXT))
   print(C.CONSOLE_OPTIONS_FORMAT:format('help', COMMAND_HELP_TEXT))
   print('Other commands:')
   print(c1('/devsuite-options'), 'or /ds-options for the Ace3 AceConfig command line options.')
@@ -301,6 +319,9 @@ function o:SlashCommands(spaceSeparatedArgs)
     if IsAnyOf('info', unpack(args)) then
         return o.SlashCommand_Info_Handler()
     end
+    if IsAnyOf('graphics', unpack(args)) then
+        return o.OpenGraphicsSettings()
+    end
     o.SlashCommand_Help_Handler(); return
 end
 
@@ -310,6 +331,7 @@ end
 
 function o.BINDING_DEVS_OPTIONS_DLG() o:OpenConfig() end
 function o.BINDING_DEVS_DEBUG_DLG() debugDialog:Show() end
+function o.BINDING_DEVS_OPEN_GRAPHICS_SETTINGS() o.OpenGraphicsSettings() end
 function o.BINDING_DEVS_GET_DETAILS_ON_MOUSEOVER() o:GetMouseFocus() end
 function o.BINDING_DEVS_TOGGLE_FRAMESTACK() o.ToggleFrameStack() end
 function o.BINDING_DEVS_CLEAR_DEBUG_CONSOLE()

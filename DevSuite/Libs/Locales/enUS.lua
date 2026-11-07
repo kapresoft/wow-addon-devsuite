@@ -6,6 +6,7 @@ local L = ns:AceLocale():NewLocale(ns.addon, 'enUS', true, true)
 L['BINDING_NAME_DEVS_OPTIONS_DLG'] = 'Options Dialog'
 L['BINDING_NAME_DEVS_DEBUG_DLG'] = 'Debug Dialog'
 L['BINDING_NAME_DEVS_GET_DETAILS_ON_MOUSEOVER'] = 'Get Details On Mouse Over'
+L['BINDING_NAME_DEVS_OPEN_GRAPHICS_SETTINGS'] = 'Open Graphics Settings'
 L['BINDING_NAME_DEVS_TOGGLE_FRAMESTACK'] = 'Toggle Frame Stack'
 L['BINDING_NAME_DEVS_CLEAR_DEBUG_CONSOLE'] = 'Clear Debug Console'
 L['BINDING_NAME_DEVS_TOGGLE_DEBUG_CONSOLE'] = 'Toggle Debug Console'
