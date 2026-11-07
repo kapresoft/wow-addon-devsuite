@@ -4,13 +4,7 @@
     <!-- LibStub, then CallbackHandler needs to be at the top -->
     <Script file="Libs\Ace3\LibStub\LibStub.lua"/>
     <Include file="Libs\Ace3\CallbackHandler-1.0\CallbackHandler-1.0.lua"/>
-
-    <!--@do-not-package@-->
-    <!-- Exclude during development for perf -->
-    <!--@end-do-not-package@-->
-    <!--@non-debug@
     <Include file="Ace3.xml"/>
-    @end-non-debug@-->
 
     <Script file="Libs\LibPrettyPrint\Libs\Namespace.lua"/>
     <Script file="Libs\LibPrettyPrint\Libs\LibPrettyPrint.lua"/>
